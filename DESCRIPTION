@@ -1,0 +1,27 @@
+Package: tbltools
+Title: Tools for Team-Based-Learning
+Description: Tools for using Team-Based-Learning (TBL) approaches in the classroom.
+Version: 0.7.8.9999
+Authors@R: person("Sebastian", "Kopf", email = "sebastian.kopf@colorado.edu",
+    role = c("aut", "cre"))
+URL: https://github.com/kopflab/tbltools
+BugReports: https://github.com/kopflab/tbltools/issues
+Depends:
+    R (>= 3.1)
+Imports:
+    methods,
+    dplyr (>= 0.7.0),
+    stringr,
+    ghql,
+    httr
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown,
+    covr
+biocViews: 
+License: GPL (>= 3) | file LICENSE
+Encoding: UTF-8
+LazyData: true
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
