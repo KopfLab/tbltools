@@ -70,6 +70,11 @@ create_RAT <- function(questions, answer_key) {
     stop("The following questions have multiple or no answer:\n  - ", str_c(find_trouble$question[trouble], collapse = "\n  - "), call. = FALSE)
   }
   
+  # make sure answer key is all upercase letters
+  if (any(trouble <- !answer_key$option %in% LETTERS)) {
+    stop("The following answer key options are invalid uppercase letters: ", str_c(answer_key$option[trouble], collapse = ", "), call. = FALSE)
+  }
+  
   # return
   structure(
     list(
@@ -133,6 +138,10 @@ arrange_RAT_questions <- function(rat, by = "original", fixed_number_column = NU
       stop("The following question(s) have a fixed number that is impossible with the provided group arrangements:\n  - ", 
            str_c(with(trouble, sprintf("#%.0f (group range #%.0f-#%.0f): %s", .fixed_number, .group_n_min, .group_n_max, question)), collapse = "\n  - "), call. = FALSE)
     }
+    if (nrow(trouble <- filter(numbers_df, !is.na(.fixed_number), duplicated(.fixed_number) | duplicated(.fixed_number, fromLast = TRUE))) > 0) {
+      stop("The following question(s) have duplicate fixed numbers:\n  - ", 
+           str_c(with(trouble, sprintf("#%.0f (group range #%.0f-#%.0f): %s", .fixed_number, .group_n_min, .group_n_max, question)), collapse = "\n  - "), call. = FALSE)
+    }
     
     # generate random numbers within group (or semi-random if any fixed numbers are set)
     generate_random_group_numbers <- function(fixed_number, group_n_min, group_n_max) {
@@ -162,15 +171,72 @@ arrange_RAT_questions <- function(rat, by = "original", fixed_number_column = NU
 
 #' Generate RAT multiple choice questions
 #' @inheritParams arrange_RAT_questions
+#' @param iRAT_sel_per_q number of selections per question for the iRAT portion of this test
 #' @export
-generate_RAT_choices <- function(rat) {
+generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, random_seed = random()) {
   if (!is(rat, "RAT")) 
     stop("can only arrange Readiness Assessment Test classes, found: ", class(rat)[1], call. = FALSE)
   
-  # default sort
+  # random seed
+  random <- function() sample(.Random.seed, 1)
+  set.seed(random_seed)
+  
+  # default sort (if none used before)
   if (!"number" %in% names(rat$questions)) {
     rat <- arrange_RAT_questions(rat, by = "original")
   }
+  
+  # join in answer key
+  rat_options <- left_join(rat$questions, rat$answer_key, by = c("number" = "number")) 
+  if (nrow(missing <- filter(rat_options, is.na(option))) > 0) {
+    stop("Missing answer key for question numbers\n ", str_c(missing$number %>% unique(), collapse = ", "), call. = FALSE)
+  }
+  
+  # check for troubles where not as many answers as options
+  rat_options <- rat_options %>% 
+    group_by(question) %>%
+    mutate(
+      n_options = n(),
+      n_correct = which(LETTERS == option[1])
+    ) 
+  trouble <- filter(rat_options, n_correct > n_options) %>% select(number, question, n_options, option) %>% unique()
+  if(nrow(trouble) > 0) {
+    stop("The following question(s) have not enough possible answers to fit the correct option, consider using by='fixed' or by='semi-random' question sorting to make sure these are located at an appropriate position in the answer key:\n  - ", 
+         str_c(with(trouble, sprintf("#%.0f (only %.0f answers but '%s' correct): %s", 
+                                     number, n_options, option, question)), collapse = "\n  - "), call. = FALSE)
+  }
+  
+  # assign options
+  assign_options <- function(correct, option, n_options) {
+    answers <- sample(LETTERS[1:n_options[1]])
+    correct_idx <- which(correct)
+    random_correct_idx <- which(answers == option[1])
+    answers[random_correct_idx] <- answers[correct_idx]
+    answers[correct_idx] <- option[1]
+    return(answers)
+  } 
+  rat_options <- rat_options %>% 
+    group_by(question) %>% 
+    mutate(answer_option = assign_options(correct, option, n_options)) %>%
+    # sort by question # and options (A-X)
+    arrange(number, answer_option) 
+
+  # assemble question in markdown
+  group_by(rat_options, number, question) %>% 
+    do({
+      with(., {
+        answer_list <- str_c(answer_option, ": ", answer)
+        data_frame(
+          label = sprintf(
+            "### #%.0f%s: %s\n - %s", 
+            number[1], 
+            if (iRAT_sel_per_q > 1) sprintf(" (iRAT %.0f-%.0f)", (number[1]-1)*iRAT_sel_per_q  + 1, (number[1]-1)*iRAT_sel_per_q + iRAT_sel_per_q) else "", 
+            question[1], str_c(answer_list, collapse = "\n - "))
+        )
+      })
+    }) %>% 
+    # print to document
+    { cat(str_c(.$label, collapse = "\n\n")) }
   
   invisible(rat)
 }

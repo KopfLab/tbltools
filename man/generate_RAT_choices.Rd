@@ -4,10 +4,14 @@
 \alias{generate_RAT_choices}
 \title{Generate RAT multiple choice questions}
 \usage{
-generate_RAT_choices(rat)
+generate_RAT_choices(rat, iRAT_sel_per_q = 1, random_seed = random())
 }
 \arguments{
 \item{rat}{Readiness Assessment Test object}
+
+\item{iRAT_sel_per_q}{number of selections per question for the iRAT portion of this test}
+
+\item{random_seed}{can overwrite with a fixed value (e.g. \code{random_seed=42}) to get a reproducible "random" order in \code{by="random"} or \code{by="semi-random"} mode.}
 }
 \description{
 Generate RAT multiple choice questions
