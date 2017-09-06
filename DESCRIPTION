@@ -13,7 +13,8 @@ Imports:
     dplyr (>= 0.7.0),
     stringr,
     ghql,
-    httr
+    httr,
+    readxl
 Suggests:
     testthat,
     knitr,

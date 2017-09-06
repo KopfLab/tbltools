@@ -5,6 +5,7 @@
 #' @import stringr
 #' @import ghql
 #' @import httr
+#' @importFrom readxl read_excel
 NULL
 
 # quiets concerns of R CMD check about . that appears in pipelines 
