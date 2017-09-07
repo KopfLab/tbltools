@@ -8,6 +8,10 @@
 #' @importFrom readxl read_excel
 NULL
 
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`
+
 # quiets concerns of R CMD check about . that appears in pipelines 
 # and some very commonly used variable names used in NSE commands
 utils::globalVariables(c("."))
