@@ -4,14 +4,22 @@
 \alias{generate_RAT_choices}
 \title{Generate RAT multiple choice questions}
 \usage{
-generate_RAT_choices(rat, iRAT_sel_per_q = 1, random_seed = random())
+generate_RAT_choices(rat, iRAT_sel_per_q = 1, answer_layout = "vertical",
+  answer_layout_column = NULL, answer_layout_funs = default_RAT_layouts(),
+  random_seed = random())
 }
 \arguments{
 \item{rat}{Readiness Assessment Test object}
 
 \item{iRAT_sel_per_q}{number of selections per question for the iRAT portion of this test}
 
+\item{answer_layout}{how to arrange the answers, layouts supported by default are \code{"vertical"} and \code{"horizontal"} (recommended for image answers). The layout can be overwritten for individual questions by setting the \code{answer_layout_column} parameter. Custom answer layouts can be provided using the \code{answer_layout_funcs} parameter.}
+
+\item{answer_layout_column}{set this parameter to a column name in the questions data frame that has a different layout name for questions that are indended to deviate from the default layout (\code{answer_layout}). All layouts must be defined in the \code{answer_layout_funs} (\code{"vertical"} and \code{"horizontal"} by default).}
+
 \item{random_seed}{can overwrite with a fixed value (e.g. \code{random_seed=42}) to get a reproducible "random" order in \code{by="random"} or \code{by="semi-random"} mode.}
+
+\item{answer_layout_funcs}{Specific custom answer layouts by providing layout functions that differ from the default. See \code{default_RAT_layouts} for details on how these work.}
 }
 \description{
 Generate RAT multiple choice questions

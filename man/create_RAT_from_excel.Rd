@@ -15,7 +15,7 @@ create_RAT_from_excel(filepath, questions_tab = "questions",
 
 \item{filter_include}{if set, only keeps questions that have the 'include' column set}
 
-\item{fill_down_questions}{whether to fill down the questions column (i.e. if question only written in first row)}
+\item{fill_down_questions}{whether to fill down the questions column (i.e. if question an their parameters are only written in first row)}
 
 \item{keys_tab}{the name of th keys tab (requires at mimimum columns 'number', 'option')}
 }

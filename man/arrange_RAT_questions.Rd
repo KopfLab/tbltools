@@ -10,7 +10,7 @@ arrange_RAT_questions(rat, by = "original", fixed_number_column = NULL,
 \arguments{
 \item{rat}{Readiness Assessment Test object}
 
-\item{by}{what to arrange by, options: \code{by="original"} leaves the original order as encountered, \code{by="random"} generates a random order, \code{by="semi-random"} generates a random order except for questions that have the \code{fixed_number_column} set, and \code{by="fixed"} used the \code{fixed_number_column} (which has to be set for all questions!).}
+\item{by}{what to arrange by, options: \code{by="original"} leaves the original order as encountered, \code{by="random"} generates a random order, \code{by="semi-random"} generates a random order except for questions that have the \code{fixed_number_column} set, and \code{by="fixed"} uses the \code{fixed_number_column} (which has to be set for all questions!).}
 
 \item{fixed_number_column}{name of a column in the RAT questions data frame that indicates the fixed question number. Only relevant if \code{by="semi-random"} or \code{by="fixed"}}
 
