@@ -4,7 +4,7 @@
 \alias{clone_repository}
 \title{Clone a repository to the target directory}
 \usage{
-clone_repository(url, path = NULL, token = NULL, overwrite = TRUE)
+clone_repository(url, path = NULL, token = NULL, pull = TRUE)
 }
 \arguments{
 \item{url}{the https://... repository}
@@ -13,7 +13,7 @@ clone_repository(url, path = NULL, token = NULL, overwrite = TRUE)
 
 \item{token}{the authentication token (only required for private repositories)}
 
-\item{overwrite}{whether to overwrite existing folders at the target location}
+\item{pull}{if the repository already exists, whether to update it from the remote}
 }
 \description{
 Clone a repository to the target directory

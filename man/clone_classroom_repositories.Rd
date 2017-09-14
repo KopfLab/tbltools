@@ -4,7 +4,8 @@
 \alias{clone_classroom_repositories}
 \title{Clone github classroom repositories}
 \usage{
-clone_classroom_repositories(token, org, repo_prefix, folder = ".")
+clone_classroom_repositories(token, org, repo_prefix, folder = ".",
+  pull = TRUE)
 }
 \arguments{
 \item{token}{authentication token for github API (https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/), requires scope "repo"}
@@ -14,6 +15,8 @@ clone_classroom_repositories(token, org, repo_prefix, folder = ".")
 \item{repo_prefix}{repository prefix (i.e. prefix set of classroom repositories)}
 
 \item{folder}{the target directory where to clone all the repositories to}
+
+\item{pull}{if the repository already exists, whether to update it from the remote}
 }
 \value{
 repositories data frame, see \link{find_classroom_repositories} for details

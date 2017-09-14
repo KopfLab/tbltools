@@ -4,7 +4,7 @@
 #' @inheritParams clone_repositories
 #' @return repositories data frame, see \link{find_classroom_repositories} for details
 #' @export
-clone_classroom_repositories <- function(token, org, repo_prefix, folder = ".") {
+clone_classroom_repositories <- function(token, org, repo_prefix, folder = ".", pull = TRUE) {
   
   # security checks
   if (missing(token)) stop("token required", call. = FALSE)
@@ -16,7 +16,7 @@ clone_classroom_repositories <- function(token, org, repo_prefix, folder = ".") 
     find_classroom_repositories(org = org, repo_prefix = repo_prefix)
   
   # clone repos
-  clone_repositories(repos, folder = folder, token = token)
+  clone_repositories(repos, folder = folder, token = token, pull = pull)
   # return repos data frame
   return(repos)
 }
@@ -114,8 +114,8 @@ find_classroom_repositories <- function (gqlc, org, repo_prefix, max = 100, quie
 #' @param repos data frame with, at minimum, columns 'repository' (name) and 'url'
 #' @param folder the target directory where to clone all the repositories to
 #' @export 
-clone_repositories <- function(repos, folder = ".", token = NULL, overwrite = TRUE) {
-  mapply(clone_repository, repos$url, file.path(folder, repos$repository))
+clone_repositories <- function(repos, folder = ".", token = NULL, pull = TRUE) {
+  mapply(clone_repository, repos$url, file.path(folder, repos$repository), token = token, pull = pull)
   invisible(repos)
 }
 
@@ -123,9 +123,9 @@ clone_repositories <- function(repos, folder = ".", token = NULL, overwrite = TR
 #' @param url the https://... repository 
 #' @param path the directory to clone to, if not provided, clones into the current working directory with the repository name
 #' @param token the authentication token (only required for private repositories)
-#' @param overwrite whether to overwrite existing folders at the target location
+#' @param pull if the repository already exists, whether to update it from the remote
 #' @export
-clone_repository <- function(url, path = NULL, token = NULL, overwrite = TRUE) {
+clone_repository <- function(url, path = NULL, token = NULL, pull = TRUE) {
   
   # token
   if (!is.null(token)) url <- str_c("https://", token, "@", str_replace(url, "^https://", "")) 
@@ -137,15 +137,22 @@ clone_repository <- function(url, path = NULL, token = NULL, overwrite = TRUE) {
     dir.create(dirname(path), recursive = TRUE)
   } 
   
-  # target directory
-  if (dir.exists(path) && overwrite) {
-    message("Overwriting directory ", path)
-    unlink(path, recursive = TRUE)
-  } else if (dir.exists(path) && !overwrite) {
-    stop("Target directory already exists and overwrite=FALSE: ", path)
-  }
+  # github call (always use pull instead of clone to avoid writing tokens to disk)
+  github_call <- "cd \"${path}\" &&${ if(new) ' git init &&' else '' } git pull \"${url}\""
+  
+  if (!dir.exists(path)) {
+    message("Cloning repository for the first time: ", path)
+    dir.create(path)
+    new <- TRUE
+  } else if (dir.exists(path) && pull) {
+    message("Repository already exists -> pulling changes from remote: ", path)
+    new <- FALSE
+  } else {
+    message("Repository already exists but NOT pulling changes from remote -> no action: ", path)
+    return(FALSE)
+  } 
   
   # run cloning
-  github_call <- sprintf("git clone \"%s\" \"%s\"", url, path)
+  github_call <- str_interp(github_call, list(path = path, new = new, url = url))
   invisible(system(github_call))
 }

@@ -4,7 +4,7 @@
 \alias{clone_repositories}
 \title{Clone repositories}
 \usage{
-clone_repositories(repos, folder = ".", token = NULL, overwrite = TRUE)
+clone_repositories(repos, folder = ".", token = NULL, pull = TRUE)
 }
 \arguments{
 \item{repos}{data frame with, at minimum, columns 'repository' (name) and 'url'}
@@ -13,7 +13,7 @@ clone_repositories(repos, folder = ".", token = NULL, overwrite = TRUE)
 
 \item{token}{the authentication token (only required for private repositories)}
 
-\item{overwrite}{whether to overwrite existing folders at the target location}
+\item{pull}{if the repository already exists, whether to update it from the remote}
 }
 \description{
 Clone repositories
