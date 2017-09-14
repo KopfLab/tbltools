@@ -20,7 +20,7 @@ Suggests:
     knitr,
     rmarkdown,
     covr
-biocViews: 
+Remotes: ropensci/ghql
 License: GPL (>= 3) | file LICENSE
 Encoding: UTF-8
 LazyData: true
