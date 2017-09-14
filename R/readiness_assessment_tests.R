@@ -4,7 +4,7 @@
 #' @param questions_tab the name of the questions tab (requires at minimum columns 'question', 'answer', and logical TRUE/FALSE 'correct', plus logical 'include' if \code{filter_inclue=TRUE})
 #' @param keys_tab the name of th keys tab (requires at mimimum columns 'number', 'option')
 #' @param filter_include if set, only keeps questions that have the 'include' column set
-#' @param fill_down_questions whether to fill down the questions column (i.e. if question only written in first row)
+#' @param fill_down_questions whether to fill down the questions column (i.e. if question an their parameters are only written in first row)
 #' @export
 create_RAT_from_excel <- function(filepath, questions_tab = "questions", key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE) {
   questions <- read_excel(filepath, sheet = questions_tab) 
@@ -41,7 +41,7 @@ create_RAT_from_excel <- function(filepath, questions_tab = "questions", key_tab
   }
   
   # return
-  questions <- filter(questions, !is.na(question))
+  questions <- filter(questions, !is.na(question), !is.na(answer))
   create_RAT(questions, answer_key)
 }
 
@@ -86,7 +86,7 @@ create_RAT <- function(questions, answer_key) {
 
 #' Arrange RAT questions
 #' @param rat Readiness Assessment Test object
-#' @param by what to arrange by, options: \code{by="original"} leaves the original order as encountered, \code{by="random"} generates a random order, \code{by="semi-random"} generates a random order except for questions that have the \code{fixed_number_column} set, and \code{by="fixed"} used the \code{fixed_number_column} (which has to be set for all questions!). 
+#' @param by what to arrange by, options: \code{by="original"} leaves the original order as encountered, \code{by="random"} generates a random order, \code{by="semi-random"} generates a random order except for questions that have the \code{fixed_number_column} set, and \code{by="fixed"} uses the \code{fixed_number_column} (which has to be set for all questions!). 
 #' @param fixed_number_column name of a column in the RAT questions data frame that indicates the fixed question number. Only relevant if \code{by="semi-random"} or \code{by="fixed"}
 #' @param group_by_column name of a column in the RAT questions data frame that indicates which questions to group together (groups will be arranged alphabetically, those with undefined group come last). Only relevant if \code{by="random"} or \code{by="semi-random"}. Throws an error if grouping and any fixed number questions are incompatible (e.g. a question has fixed number 5 but is part of the first group of only 3 questions).
 #' @param random_seed can overwrite with a fixed value (e.g. \code{random_seed=42}) to get a reproducible "random" order in \code{by="random"} or \code{by="semi-random"} mode.
@@ -172,10 +172,20 @@ arrange_RAT_questions <- function(rat, by = "original", fixed_number_column = NU
 #' Generate RAT multiple choice questions
 #' @inheritParams arrange_RAT_questions
 #' @param iRAT_sel_per_q number of selections per question for the iRAT portion of this test
+#' @param answer_layout how to arrange the answers, layouts supported by default are \code{"vertical"} and \code{"horizontal"} (recommended for image answers). The layout can be overwritten for individual questions by setting the \code{answer_layout_column} parameter. Custom answer layouts can be provided using the \code{answer_layout_funcs} parameter. 
+#' @param answer_layout_column set this parameter to a column name in the questions data frame that has a different layout name for questions that are indended to deviate from the default layout (\code{answer_layout}). All layouts must be defined in the \code{answer_layout_funs} (\code{"vertical"} and \code{"horizontal"} by default).
+#' @param answer_layout_funcs Specific custom answer layouts by providing layout functions that differ from the default. See \code{default_RAT_layouts} for details on how these work.
 #' @export
-generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, random_seed = random()) {
+generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, answer_layout = "vertical", answer_layout_column = NULL, answer_layout_funs = default_RAT_layouts(), random_seed = random()) {
   if (!is(rat, "RAT")) 
     stop("can only arrange Readiness Assessment Test classes, found: ", class(rat)[1], call. = FALSE)
+  
+  # safety checks
+  layout_options <- names(answer_layout_funs)
+  if (!answer_layout %in% layout_options)
+    stop("Unsupported answer layout: ", answer_layout, ". Only know: ", str_c(layout_options, collapse = ", "), call. = FALSE)
+  if (!is.null(answer_layout_column) && !answer_layout_column %in% names(rat$questions)) 
+    stop("the provided 'answer_layout_column' ", answer_layout_column, " does not exist for these RAT questions", call. = FALSE)
   
   # random seed
   random <- function() sample(.Random.seed, 1)
@@ -190,6 +200,25 @@ generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, random_seed = random()
   rat_options <- left_join(rat$questions, rat$answer_key, by = c("number" = "number")) 
   if (nrow(missing <- filter(rat_options, is.na(option))) > 0) {
     stop("Missing answer key for question numbers\n ", str_c(missing$number %>% unique(), collapse = ", "), call. = FALSE)
+  }
+  
+  # layout
+  if (!is.null(answer_layout_column)) {
+    rat_options <- rat_options %>% 
+      { .$.layout <- .[[answer_layout_column]]; . } %>% 
+      group_by(question) %>% 
+      mutate(.layout = ifelse(!is.na(.layout[1]), .layout[1], answer_layout)) %>% # propagate question values
+      ungroup()
+  } else {
+    rat_options$.layout <- answer_layout
+  } 
+  
+  # check for incorrect layout information
+  trouble <- filter(rat_options, !.layout %in% layout_options) %>% select(number, .layout, question) %>% unique()
+  if (nrow(trouble) > 0) {
+    stop("The following question(s) have unrecognized layout settings:\n  - ", 
+         str_c(with(trouble, sprintf("#%.0f (unknown layout '%s'): %s", 
+                                     number, .layout, question)), collapse = "\n  - "), call. = FALSE)
   }
   
   # check for troubles where not as many answers as options
@@ -225,13 +254,12 @@ generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, random_seed = random()
   group_by(rat_options, number, question) %>% 
     do({
       with(., {
-        answer_list <- str_c(answer_option, ": ", answer)
         data_frame(
           label = sprintf(
-            "### #%.0f%s: %s\n - %s", 
+            "### #%.0f%s: %s\n%s", 
             number[1], 
             if (iRAT_sel_per_q > 1) sprintf(" (iRAT %.0f-%.0f)", (number[1]-1)*iRAT_sel_per_q  + 1, (number[1]-1)*iRAT_sel_per_q + iRAT_sel_per_q) else "", 
-            question[1], str_c(answer_list, collapse = "\n - "))
+            question[1], answer_layout_funs[[.layout[1]]](answer_option, answer))
         )
       })
     }) %>% 
@@ -243,6 +271,19 @@ generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, random_seed = random()
 
 
 # utilities functions -----
+
+#' Retrieve default RAT layouts
+#' @export
+default_RAT_layouts <- function() {
+  list(
+    horizontal = function(answer_option, answer) { 
+      str_c(str_c(answer_option, ": ", answer), collapse = ", ")
+    },
+    vertical = function(answer_option, answer) { 
+      str_c(" - ", str_c(str_c(answer_option, ": ", answer), collapse = "\n - ")) 
+    }
+  )
+}
 
 #' @export
 print.RAT <- function(x, ...) {
