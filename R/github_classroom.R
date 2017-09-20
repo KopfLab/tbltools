@@ -141,14 +141,14 @@ clone_repository <- function(url, path = NULL, token = NULL, pull = TRUE) {
   github_call <- "cd \"${path}\" &&${ if(new) ' git init &&' else '' } git pull \"${url}\""
   
   if (!dir.exists(path)) {
-    message("Cloning repository for the first time: ", path)
+    message(sprintf("'%s': cloning repository for the first time", basename(path)))
     dir.create(path)
     new <- TRUE
   } else if (dir.exists(path) && pull) {
-    message("Repository already exists -> pulling changes from remote: ", path)
+    message(sprintf("'%s': repository already exists -> pulling changes from remote", basename(path)))
     new <- FALSE
   } else {
-    message("Repository already exists but NOT pulling changes from remote -> no action: ", path)
+    message(sprintf("'%s': repository already exists but NOT pulling changes from remote -> no action", basename(path)))
     return(FALSE)
   } 
   
