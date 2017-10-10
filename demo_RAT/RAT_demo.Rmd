@@ -1,0 +1,53 @@
+---
+title: "Readiness Assessment Test (RAT)"
+subtitle: 'Module: `r (module <- "test")`'
+date: 'Date: `r Sys.Date()`'
+output:
+  pdf_document:
+    fig_caption: no
+  html_notebook: default
+geometry: margin=1in
+---
+
+```{r, echo=FALSE}
+# Note: echo=FALSE makes sure that code blocks are not included in the final PDF. This means that code blocks can also be used to keep notes to onself when designing a RAT.
+```
+
+## Instructions for individual readiness assessment test (iRAT)
+
+```{r, echo=FALSE}
+# You can write anything for the instructions. All markdown formatting will work.
+```
+
+
+1. Put your name, the module (`r module`) and today's date (`r format(Sys.Date(), "%m/%d/%Y")`) on the test.
+
+2. Answer each question **four times** (i.e., as though there were four separate questions). Each question is worth a maximum of four points and you will receive one point for each correct answer. For example, if you are confident with your answer for a question, you should answer the same letter for each of the four numbers. If you are correct, you will receive the maximum of four points. If you are debating between two answers and cannot decide which is correct, you can answer twice one of the letters and twice the other or any combination of answers in the four numbers assigned to the question. Each question states which four answers belong to it (e.g. `iRAT 9-12`).
+
+3. When you are finished (or the time is up), return the test.
+
+## Instructions for the team readiness assessment test (tRAT)
+
+1. When the time is up, have one member of your team turn in the envelopes to the instructor and collect the IF-AT sheet for your team.
+
+2. Complete the test with your team using the IF-AT sheet (careful, here each question is answered on the same line by scratching off as many answers as necessary to find the correct one). 
+
+3. Tally your team's tRAT with the following scoring guide: 4 points for one scratch, 2 points for 2 scratches, 1 point for 3 scratches and zero if you have to scratch four or more to reveal the correct answer.
+
+4. Discuss as a team which questions you would like clarified and put a checkmark on the black board next to each coresponding question.
+
+5. Review appeals form and complete if appropriate. Return the IF-AT to the team envelope and return with your team folder at the end of class.
+
+
+## Questions
+
+Choose the **best** answer among the alternatives. Remember that RATs are **closed book**.
+
+```{r, results='asis', echo=FALSE, message = FALSE, warning=FALSE}
+library(tbltools)
+create_RAT_from_excel("RAT_demo.xlsx") %>%
+    arrange_RAT_questions(by = "semi-random", fixed_number_column = "order", group_by_column = "group", random_seed = 42) %>%
+    generate_RAT_choices(iRAT_sel_per_q = 4, answer_layout_column = "layout", answer_layout = "vertical", random_seed = 42)
+```
+
+
