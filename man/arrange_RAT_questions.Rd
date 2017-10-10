@@ -4,13 +4,16 @@
 \alias{arrange_RAT_questions}
 \title{Arrange RAT questions}
 \usage{
-arrange_RAT_questions(rat, by = "original", fixed_number_column = NULL,
-  group_by_column = NULL, random_seed = random())
+arrange_RAT_questions(rat, by = "original", tRAT_n_offset = 0,
+  fixed_number_column = NULL, group_by_column = NULL,
+  random_seed = random())
 }
 \arguments{
 \item{rat}{Readiness Assessment Test object}
 
 \item{by}{what to arrange by, options: \code{by="original"} leaves the original order as encountered, \code{by="random"} generates a random order, \code{by="semi-random"} generates a random order except for questions that have the \code{fixed_number_column} set, and \code{by="fixed"} uses the \code{fixed_number_column} (which has to be set for all questions!).}
+
+\item{tRAT_n_offset}{the offset for the question numbering (if there should be an offset to fit a different part of an IF-AT), only matters if \code{by} is not \code{"fixed"}. Default is 0 (so numbering starts at 1).}
 
 \item{fixed_number_column}{name of a column in the RAT questions data frame that indicates the fixed question number. Only relevant if \code{by="semi-random"} or \code{by="fixed"}}
 

@@ -1,4 +1,5 @@
 #' Create Readiness Assessment Test from Excel
+#' 
 #' Load RAT questions and answer key from Excel. Note that logical columns are evaluated to TRUE if they are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE.
 #' @param filepath the path to the excel file
 #' @param questions_tab the name of the questions tab (requires at minimum columns 'question', 'answer', and logical TRUE/FALSE 'correct', plus logical 'include' if \code{filter_inclue=TRUE})
@@ -87,12 +88,13 @@ create_RAT <- function(questions, answer_key) {
 #' Arrange RAT questions
 #' @param rat Readiness Assessment Test object
 #' @param by what to arrange by, options: \code{by="original"} leaves the original order as encountered, \code{by="random"} generates a random order, \code{by="semi-random"} generates a random order except for questions that have the \code{fixed_number_column} set, and \code{by="fixed"} uses the \code{fixed_number_column} (which has to be set for all questions!). 
+#' @param tRAT_n_offset the offset for the question numbering (if there should be an offset to fit a different part of an IF-AT), only matters if \code{by} is not \code{"fixed"}. Default is 0 (so numbering starts at 1).
 #' @param fixed_number_column name of a column in the RAT questions data frame that indicates the fixed question number. Only relevant if \code{by="semi-random"} or \code{by="fixed"}
 #' @param group_by_column name of a column in the RAT questions data frame that indicates which questions to group together (groups will be arranged alphabetically, those with undefined group come last). Only relevant if \code{by="random"} or \code{by="semi-random"}. Throws an error if grouping and any fixed number questions are incompatible (e.g. a question has fixed number 5 but is part of the first group of only 3 questions).
 #' @param random_seed can overwrite with a fixed value (e.g. \code{random_seed=42}) to get a reproducible "random" order in \code{by="random"} or \code{by="semi-random"} mode.
 #' @return returns the RAT with the questions having a new 'number' column
 #' @export
-arrange_RAT_questions <- function(rat, by = "original", fixed_number_column = NULL, group_by_column = NULL, random_seed = random()) {
+arrange_RAT_questions <- function(rat, by = "original", tRAT_n_offset = 0, fixed_number_column = NULL, group_by_column = NULL, random_seed = random()) {
   if (!is(rat, "RAT")) 
     stop("can only arrange Readiness Assessment Test classes, found: ", class(rat)[1], call. = FALSE)
   
@@ -109,7 +111,7 @@ arrange_RAT_questions <- function(rat, by = "original", fixed_number_column = NU
   rat$questions$number <- NULL
   if (by == "original") {
     # keep original order (i.e. as encountered)
-    numbers_df <- data_frame(question = unique(rat$questions$question), number= 1:length(unique(rat$questions$question)))
+    numbers_df <- data_frame(question = unique(rat$questions$question), number= (1:length(unique(rat$questions$question))) + tRAT_n_offset)
   } else if (by == "fixed") {
     # use fixed order
     numbers_df <- rat$questions %>% 
@@ -128,7 +130,7 @@ arrange_RAT_questions <- function(rat, by = "original", fixed_number_column = NU
       # initial numbering (in groups)
       ungroup() %>% 
       arrange(.group) %>% 
-      mutate(.init_n = 1:n()) %>% 
+      mutate(.init_n = (1:n()) + tRAT_n_offset) %>% 
       # get group ranges
       group_by(.group) %>% 
       mutate(.group_n_min = min(.init_n), .group_n_max = max(.init_n))
@@ -172,11 +174,12 @@ arrange_RAT_questions <- function(rat, by = "original", fixed_number_column = NU
 #' Generate RAT multiple choice questions
 #' @inheritParams arrange_RAT_questions
 #' @param iRAT_sel_per_q number of selections per question for the iRAT portion of this test
+#' @param iRAT_n_offset number that indicates by how much the iRAT should be offset from the question numbers (e.g. if tRAT starts at a higher IF-AT but iRAT numbers should start low, this could be a negative offset).
 #' @param answer_layout how to arrange the answers, layouts supported by default are \code{"vertical"} and \code{"horizontal"} (recommended for image answers). The layout can be overwritten for individual questions by setting the \code{answer_layout_column} parameter. Custom answer layouts can be provided using the \code{answer_layout_funcs} parameter. 
 #' @param answer_layout_column set this parameter to a column name in the questions data frame that has a different layout name for questions that are indended to deviate from the default layout (\code{answer_layout}). All layouts must be defined in the \code{answer_layout_funs} (\code{"vertical"} and \code{"horizontal"} by default).
 #' @param answer_layout_funcs Specific custom answer layouts by providing layout functions that differ from the default. See \code{default_RAT_layouts} for details on how these work.
 #' @export
-generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, answer_layout = "vertical", answer_layout_column = NULL, answer_layout_funs = default_RAT_layouts(), random_seed = random()) {
+generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, iRAT_n_offset = 0, answer_layout = "vertical", answer_layout_column = NULL, answer_layout_funs = default_RAT_layouts(), random_seed = random()) {
   if (!is(rat, "RAT")) 
     stop("can only arrange Readiness Assessment Test classes, found: ", class(rat)[1], call. = FALSE)
   
@@ -255,11 +258,14 @@ generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, answer_layout = "verti
     do({
       with(., {
         data_frame(
+          iRAT_numbering = 
+            if (iRAT_sel_per_q > 1) sprintf("%.0f-%.0f", (number[1]-1+iRAT_n_offset)*iRAT_sel_per_q  + 1, (number[1]-1+iRAT_n_offset)*iRAT_sel_per_q + iRAT_sel_per_q) 
+            else sprintf("%.0f", number[1]+iRAT_n_offset),
+          tRAT_numbering = number[1],
+          q_numbering = ifelse(iRAT_numbering != tRAT_numbering, sprintf("iRAT %s / tRAT %s", iRAT_numbering, tRAT_numbering), iRAT_numbering),
           label = sprintf(
-            "### #%.0f%s: %s\n%s", 
-            number[1], 
-            if (iRAT_sel_per_q > 1) sprintf(" (iRAT %.0f-%.0f)", (number[1]-1)*iRAT_sel_per_q  + 1, (number[1]-1)*iRAT_sel_per_q + iRAT_sel_per_q) else "", 
-            question[1], answer_layout_funs[[.layout[1]]](answer_option, answer))
+            "### %s: %s\n%s", 
+            q_numbering, question[1], answer_layout_funs[[.layout[1]]](answer_option, answer))
         )
       })
     }) %>% 
