@@ -1,24 +1,25 @@
 ---
-title: "Readiness Assessment Test (RAT)"
-subtitle: 'Module: `r (module <- "test")`'
-date: 'Date: `r Sys.Date()`'
-output:
+title: "Readiness Assessment Test (RAT)" # decide which title to use (shows up at the top of the first page)
+geometry: margin=1in # decide what margins the PDF should have
+date: 'Date: `r Sys.Date()`' # you can have today's date using R or just use plain text for a specific date
+output: # only modify this if you are familiar with knitr syntax
   pdf_document:
     fig_caption: no
   html_notebook: default
-geometry: margin=1in
+subtitle: 'Module: `r (module <- "demo")`' # you can use plain text or assign an R variable to be used later on in the text
 ---
 
 ```{r, echo=FALSE}
-# Note: echo=FALSE makes sure that code blocks are not included in the final PDF. This means that code blocks can also be used to keep notes to onself when designing a RAT.
+# Note: echo=FALSE makes sure that code blocks do not show up on the final PDF. 
+# This means that code blocks can also be used to keep notes for onself when designing an iRAT/tRAT.
 ```
 
 ## Instructions for individual readiness assessment test (iRAT)
 
 ```{r, echo=FALSE}
 # You can write anything for the instructions. All markdown formatting will work.
+# You can also use R code using the `r ...` syntax.
 ```
-
 
 1. Put your name, the module (`r module`) and today's date (`r format(Sys.Date(), "%m/%d/%Y")`) on the test.
 
@@ -30,24 +31,22 @@ geometry: margin=1in
 
 1. When the time is up, have one member of your team turn in the envelopes to the instructor and collect the IF-AT sheet for your team.
 
-2. Complete the test with your team using the IF-AT sheet (careful, here each question is answered on the same line by scratching off as many answers as necessary to find the correct one). 
+2. Complete the test with your team using the IF-AT sheet.
 
 3. Tally your team's tRAT with the following scoring guide: 4 points for one scratch, 2 points for 2 scratches, 1 point for 3 scratches and zero if you have to scratch four or more to reveal the correct answer.
 
-4. Discuss as a team which questions you would like clarified and put a checkmark on the black board next to each coresponding question.
-
-5. Review appeals form and complete if appropriate. Return the IF-AT to the team envelope and return with your team folder at the end of class.
+4. Review appeals form and complete if appropriate. Return the IF-AT when the time is up.
 
 
 ## Questions
 
 Choose the **best** answer among the alternatives. Remember that RATs are **closed book**.
 
-```{r, results='asis', echo=FALSE, message = FALSE, warning=FALSE}
+```{r "questions", results='asis', echo=FALSE, message = FALSE, warning=FALSE}
 library(tbltools)
-create_RAT_from_excel("RAT_demo.xlsx") %>%
-    arrange_RAT_questions(by = "semi-random", fixed_number_column = "order", group_by_column = "group", random_seed = 42) %>%
-    generate_RAT_choices(iRAT_sel_per_q = 4, answer_layout_column = "layout", answer_layout = "vertical", random_seed = 42)
+RAT <- create_RAT_from_excel("RAT_demo.xlsx", filter_include = TRUE, fill_down_questions = TRUE)
+RAT_ordered <- arrange_RAT_questions(RAT, by = "semi-random", fixed_number_column = "order", group_by_column = "group", random_seed = 42)
+generate_RAT_choices(RAT_ordered, iRAT_sel_per_q = 4, answer_layout_column = "layout", answer_layout = "vertical", random_seed = 42)
 ```
 
 

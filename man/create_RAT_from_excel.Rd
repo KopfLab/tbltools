@@ -2,8 +2,7 @@
 % Please edit documentation in R/readiness_assessment_tests.R
 \name{create_RAT_from_excel}
 \alias{create_RAT_from_excel}
-\title{Create Readiness Assessment Test from Excel
-Load RAT questions and answer key from Excel. Note that logical columns are evaluated to TRUE if they are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE.}
+\title{Create Readiness Assessment Test from Excel}
 \usage{
 create_RAT_from_excel(filepath, questions_tab = "questions",
   key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE)
@@ -20,6 +19,5 @@ create_RAT_from_excel(filepath, questions_tab = "questions",
 \item{keys_tab}{the name of th keys tab (requires at mimimum columns 'number', 'option')}
 }
 \description{
-Create Readiness Assessment Test from Excel
 Load RAT questions and answer key from Excel. Note that logical columns are evaluated to TRUE if they are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE.
 }
