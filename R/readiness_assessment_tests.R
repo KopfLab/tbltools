@@ -103,6 +103,8 @@ arrange_RAT_questions <- function(rat, by = "original", tRAT_n_offset = 0, fixed
   set.seed(random_seed)
   
   # always check if provided, even if not always relevant (by="original")
+  if (by %in% c("semi-random", "fixed") && is.null(fixed_number_column) )
+    stop("no 'fixed_number_column' provided for arrangement mode '", by, "'", call. = FALSE)
   if (!is.null(fixed_number_column) && !fixed_number_column %in% names(rat$questions))
     stop("the provided 'fixed_number_column' ", fixed_number_column, " does not exist for these RAT questions", call. = FALSE)
   if (!is.null(group_by_column) && !group_by_column %in% names(rat$questions)) 
