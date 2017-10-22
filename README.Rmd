@@ -15,12 +15,24 @@ knitr::opts_chunk$set(
 
 ## Installation
 
-You can install `tbltools` from github with the devtools package.
+You can install `tbltools` from github with the devtools package. If you do not already have many of the dependencies installed (dplyr, stringr, ghql, httr, readxl, knitr, rmarkdown), this may take a moment to install.
 
 ```{r gh-installation, eval = FALSE}
-# install.packages("devtools")
+install.packages("devtools") # skip this if you have devtools already installed
 devtools::install_github("KopfLab/tbltools")
 ```
 
-## Example
+## Functionality
+
+### iRAT/tRAT generation
+
+The `tbltools` package provides functionality to easily generate Readiness Assessment Tests from a collection of questions and answers and any IF-AT answer key. For an example of how to use this functionality, see the [`demo_RAT`](demo_RAT) folder.
+
+### Peer Evaluations
+
+in progress
+
+### GitHub Classroom integration
+
+not documented yet
 
