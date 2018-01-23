@@ -122,7 +122,7 @@ clone_repositories <- function(repos, folder = ".", token = NULL, pull = TRUE) {
 #' Clone a repository to the target directory
 #' @param url the https://... repository 
 #' @param path the directory to clone to, if not provided, clones into the current working directory with the repository name
-#' @param token the authentication token (only required for private repositories)
+#' @param token the authentication token (only required for private repositories if global credentials are not set)
 #' @param pull if the repository already exists, whether to update it from the remote
 #' @export
 clone_repository <- function(url, path = NULL, token = NULL, pull = TRUE) {
@@ -137,22 +137,19 @@ clone_repository <- function(url, path = NULL, token = NULL, pull = TRUE) {
     dir.create(dirname(path), recursive = TRUE)
   } 
   
-  # github call (always use pull instead of clone to avoid writing tokens to disk)
-  github_call <- "cd \"${path}\" &&${ if(new) ' git init &&' else '' } git pull \"${url}\""
-  
+  # different cases
   if (!dir.exists(path)) {
     message(sprintf("'%s': cloning repository for the first time", basename(path)))
-    dir.create(path)
-    new <- TRUE
+    github_call <- "git clone \"${url}\" \"${path}\""
   } else if (dir.exists(path) && pull) {
     message(sprintf("'%s': repository already exists -> pulling changes from remote", basename(path)))
-    new <- FALSE
+    github_call <- "cd \"${path}\" && git pull \"${url}\""
   } else {
     message(sprintf("'%s': repository already exists but NOT pulling changes from remote -> no action", basename(path)))
     return(FALSE)
   } 
   
-  # run cloning
-  github_call <- str_interp(github_call, list(path = path, new = new, url = url))
+  # run github call
+  github_call <- str_interp(github_call, list(path = path, url = url))
   invisible(system(github_call))
 }
