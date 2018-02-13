@@ -34,7 +34,6 @@ vignettes/*.pdf
 *.knit.md
 
 # Auxiliary package files
-/docs/
 /tmp/
 ~*
 *.nb.html
