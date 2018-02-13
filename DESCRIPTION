@@ -12,8 +12,11 @@ Imports:
     methods,
     glue, 
     dplyr (>= 0.7.0),
+    purrr,
     stringr,
+    readr,
     readxl,
+    googlesheets,
     shiny,
     shinyjs
 Suggests:

@@ -3,8 +3,11 @@
 
 #' @importFrom glue glue collapse
 #' @importFrom dplyr select rename mutate filter group_by arrange
+#' @importFrom purrr quietly
 #' @importFrom stringr str_c
+#' @importFrom readr write_rds read_rds
 #' @importFrom readxl read_excel
+#' @importFrom googlesheets gs_auth gs_title
 #' @import shiny 
 #' @importFrom shinyjs useShinyjs
 NULL

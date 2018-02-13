@@ -32,6 +32,10 @@ peer_evaluation_server <- function(roster) {
     # construct full and short student names
     mutate(full = str_c(first, " ", last), short = full)
 
+  # FIXME: continue here - maybe have a spreadsheet object passed in
+  # use gs %>% gs_ws_ls() to get the list of titles
+  # us gs_add_row to add rows (just add additional rows for each safe, easier than deleting previous ones)
+  
   shinyServer(function(input, output, session) {
     
     message("\n\nINFO: Loading GUI instance ...")
