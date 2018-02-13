@@ -1,0 +1,16 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r, include = FALSE}
+# Cloning test
+devtools::load_all()
+status <- clone_classroom_repositories(
+  token = "2a52065aa0766bad8b222c259d5e6d3985286d5e",
+  org = "2017-geomicrobiology",
+  repo_prefix = "intro-team-",
+  folder = file.path("tmp")
+)
+knitr::kable(status)
+```
