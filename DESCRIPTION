@@ -10,11 +10,12 @@ Depends:
     R (>= 3.1)
 Imports:
     methods,
+    glue, 
     dplyr (>= 0.7.0),
     stringr,
-    ghql,
-    httr,
-    readxl
+    readxl,
+    shiny,
+    shinyjs
 Suggests:
     testthat,
     knitr,

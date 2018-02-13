@@ -1,11 +1,12 @@
 #' @keywords internal
 "_PACKAGE"
 
-#' @import dplyr
-#' @import stringr
-#' @import ghql
-#' @import httr
+#' @importFrom glue glue collapse
+#' @importFrom dplyr select rename mutate filter group_by arrange
+#' @importFrom stringr str_c
 #' @importFrom readxl read_excel
+#' @import shiny 
+#' @importFrom shinyjs useShinyjs
 NULL
 
 #' @importFrom magrittr %>%
