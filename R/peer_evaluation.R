@@ -200,13 +200,16 @@ tbl_gather_peer_evaluation_data <- function() {
 #' Utility function to generate a list of random access codes that can be copied into an Excel column.
 #' @param n how many access codes to generate
 #' @param length how many characters for each acccess code
+#' @return returns the access codes invisible
 #' @export
 tbl_generate_access_codes <- function(n, length = 4) {
-  sapply(1:n, function(i) {
+  codes <- sapply(1:n, function(i) {
     sample(1:36, length, replace = TRUE) %>% 
       sapply(function(x) if (x>26) x-27 else LETTERS[x]) %>% 
       paste(collapse = "")
-  })
+  }) 
+  codes %>% cat(sep = "\n")
+  return(invisible(codes))
 }
 
 # check functions =====
