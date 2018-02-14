@@ -160,10 +160,11 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         req(length(values$data) > 0)
         
         # tabs
+        other_team_members <- values$team_mates[names(values$team_mates) != values$student$access_code]
         message("Info: generating tabs for teammates: ", str_c(values$team_mates, collapse = ", "))
         tabs <- c(
           list(get_qual_ui_self(values$student$access_code)),
-          map2(names(values$team_mates), values$team_mates, get_qual_ui_team_mate),
+          map2(names(other_team_members), other_team_members, get_qual_ui_team_mate),
           list(get_quant_scores_ui(values$team_mates))
         )
         
