@@ -219,7 +219,7 @@ tbl_fetch_peer_evaluation_data <- function(folder = ".",roster, data_gs_title, g
   
   # structure information and nest evaluations
   pe_data <- 
-    pe_data_raw %>% 
+    pe_data %>% 
     mutate(
       started = !is.na(timestamp),
       submitted = ifelse(is.na(submitted), FALSE, submitted),
