@@ -319,7 +319,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       message("Submission for student ", values$student$full_name)
       hide("main-panel")
       removeModal()
-      show("submitted-panel")
+      show("submit-panel")
       save_peer_eval(gs, values$access_code, get_data_as_df(), submitted = TRUE)
       
       showModal(modalDialog(
@@ -328,7 +328,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         easyClose = TRUE, fade = FALSE
       ))
       values$access_code <- NULL
-      hide("submitted-panel")
+      hide("submit-panel")
       show("access-panel")
       hide("main-panel")
     })

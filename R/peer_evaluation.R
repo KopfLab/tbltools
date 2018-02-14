@@ -193,9 +193,15 @@ tbl_gather_peer_evaluation_data <- function() {
   
 }
 
-#' function to generate random codes for students
+# utility functions ====
+
+#' Generate random access codes
+#' 
+#' Utility function to generate a list of random access codes that can be copied into an Excel column.
+#' @param n how many access codes to generate
+#' @param length how many characters for each acccess code
 #' @export
-generate_access_codes <- function(n, length = 4) {
+tbl_generate_access_codes <- function(n, length = 4) {
   sapply(1:n, function(i) {
     sample(1:36, length, replace = TRUE) %>% 
       sapply(function(x) if (x>26) x-27 else LETTERS[x]) %>% 
@@ -203,7 +209,7 @@ generate_access_codes <- function(n, length = 4) {
   })
 }
 
-# safety utilties functions =====
+# check functions =====
 
 # safety checks for student roster data frame
 check_student_roster <- function(roster) {
