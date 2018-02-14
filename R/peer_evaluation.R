@@ -2,6 +2,8 @@
 #' 
 #' This functions makes it easy to setup a peer evaluation app folder. It creates the app script \code{app.R} and copies the \code{roster_file} (an Excel spreadsheet) as well as the necessary google drive credentials for the \code{data_gsheet} to the same directory. It will ask for google drive credentials using \link[googlesheets]{gs_auth} and the entered credentials must have access to the \code{data_gsheet}. Both \code{app.R} and the \code{roster_file} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster_file} will be read only and all actual data will be stored in the google drive data file.
 #' 
+#' Use \link{tbl_test_peer_evaluation} with the same \code{folder} as parameter to test run the peer evaluation application locally on your computer.
+#' 
 #' @param folder target folder where to setup the peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
 #' @param data_gs_title name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.
 #' @param roster_file path to an excel (.xslx) file that contains the student roster information - will use the package template by default
@@ -9,6 +11,7 @@
 #' @param overwrite whether to overwrite the app in the target directory if it already exists
 #' @inheritParams tbl_run_peer_evaluation
 #' @return returns the \code{folder} invisibly for ease of use in pipelines
+#' @family peer evaluation functions
 #' @export
 tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", roster_file = system.file(package = "tbltools", "extdata", "roster_template.xlsx"), data_gs_title = "Peer Evaluation", gs_token = NULL, overwrite = FALSE) {
   
@@ -77,13 +80,31 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", roster_file = 
   
   # generate function call
   glue("Info: creating {folder}/app.R application file") %>% message()
+  
+  # generate function call parameters
+  parameters <- 
+    list(
+      roster = quo(readxl::read_excel("roster.xlsx")),
+      data_gs_title = data_gs_title,
+      gs_token = "gs_token.rds",
+      app_title = "Peer Evaluation",
+      launch = FALSE
+    ) %>% {
+      map2_chr(names(.), ., function(var, val) {
+        val <- 
+          if(is_quosure(val)) quo_text(val)
+          else if(is.numeric(val) || is.logical(val)) val
+          else if (is.character(val)) str_c("\"", val, "\"")
+          else stop("don't know how to process ", class(val))
+        str_c(var, " = ", val)
+      })
+    } %>% 
+    collapse(sep = ",\n\t")
+    
   glue(
     "library(tbltools)",
     "tbl_run_peer_evaluation(",
-    "  roster = readxl::read_excel(\"roster.xlsx\"),",
-    "  data_gs_title = \"{data_gs_title}\",",
-    "  gs_token = \"gs_token.rds\",",
-    "  launch = FALSE",
+    "  {parameters}",
     ")", .sep = "\n") %>% 
     cat(file = file.path(folder, "app.R"))
   
@@ -96,13 +117,16 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", roster_file = 
 
 #' Start the peer evaluation user interface
 #'
+#' This function starts the peer evaluation user interface. This function is typically not called directly but indirectly by setting up the peer evalution app using \link{tbl_setup_peer_evaluation}, adjusting the files in the peer evaluation app folder, and test running the app using \link{tbl_test_peer_evaluation}.
+#'
 #' @inheritParams app_server
 #' @inheritParams app_ui
 #' @param ... passed on to the \code{\link[shiny]{runApp}} call (only if \code{launch = TRUE}), can include server-specific parameters such as host or port
 #' @param launch whether to launch the app (TRUE) or return a shiny app object (FALSE) that then can be launched via \code{\link[shiny]{runApp}}
 #' @inheritParams peer_evaluation_app_server
+#' @family peer evaluation functions
 #' @export
-tbl_run_peer_evaluation <- function(roster, data_gs_title, gs_token, ..., launch = TRUE) {
+tbl_run_peer_evaluation <- function(roster, data_gs_title, gs_token, app_title = "Peer Evaluation", ..., launch = TRUE) {
   
   # safety checks
   if (missing(roster)) stop("roster data frame required", call. = FALSE)
@@ -119,7 +143,7 @@ tbl_run_peer_evaluation <- function(roster, data_gs_title, gs_token, ..., launch
   
   # generate app
   app <- shinyApp(
-    ui = peer_evaluation_ui(title = "bla"),
+    ui = peer_evaluation_ui(app_title = app_title),
     server = peer_evaluation_server(roster = roster)
   )
   
@@ -131,9 +155,27 @@ tbl_run_peer_evaluation <- function(roster, data_gs_title, gs_token, ..., launch
 }
 
 
-
-tbl_test_peer_evaluation <- function() {
+#' Test run peer evaluation locally
+#' 
+#' This function starts a peer evaluation app set up using \link{tbl_setup_peer_evaluation}.
+#' 
+#' @param folder folder where the peer evaluation app is located (see \link{tbl_setup_peer_evaluation} for details)
+#' @param ... parameters passed to \link[shiny]{runApp}
+#' @family peer evaluation functions
+#' @export
+tbl_test_peer_evaluation <- function(folder = "peer_evaluation", ...) {
   
+  if(!dir.exists(folder)) {
+    glue("peer evaluation app folder '{folder}' does not exist") %>% 
+      stop(call. = FALSE)
+  }
+  
+  if (!file.exists(file.path(folder, "app.R"))) {
+    glue("the folder '{folder}' does not seem to contain a peer evaluation app ('app.R' is missing)") %>% 
+      stop(call. = FALSE)
+  }
+  
+  runApp(folder, ...)
 }
 
 tbl_upload_peer_evaluation <- function() {

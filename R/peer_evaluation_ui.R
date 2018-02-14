@@ -2,14 +2,14 @@
 #'
 #' Generates the user interface part of the peer evaluation app.
 #' 
-#' @param title the title of the Peer Evaluation, e.g. "Class name - Peer Evaluation #1"
-peer_evaluation_ui <- function(title = "Peer Evaluation") {
+#' @param app_title the title of the Peer Evaluation App, e.g. "Class name - Peer Evaluation #1"
+peer_evaluation_ui <- function(app_title) {
 
   # Define UI ----
   ui <- fluidPage(
     
     useShinyjs(),  # Set up shinyjs
-    titlePanel(title),
+    titlePanel(app_title),
     
     fluidRow(
       

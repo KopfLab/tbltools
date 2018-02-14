@@ -19,7 +19,11 @@ test_that("test that peer evaluation functions throw the proper errors", {
   expect_error(tbl_setup_peer_evaluation(folder = tmp, gs_token = "DNE"), "authentication failed")
   expect_true(file.exists(file.path(tmp, "roster.xlsx")))
   
-  # start evalution
+  # app start
   expect_error(tbl_run_peer_evaluation(), "roster.*required")
 
+  # app testing
+  expect_error(tbl_test_peer_evaluation(folder = "DNE"), "does not exist")
+  expect_error(tbl_test_peer_evaluation(folder = "."), "not.*contain a peer evaluation app")
+  
 })
