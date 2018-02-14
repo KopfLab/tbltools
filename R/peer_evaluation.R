@@ -188,9 +188,50 @@ tbl_deploy_peer_evaluation <- function(folder = "peer_evaluation", ...) {
   deployApp(folder, ...)
 }
 
-# maybe
-tbl_gather_peer_evaluation_data <- function() {
+#' Fetch the peer evaluation data
+#' 
+#' Fetches the peer evaluation data from the google spreadsheet.
+#' 
+#' @inheritParams tbl_run_peer_evaluation
+#' @param folder folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter)
+#' @export
+tbl_fetch_peer_evaluation_data <- function(folder = ".",roster, data_gs_title, gs_token = "gs_token.rds") {
   
+  # safety checks
+  if (missing(roster)) stop("roster data frame required", call. = FALSE)
+  students <- check_student_roster(roster) 
+  try_to_authenticate(gs_token)
+  gs <- try_to_fetch_google_spreadsheet(data_gs_title)
+  
+  # fetch student info
+  access_code_prefix <- "id_"
+  students <- students %>% mutate(access_code = str_c(access_code_prefix, access_code)) 
+  pe_data <- students %>% 
+    group_by(access_code) %>% 
+    do({
+      data <- read_peer_eval(gs, .$access_code)
+      if (is.null(data)) data <- data_frame()
+      else data <- rename(data, evaluatee_access_code = access_code)
+    })
+  
+  # merge students in
+  pe_data <- students %>% left_join(pe_data, by = "access_code")
+  
+  # structure information and nest evaluations
+  pe_data <- 
+    pe_data_raw %>% 
+    mutate(
+      started = !is.na(timestamp),
+      submitted = ifelse(is.na(submitted), FALSE, submitted),
+      submitted_timestamp = timestamp
+    ) %>% 
+    nest(evaluatee_access_code, plus, minus, score, .key = "evaluations") %>% 
+    select(access_code, last, first, team, started, submitted, submitted_timestamp, evaluations) 
+  
+  # update timestamp (can't do inside mutate, problems with the NA)
+  pe_data <- within(pe_data, submitted_timestamp[!submitted] <- NA)
+  
+  return(pe_data)
 }
 
 # utility functions ====
@@ -234,7 +275,7 @@ check_student_roster <- function(roster) {
       stop(call. = FALSE)
   }
   
-  return(roster)
+  return(mutate(roster, access_code = as.character(access_code)))
 }
 
 
@@ -271,7 +312,7 @@ try_to_fetch_google_spreadsheet <- function(gs_title) {
 # data loading/saving functions ==========
 
 # load peer evaluation
-load_peer_eval <- function(gs, access_code) {
+read_peer_eval <- function(gs, access_code) {
   # refresh sheet
   gs <- gs_gs(gs)
   
@@ -288,7 +329,7 @@ load_peer_eval <- function(gs, access_code) {
         col_types = cols(
           timestamp = col_character(),
           submitted = col_logical(),
-          short = col_character(),
+          access_code = col_character(),
           plus = col_character(),
           minus = col_character(),
           score = col_integer()
