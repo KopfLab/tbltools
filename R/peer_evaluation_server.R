@@ -314,7 +314,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       if (length(errors) > 0) {
         # show errors
         showModal(modalDialog(
-          h2("Cannot submitted yet"),
+          h2("Cannot be submitted yet"),
           p("All fields must be filled out. Please correct the following problems before submittedting your peer evaluation."),
           do.call(tags$ul, args = lapply(errors, tags$li)),
           easyClose = TRUE, fade = FALSE
