@@ -9,13 +9,13 @@ folder = 'peer_evaluation'
 port = 5000
 
 guard 'process', name: 'Shiny', command: ['R', '-e', "devtools::load_all('.'); tbltools::tbl_test_peer_evaluation('#{folder}', port = #{port})"] do
-  watch(%r{NAMESPACE})
+  watch(%r{^NAMESPACE$})
   watch(%r{R/.+\.R$})
   watch(%r{#{folder}/.+\.R$})
 end
 
-guard 'livereload', grace_period: 3 do
-  watch(%r{NAMESPACE})
+guard 'livereload', grace_period: 2 do
+  watch(%r{^NAMESPACE$})
   watch(%r{R/.+\.R$})
   watch(%r{#{folder}/.+\.R$})
 end

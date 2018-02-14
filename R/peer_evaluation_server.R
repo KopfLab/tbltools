@@ -1,40 +1,21 @@
-# safety checks for student roster data frame
-check_student_roster <- function(roster) {
-  # check for data frame
-  if(!is.data.frame(roster))
-    stop("student roster must be a data frame", call. = FALSE)
-  
-  # check for required columns
-  req_columns <- c("last", "first", "access_code", "team")
-  if (length(missing <- setdiff(req_columns, names(roster))) > 0)
-    glue("missing column(s) in student roster: {collapse(missing, sep=', ')}") %>% 
-    stop(call. = FALSE)
-  
-  # check for unique access codes
-  not_unique <- roster %>% group_by(access_code) %>% tally() %>% filter(n > 1)
-  if (nrow(not_unique) > 0) {
-    glue("all access codes must be unique, found not unique access code(s): ",
-         "{collapse(not_unique$access_code, sep = ', ')}") %>% 
-      stop(call. = FALSE)
-  }
-  
-  return(roster)
-}
 
 #' Peer Evaluation App Server
 #'
 #' Generates the server part of the peer evaluation app
 #' @param roster data frame with the student roster
-peer_evaluation_server <- function(roster) {
+#' @param data_gs_title name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.
+#' @param gs_token a google spreadsheet oauth 2.0 authentication token (see \link[httr]{Token-class}). If none is provided (\code{g_token = NULL}, the default), will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive. 
+#' @param points_per_teammate points per teammate
+peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_teammate = 10) {
   
   # safety check for the student roster
   students <- check_student_roster(roster) %>% 
-    # construct full and short student names
-    mutate(full = str_c(first, " ", last), short = full)
+    # construct full_name name
+    mutate(full_name = str_trim(str_c(str_replace_na(first, ""), " ", str_replace_na(last, ""))))
 
-  # FIXME: continue here - maybe have a spreadsheet object passed in
-  # use gs %>% gs_ws_ls() to get the list of titles
-  # us gs_add_row to add rows (just add additional rows for each safe, easier than deleting previous ones)
+  # spreadsheet
+  try_to_authenticate(gs_token)
+  gs <- try_to_fetch_google_spreadsheet(data_gs_title)
   
   shinyServer(function(input, output, session) {
     
@@ -79,45 +60,63 @@ peer_evaluation_server <- function(roster) {
       diff(range(calculate_scores()))
     })
     
-    # paths ====
-    get_submission_path <- reactive({ file.path("data", str_c(values$student$full, " answers.submitted.csv")) })
-    get_answers_path <- reactive({ file.path("data", str_c(values$student$full, " answers.csv")) })
-    
     # load access code ====
     load_access <- function(entered_access_code) {
       message("Checking access code: ", entered_access_code)
+      hide("access-panel")
+      show("loading-panel")
       student <- filter(students, tolower(access_code) == tolower(entered_access_code))
+      load_access_code <- FALSE
       if (nrow(student) == 0) {
         showModal(modalDialog(h2(str_c("Unknown access code: ", entered_access_code)), easyClose = TRUE, fade = FALSE))
       } else if (is.null(values$access_code) || values$access_code != entered_access_code) {
+        
+        # save student info
         values$student <- as.list(student[1,])
-        if (file.exists(get_submission_path())) {
-          # already submitted
-          message("Already submitted: ", entered_access_code)
+        
+        # retrieve data from google spreadsheet
+        data <- load_peer_eval(gs, entered_access_code)
+        
+        # figure out what to do with the data
+        if (is.null(data) || nrow(data) == 0) {
+          # completely new data set (i.e. no tab yet)
+          message("Into: first time session - creating new data frame")
+          data <- students %>% 
+            filter(team == values$student$team) %>% 
+            arrange(full_name, access_code) %>% 
+            select(full_name) %>% 
+            mutate(plus = "", minus = "", score = NA_integer_)
+          load_access_code <- TRUE
+        } else if (data$submitted[1]) {
+          # already submittedted
+          message("Info: already submitted: ", entered_access_code)
           showModal(modalDialog(h2("Peer evaluation already submitted."), easyClose = TRUE, fade = FALSE))
         } else {
-          # not yet submitted
-          message("Setting access code: ", entered_access_code)
-          values$access_code <- entered_access_code 
-          if (file.exists(get_answers_path())) {
-            message("Resuming previous session")
-            data <- read_csv(get_answers_path(), col_types = "ccci")
-          } else {
-            message("First time session")
-            data <- students %>% 
-              filter(team == values$student$team) %>% 
-              arrange(short, access_code) %>% 
-              select(short) %>% 
-              mutate(plus = "", minus = "", score = NA_integer_)
-          }
-          if (nrow(data) == 0) stop("no data provided", call. = FALSE)
-          values$data <- list()
-          for (i in 1:nrow(data)) {
-            values$data[[data[["short"]][i]]] <- as.list(data[i,])
-          }
-          values$team_mates <- data %>% filter(short != values$student$short) %>% {.$short}
-          values$total_score <- length(values$team_mates)*10
+          # resuming
+          message("Info: resuming previous session")
+          data <- select(data, full_name, plus, minus, score)
+          load_access_code <- TRUE
         }
+      }
+      
+      # load access code
+      if (load_access_code) {
+        message("Info: loading GUI for access code: ", entered_access_code)
+        values$access_code <- entered_access_code 
+        values$data <- list()
+        for (i in 1:nrow(data)) {
+          values$data[[data[["full_name"]][i]]] <- as.list(data[i,])
+        }
+        print(values$student$full_name)
+        print(data$full_name)
+        print(data$full_name == values$student$full_name)
+        values$team_mates <- filter(data, full_name != values$student$full_name)$full_name
+        values$total_score <- length(values$team_mates)*points_per_teammate
+        hide("loading-panel", anim = TRUE, animType = "fade")   
+        show("main-panel")
+      } else {
+        hide("loading-panel", anim = TRUE, animType = "fade")   
+        show("access-panel")
       }
     }
     
@@ -126,19 +125,17 @@ peer_evaluation_server <- function(roster) {
     # load main UI ====
     observeEvent(values$access_code, {
       req(values$student)
-      message("Showing UI for student ", values$student$short)
-      hide("access_panel")
+      message("Info: showing GUI for student ", values$student$full_name)
       if (values$debug == FALSE) {
         showModal(modalDialog(
           h2(str_c("Welcome ", values$student$first)),
           h4(str_c("Team: ", values$student$team)),
           p("Please reflect on your own efforts and provide qualitative and quantitative feedback on your teammates' contributions to your team's performance in the class. The quantitative feedback will be used as part of the overall course grade. For the qualitative feedback, focus on specific behaviors and their impacts on team performance. Write about something you or your teammate does well and at least one area for improvement for their future teamwork."),
-          p("You can save your answers at any point by clicking the ", strong("Save"), " button and resume the peer evaluation at a later point simply by returning to this page and entering your access code again. To submit your peer evaluation, please click the ", strong("Submit"), " button. Once you submit, you can no longer change your answers."),
+          p("You can save your answers at any point by clicking the ", strong("Save"), " button and resume the peer evaluation at a later point simply by returning to this page and entering your access code again. To submitted your peer evaluation, please click the ", strong("submitted"), " button. Once you submitted, you can no longer change your answers."),
           footer = modalButton("Ok"),
           easyClose = TRUE, fade = FALSE
         ))
       }
-      show("main_panel")
     })
     
     # evaluation panels ===
@@ -152,16 +149,16 @@ peer_evaluation_server <- function(roster) {
         req(length(values$data) > 0)
         
         # tabs
-        message("Generating tabs for teammates: ", str_c(values$team_mates, collapse = ", "))
+        message("Info: generating tabs for teammates: ", str_c(values$team_mates, collapse = ", "))
         tabs <- c(
-          list(get_qual_ui_self(values$student$short)),
+          list(get_qual_ui_self(values$student$full_name)),
           lapply(values$team_mates, get_qual_ui_team_mate),
           list(get_quant_scores_ui(values$team_mates))
         )
         
-        # full tag list
+        # full_name tag list
         tagList(
-          column(12, actionButton("save", "Save"), actionButton("submit", "Submit"), align = "right"),
+          column(12, actionButton("save", "Save"), actionButton("submitted", "Submit"), align = "right"),
           column(12, 
                  do.call(tabsetPanel, args = c(tabs, list(selected = "Self evaluation")))
           )
@@ -211,8 +208,8 @@ peer_evaluation_server <- function(roster) {
         tagList(column(3, align="left", h5(name)), 
                 column(9, numericInput(
                   str_c("score_", name), NULL, 
-                  value = get_student_data(name, "score", default = 10), 
-                  min=0, max=15, step=1, width = "80px")))
+                  value = get_student_data(name, "score", default = points_per_teammate), 
+                  min=0, max=2*points_per_teammate, step=1, width = "80px")))
       }
       
       tabPanel(
@@ -267,18 +264,22 @@ peer_evaluation_server <- function(roster) {
     
     # save =====
     observeEvent(input$save, {
-      message("Saving for student ", values$student$short, " to ", get_answers_path())
-      write.csv(get_data_as_df(), file = get_answers_path(), row.names = FALSE)
+      message("Saving for student ", values$student$full_name, "...")
+      hide("main-panel")
+      show("saving-panel")
+      save_peer_eval(gs, values$access_code, get_data_as_df())
       showModal(modalDialog(
         h2("Saved"),
-        p("Your draft evaluation has been saved. You can continue working on it now or resume at a later point. Make sure to return to submit it before the deadline."),
+        p("Your draft evaluation has been saved. You can continue working on it now or resume at a later point. Make sure to return to submitted it before the deadline."),
         easyClose = TRUE, fade = FALSE
       ))
+      hide("saving-panel", anim = TRUE, animType = "fade")   
+      show("main-panel")
     })
     
     
-    # submit =====
-    observeEvent(input$submit, {
+    # submitted =====
+    observeEvent(input$submitted, {
       # safety checks
       req(values$data)
       req(length(values$data) > 0)
@@ -286,9 +287,9 @@ peer_evaluation_server <- function(roster) {
       missing_data <- get_data_as_df() %>% 
         filter(is.na(plus) | is.na(minus) | plus == "" | minus == "")
       if (nrow(missing_data) > 0) {
-        if (values$student$short %in% missing_data$short)
+        if (values$student$full_name %in% missing_data$full_name)
           errors <- c(errors, str_c("self evaluation is incomplete"))
-        errors <- c(errors, str_c("evaluation for ", missing_data$short %>% { .[.!=values$student$short]}, " is incomplete"))
+        errors <- c(errors, str_c("evaluation for ", missing_data$full_name %>% { .[.!=values$student$full_name]}, " is incomplete"))
       }
       if (sum(calculate_scores()) != values$total_score)
         errors <- c(errors, str_c("quantitative scores must add up to ", values$total_score))
@@ -298,16 +299,16 @@ peer_evaluation_server <- function(roster) {
       if (length(errors) > 0) {
         # show errors
         showModal(modalDialog(
-          h2("Cannot submit yet"),
-          p("All fields must be filled out. Please correct the following problems before submitting your peer evaluation."),
+          h2("Cannot submitted yet"),
+          p("All fields must be filled out. Please correct the following problems before submittedting your peer evaluation."),
           do.call(tags$ul, args = lapply(errors, tags$li)),
           easyClose = TRUE, fade = FALSE
         ))
       } else {
-        # ask if they really want to submit 
+        # ask if they really want to submitted 
         showModal(modalDialog(
-          h2("Submit"),
-          p("Are you sure you want to submit? You cannot go back."),
+          h2("submitted"),
+          p("Are you sure you want to submitted? You cannot go back."),
           footer = tagList(actionButton("confirm", "Yes"), modalButton("Not yet")),
           easyClose = TRUE, fade = FALSE
         ))
@@ -315,22 +316,27 @@ peer_evaluation_server <- function(roster) {
     })
     
     observeEvent(input$confirm, {
-      message("Submission for student ", values$student$short, " to ", get_submission_path())
-      write.csv(get_data_as_df(), file = get_submission_path(), row.names = FALSE)
+      message("Submission for student ", values$student$full_name)
+      hide("main-panel")
+      removeModal()
+      show("submitted-panel")
+      save_peer_eval(gs, values$access_code, get_data_as_df(), submitted = TRUE)
+      
       showModal(modalDialog(
-        h2("Submit"),
-        p("Thank you, your evaluation has been submitted."),
+        h2("submitted"),
+        p("Thank you, your evaluation has been submittedted."),
         easyClose = TRUE, fade = FALSE
       ))
       values$access_code <- NULL
-      show("access_panel")
-      hide("main_panel")
+      hide("submitted-panel")
+      show("access-panel")
+      hide("main-panel")
     })
     
     # debug ====
     observeEvent(input$debug_trigger, {
       values$debug <- TRUE
-      load_access("VUI7")
+      load_access("1234")
     })
     
   })

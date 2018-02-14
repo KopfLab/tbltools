@@ -10,15 +10,18 @@ Depends:
     R (>= 3.1)
 Imports:
     methods,
+    rlang,
     glue, 
     dplyr (>= 0.7.0),
+    lubridate,
     purrr,
     stringr,
     readr,
     readxl,
     googlesheets,
     shiny,
-    shinyjs
+    shinyjs,
+    shinycssloaders
 Suggests:
     testthat,
     knitr,

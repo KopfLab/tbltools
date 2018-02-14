@@ -1,15 +1,18 @@
 #' @keywords internal
 "_PACKAGE"
 
+#' @importFrom rlang is_quosure quo !! quo_text
 #' @importFrom glue glue collapse
-#' @importFrom dplyr select rename mutate filter group_by arrange
+#' @importFrom dplyr select rename mutate filter group_by arrange tally bind_rows everything starts_with ends_with
+#' @importFrom lubridate now ymd_hms
 #' @importFrom purrr quietly
-#' @importFrom stringr str_c
-#' @importFrom readr write_rds read_rds
+#' @importFrom stringr str_c str_extract str_replace_na str_trim
+#' @importFrom readr write_rds read_rds cols col_character col_logical col_integer
 #' @importFrom readxl read_excel
-#' @importFrom googlesheets gs_auth gs_title
+#' @importFrom googlesheets gs_auth gs_title gs_gs gs_ws_ls gs_ws_new gs_add_row gs_read_csv
 #' @import shiny 
-#' @importFrom shinyjs useShinyjs
+#' @importFrom shinyjs useShinyjs hidden show hide inlineCSS 
+#' @importFrom shinycssloaders withSpinner
 NULL
 
 #' @importFrom magrittr %>%
