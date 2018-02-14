@@ -169,8 +169,26 @@ tbl_test_peer_evaluation <- function(folder = "peer_evaluation", ...) {
   runApp(folder, ...)
 }
 
-tbl_upload_peer_evaluation <- function() {
+#' Deploy peer evaluation app
+#' 
+#' Upload the peer evaluation app to a shiny server via rsconnect. This requires rsconnect credentials to be already set --> see \link[rsconnect]{setAccountInfo}
+#' @param folder folder where the peer evaluation app is located (see \link{tbl_setup_peer_evaluation} for details)
+#' @param ... passed on to \link[rsconnect]{deployApp}
+#' @family peer evaluation functionsde 
+#' @export
+tbl_deploy_peer_evaluation <- function(folder = "peer_evaluation", ...) {
   
+  if(!dir.exists(folder)) {
+    glue("peer evaluation app folder '{folder}' does not exist") %>% 
+      stop(call. = FALSE)
+  }
+  
+  if (!file.exists(file.path(folder, "app.R"))) {
+    glue("the folder '{folder}' does not seem to contain a peer evaluation app ('app.R' is missing)") %>% 
+      stop(call. = FALSE)
+  }
+  
+  deployApp(folder, ...)
 }
 
 # maybe

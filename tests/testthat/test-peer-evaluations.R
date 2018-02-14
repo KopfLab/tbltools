@@ -26,4 +26,7 @@ test_that("test that peer evaluation functions throw the proper errors", {
   expect_error(tbl_test_peer_evaluation(folder = "DNE"), "does not exist")
   expect_error(tbl_test_peer_evaluation(folder = "."), "not.*contain a peer evaluation app")
   
+  # app deployment
+  expect_error(tbl_deploy_peer_evaluation(folder = "DNE"), "does not exist")
+  expect_error(tbl_deploy_peer_evaluation(folder = "."), "not.*contain a peer evaluation app")
 })

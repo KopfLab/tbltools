@@ -13,6 +13,7 @@
 #' @import shiny 
 #' @importFrom shinyjs useShinyjs hidden show hide inlineCSS 
 #' @importFrom shinycssloaders withSpinner
+#' @importFrom rsconnect deployApp
 NULL
 
 #' @importFrom magrittr %>%

@@ -21,7 +21,8 @@ Imports:
     googlesheets,
     shiny,
     shinyjs,
-    shinycssloaders
+    shinycssloaders,
+    rsconnect
 Suggests:
     testthat,
     knitr,
