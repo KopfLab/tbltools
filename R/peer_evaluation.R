@@ -123,10 +123,7 @@ tbl_run_peer_evaluation <- function(roster, data_gs_title, gs_token, app_title =
     "\nInfo: roster: {nrow(roster)} students in {length(unique(roster$team))} teams",
     "\nInfo: points per teammate: {points_per_teammate}"
   ) %>% message()
-  
-  # make sure shinyBS on attach runs
-  shinyBS:::.onAttach()
-  
+
   # generate app
   app <- shinyApp(
     ui = peer_evaluation_ui(app_title = app_title),
