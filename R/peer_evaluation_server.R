@@ -120,6 +120,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         values$team_mates <- 
           pe_data %>% 
           left_join(students, by = "access_code") %>% 
+          filter(access_code != values$student$access_code) %>% 
           select(access_code, full_name) %>% deframe()
         # total score determined by number of teammates
         values$total_score <- length(values$team_mates)*points_per_teammate
@@ -160,11 +161,10 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         req(length(values$data) > 0)
         
         # tabs
-        other_team_members <- values$team_mates[names(values$team_mates) != values$student$access_code]
         message("Info: generating tabs for teammates: ", str_c(values$team_mates, collapse = ", "))
         tabs <- c(
           list(get_qual_ui_self(values$student$access_code)),
-          map2(names(other_team_members), other_team_members, get_qual_ui_team_mate),
+          map2(names(values$team_mates), values$team_mates, get_qual_ui_team_mate),
           list(get_quant_scores_ui(values$team_mates))
         )
         
@@ -221,7 +221,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
                 column(9, numericInput(
                   str_c("score_", team_mate_access_code), NULL, 
                   value = get_student_data(team_mate_access_code, "score", default = points_per_teammate), 
-                  min=0, max=2*points_per_teammate, step=1, width = "80px")))
+                  min=0, max=15, step=1, width = "80px")))
       }
       
       tabPanel(
