@@ -3,9 +3,10 @@
 
 #' @importFrom rlang is_quosure quo !! quo_text
 #' @importFrom glue glue collapse
-#' @importFrom dplyr select rename mutate filter group_by arrange tally bind_rows everything starts_with ends_with
+#' @importFrom tibble deframe
+#' @importFrom dplyr select rename mutate filter group_by arrange tally bind_rows everything starts_with ends_with left_join
 #' @importFrom lubridate now ymd_hms
-#' @importFrom purrr quietly
+#' @importFrom purrr quietly map2
 #' @importFrom stringr str_c str_extract str_replace_na str_trim
 #' @importFrom readr write_rds read_rds cols col_character col_logical col_integer
 #' @importFrom readxl read_excel

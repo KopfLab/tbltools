@@ -29,4 +29,7 @@ test_that("test that peer evaluation functions throw the proper errors", {
   # app deployment
   expect_error(tbl_deploy_peer_evaluation(folder = "DNE"), "does not exist")
   expect_error(tbl_deploy_peer_evaluation(folder = "."), "not.*contain a peer evaluation app")
+  
+  # app fetch data
+  expect_error(tbl_fetch_peer_evaluation_data(), "roster.*required")
 })

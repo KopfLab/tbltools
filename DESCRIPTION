@@ -12,6 +12,7 @@ Imports:
     methods,
     rlang,
     glue, 
+    tibble,
     dplyr (>= 0.7.0),
     lubridate,
     purrr,

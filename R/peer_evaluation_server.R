@@ -8,10 +8,17 @@
 #' @param points_per_teammate points per teammate
 peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_teammate = 10) {
   
+  # access code prefix (must stay the same as in tbl_fetch_peer_evaluation_data!)
+  access_code_prefix <- "id_"
+  
   # safety check for the student roster
   students <- check_student_roster(roster) %>% 
-    # construct full_name name
-    mutate(full_name = str_trim(str_c(str_replace_na(first, ""), " ", str_replace_na(last, ""))))
+    mutate(
+      # make sure access code is textual
+      access_code = str_c(access_code_prefix, access_code),
+      # construct full_name name
+      full_name = str_trim(str_c(str_replace_na(first, ""), " ", str_replace_na(last, "")))
+    )
 
   # spreadsheet
   try_to_authenticate(gs_token)
@@ -26,7 +33,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       access_code = NULL,
       student = NULL,
       data = list(), 
-      team_mates = c(), # the list of team mate names
+      team_mates = c(), # named list of the team mates (key=access_code, value=full name)
       total_score = 0 # the total score available
     )
     
@@ -46,8 +53,8 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       isolate(bind_rows(values$data))
     })
     
-    get_student_data <- function(student, field, default = "") {
-      value <- values$data[[student]][[field]]
+    get_student_data <- function(student_access_code, field, default = "") {
+      value <- values$data[[student_access_code]][[field]]
       if (is.null(value) || is.na(value)) value <- default
       return(value)
     }
@@ -62,6 +69,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     
     # load access code ====
     load_access <- function(entered_access_code) {
+      entered_access_code <- str_c(access_code_prefix, entered_access_code)
       message("Checking access code: ", entered_access_code)
       hide("access-panel")
       show("loading-panel")
@@ -75,26 +83,26 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         values$student <- as.list(student[1,])
         
         # retrieve data from google spreadsheet
-        data <- load_peer_eval(gs, entered_access_code)
-        
+        pe_data <- read_peer_eval(gs, entered_access_code)
+
         # figure out what to do with the data
-        if (is.null(data) || nrow(data) == 0) {
+        if (is.null(pe_data) || nrow(pe_data) == 0) {
           # completely new data set (i.e. no tab yet)
           message("Into: first time session - creating new data frame")
-          data <- students %>% 
+          pe_data <- students %>% 
             filter(team == values$student$team) %>% 
-            arrange(full_name, access_code) %>% 
-            select(full_name) %>% 
+            arrange(access_code) %>% 
+            select(access_code) %>% 
             mutate(plus = "", minus = "", score = NA_integer_)
           load_access_code <- TRUE
-        } else if (data$submitted[1]) {
+        } else if (pe_data$submitted[1]) {
           # already submittedted
           message("Info: already submitted: ", entered_access_code)
           showModal(modalDialog(h2("Peer evaluation already submitted."), easyClose = TRUE, fade = FALSE))
         } else {
           # resuming
           message("Info: resuming previous session")
-          data <- select(data, full_name, plus, minus, score)
+          pe_data <- select(pe_data, access_code, plus, minus, score)
           load_access_code <- TRUE
         }
       }
@@ -104,13 +112,16 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         message("Info: loading GUI for access code: ", entered_access_code)
         values$access_code <- entered_access_code 
         values$data <- list()
-        for (i in 1:nrow(data)) {
-          values$data[[data[["full_name"]][i]]] <- as.list(data[i,])
+        for (i in 1:nrow(pe_data)) {
+          values$data[[pe_data[["access_code"]][i]]] <- as.list(pe_data[i,])
         }
-        print(values$student$full_name)
-        print(data$full_name)
-        print(data$full_name == values$student$full_name)
-        values$team_mates <- filter(data, full_name != values$student$full_name)$full_name
+        
+        # find team mates
+        values$team_mates <- 
+          pe_data %>% 
+          left_join(students, by = "access_code") %>% 
+          select(access_code, full_name) %>% deframe()
+        # total score determined by number of teammates
         values$total_score <- length(values$team_mates)*points_per_teammate
         hide("loading-panel", anim = TRUE, animType = "fade")   
         show("main-panel")
@@ -151,8 +162,8 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         # tabs
         message("Info: generating tabs for teammates: ", str_c(values$team_mates, collapse = ", "))
         tabs <- c(
-          list(get_qual_ui_self(values$student$full_name)),
-          lapply(values$team_mates, get_qual_ui_team_mate),
+          list(get_qual_ui_self(values$student$access_code)),
+          map2(names(values$team_mates), values$team_mates, get_qual_ui_team_mate),
           list(get_quant_scores_ui(values$team_mates))
         )
         
@@ -167,48 +178,48 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     })
     
     # evaluation gui
-    get_qual_ui_self <- function(team_mate) {
+    get_qual_ui_self <- function(team_mate_access_code) {
       tabPanel(
         "Self evaluation",
         column(6, 
                h5("What have you done well to positively impact your team's performance?"),
                textAreaInput(
-                 str_c("plus_", team_mate), width = "100%", height = "200px", resize = "both",
-                 value = get_student_data(team_mate, "plus"), label = NULL)),
+                 str_c("plus_", team_mate_access_code), width = "100%", height = "200px", resize = "both",
+                 value = get_student_data(team_mate_access_code, "plus"), label = NULL)),
         column(6, 
                h5("What could you do differently to increase your contribution to your team?"),
                textAreaInput(
-                 str_c("minus_", team_mate), width = "100%", height = "200px", resize = "both",
-                 value = get_student_data(team_mate, "minus"), label = NULL))
+                 str_c("minus_", team_mate_access_code), width = "100%", height = "200px", resize = "both",
+                 value = get_student_data(team_mate_access_code, "minus"), label = NULL))
       )
     }
     
-    get_qual_ui_team_mate <- function(team_mate) {
+    get_qual_ui_team_mate <- function(team_mate_access_code, team_mate_name) {
       tabPanel(
-        team_mate,
+        team_mate_name,
         column(6, 
-               h5(str_c("What did ", str_extract(team_mate, "^(\\w+)"), 
+               h5(str_c("What did ", str_extract(team_mate_name, "^(\\w+)"), 
                         " do well to positively impact your team's performance?")),
                textAreaInput(
-                 str_c("plus_", team_mate), width = "100%", height = "200px", resize = "vertical",
-                 value = get_student_data(team_mate, "plus"), label = NULL)),
+                 str_c("plus_", team_mate_access_code), width = "100%", height = "200px", resize = "vertical",
+                 value = get_student_data(team_mate_access_code, "plus"), label = NULL)),
         column(6, 
-               h5(str_c("What could ", str_extract(team_mate, "^(\\w+)"), 
+               h5(str_c("What could ", str_extract(team_mate_name, "^(\\w+)"), 
                         " do differently to increase his/her/their contribution to your team?")),
                textAreaInput(
-                 str_c("minus_", team_mate), width = "100%", height = "200px", resize = "vertical",
-                 value = get_student_data(team_mate, "minus"), label = NULL))
+                 str_c("minus_", team_mate_access_code), width = "100%", height = "200px", resize = "vertical",
+                 value = get_student_data(team_mate_access_code, "minus"), label = NULL))
       )
     }
     
     # qunatitative scores
     get_quant_scores_ui <- function(team_mates) {
       
-      team_mate_tags <- function(name) {
-        tagList(column(3, align="left", h5(name)), 
+      team_mate_tags <- function(team_mate_access_code, team_mate_name) {
+        tagList(column(3, align="left", h5(team_mate_name)), 
                 column(9, numericInput(
-                  str_c("score_", name), NULL, 
-                  value = get_student_data(name, "score", default = points_per_teammate), 
+                  str_c("score_", team_mate_access_code), NULL, 
+                  value = get_student_data(team_mate_access_code, "score", default = points_per_teammate), 
                   min=0, max=2*points_per_teammate, step=1, width = "80px")))
       }
       
@@ -238,7 +249,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         ),
         
         h4("Scores:"),
-        do.call(tagList, lapply(team_mates, team_mate_tags)),
+        do.call(tagList, map2(names(team_mates), team_mates, team_mate_tags)),
         column(3, h5("Total:")),
         column(9, h5(textOutput("total_score"))),
         column(3, h5("Difference:")),
@@ -287,7 +298,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       missing_data <- get_data_as_df() %>% 
         filter(is.na(plus) | is.na(minus) | plus == "" | minus == "")
       if (nrow(missing_data) > 0) {
-        if (values$student$full_name %in% missing_data$full_name)
+        if (values$student$access_code %in% missing_data$access_code)
           errors <- c(errors, str_c("self evaluation is incomplete"))
         errors <- c(errors, str_c("evaluation for ", missing_data$full_name %>% { .[.!=values$student$full_name]}, " is incomplete"))
       }
@@ -336,7 +347,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     # debug ====
     observeEvent(input$debug_trigger, {
       values$debug <- TRUE
-      load_access("1234")
+      load_access(input$debug_trigger)
     })
     
   })
