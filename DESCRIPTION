@@ -14,6 +14,7 @@ Imports:
     glue, 
     tibble,
     dplyr (>= 0.7.0),
+    tidyr,
     lubridate,
     purrr,
     stringr,
