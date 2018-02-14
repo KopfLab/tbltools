@@ -32,4 +32,8 @@ test_that("test that peer evaluation functions throw the proper errors", {
   
   # app fetch data
   expect_error(tbl_fetch_peer_evaluation_data(), "roster.*required")
+  
+  # summaarize
+  expect_error(tbl_summarize_peer_evaluation_data(), "no data frame supplied")
+  expect_error(tbl_summarize_peer_evaluation_data(5), "no data frame supplied")
 })

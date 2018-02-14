@@ -234,6 +234,40 @@ tbl_fetch_peer_evaluation_data <- function(folder = ".",roster, data_gs_title, g
   return(pe_data)
 }
 
+#' Summarize peer evaluation data
+#' @param data the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_dat}
+#' @export
+tbl_summarize_peer_evaluation_data <- function(data) {
+  
+  # safety
+  if (missing(data) || !is.data.frame(data))
+    stop("no data frame supplied")
+  
+  # check for required columns
+  req_columns <- c("access_code", "evaluations")
+  if (length(missing <- setdiff(req_columns, names(data))) > 0)
+    glue("missing column(s) in data frame: {collapse(missing, sep=', ')}") %>% 
+    stop(call. = FALSE)
+  
+  summarize_evals <- . %>% sample() %>% na.omit() %>% collapse(sep = "\n\n") %>% { ifelse(is.null(.), NA_character_, .) }
+  
+  data %>% 
+    select(access_code, evaluations) %>% 
+    unnest(evaluations) %>% 
+    mutate(self_evaluation = access_code == evaluatee_access_code) %>% 
+    select(-access_code) %>% 
+    left_join(select(data, evaluatee_access_code = access_code, last, first), by = "evaluatee_access_code") %>% 
+    group_by(evaluatee_access_code, last, first) %>% 
+    summarise(
+      n_evaluations = length(score[!self_evaluation]),
+      score_avg = mean(score[!self_evaluation]),
+      self_plus = plus[self_evaluation] %>% summarize_evals,
+      self_minus = minus[self_evaluation] %>% summarize_evals,
+      team_plus = plus[!self_evaluation] %>% summarize_evals,
+      team_minus = minus[!self_evaluation] %>% summarize_evals
+    )
+}
+
 # utility functions ====
 
 #' Generate random access codes
