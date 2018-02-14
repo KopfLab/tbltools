@@ -96,7 +96,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
             mutate(plus = "", minus = "", score = NA_integer_)
           load_access_code <- TRUE
         } else if (pe_data$submitted[1]) {
-          # already submittedted
+          # already submitted
           message("Info: already submitted: ", entered_access_code)
           showModal(modalDialog(h2("Peer evaluation already submitted."), easyClose = TRUE, fade = FALSE))
         } else {
@@ -297,11 +297,14 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       req(length(values$data) > 0)
       errors <- c()
       missing_data <- get_data_as_df() %>% 
-        filter(is.na(plus) | is.na(minus) | plus == "" | minus == "")
+        filter(is.na(plus) | is.na(minus) | plus == "" | minus == "") %>% 
+        left_join(students, by = "access_code")
       if (nrow(missing_data) > 0) {
         if (values$student$access_code %in% missing_data$access_code)
           errors <- c(errors, str_c("self evaluation is incomplete"))
-        errors <- c(errors, str_c("evaluation for ", missing_data$full_name %>% { .[.!=values$student$full_name]}, " is incomplete"))
+        missing_team <- missing_data %>% filter(access_code != values$student$access_code)
+        if (nrow(missing_team) > 0)
+          errors <- c(errors, str_c("evaluation for ", missing_team$full_name, " is incomplete"))
       }
       if (sum(calculate_scores()) != values$total_score)
         errors <- c(errors, str_c("quantitative scores must add up to ", values$total_score))
@@ -336,7 +339,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       
       showModal(modalDialog(
         h2("submitted"),
-        p("Thank you, your evaluation has been submittedted."),
+        p("Thank you, your evaluation has been submitted."),
         easyClose = TRUE, fade = FALSE
       ))
       values$access_code <- NULL
