@@ -40,5 +40,8 @@ vignettes/*.pdf
 # Auxiliary package files
 /tmp/
 /peer_evaluation*/
-~*
 *.nb.html
+
+# temp OS files
+.DS_Store
+~*
