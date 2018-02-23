@@ -76,8 +76,8 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title 
   # generate function call parameters ======
   parameters <- 
     list(
-      roster = quo(readxl::read_excel("roster.xlsx")),
       data_gs_title = data_gs_title,
+      roster = quo(readxl::read_excel("roster.xlsx")),
       gs_token = "gs_token.rds",
       app_title = "Peer Evaluation",
       points_per_teammate = 10
@@ -126,7 +126,8 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title 
 #' @param launch whether to launch the app (TRUE) or return a shiny app object (FALSE) that then can be launched via \code{\link[shiny]{runApp}}
 #' @family peer evaluation functions
 #' @export
-tbl_run_peer_evaluation <- function(roster, data_gs_title, gs_token, app_title = "Peer Evaluation", points_per_teammate, ..., launch = FALSE) {
+tbl_run_peer_evaluation <- function(data_gs_title, roster, gs_token, app_title = "Peer Evaluation", 
+                                    points_per_teammate, auto_login_access_code = NULL, ..., launch = FALSE) {
   
   # safety checks
   if (missing(roster)) stop("roster data frame required", call. = FALSE)
@@ -147,7 +148,8 @@ tbl_run_peer_evaluation <- function(roster, data_gs_title, gs_token, app_title =
       roster = roster,
       data_gs_title = data_gs_title,
       gs_token = gs_token,
-      points_per_teammate = points_per_teammate
+      points_per_teammate = points_per_teammate,
+      auto_login_access_code = auto_login_access_code
     )
   )
   

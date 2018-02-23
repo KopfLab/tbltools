@@ -6,7 +6,8 @@
 #' @param data_gs_title name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.
 #' @param gs_token path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive. 
 #' @param points_per_teammate points per teammate
-peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_teammate = 10) {
+#' @param auto_login_access_code set an automatic login access code for testing and debugging purposes
+peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_teammate = 10, auto_login_access_code = NULL) {
   
   # access code prefix (must stay the same as in tbl_fetch_peer_evaluation_data!)
   access_code_prefix <- "id_"
@@ -29,7 +30,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     message("\n\nINFO: Loading GUI instance ...")
     
     values <- reactiveValues(
-      debug = FALSE,
+      auto_login = FALSE,
       access_code = NULL,
       student = NULL,
       data = list(), 
@@ -138,7 +139,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     observeEvent(values$access_code, {
       req(values$student)
       message("Info: showing GUI for student ", values$student$full_name)
-      if (values$debug == FALSE) {
+      if (values$auto_login == FALSE) {
         showModal(modalDialog(
           h2(str_c("Welcome ", values$student$first)),
           h4(str_c("Team: ", values$student$team)),
@@ -148,6 +149,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
           easyClose = TRUE, fade = FALSE
         ))
       }
+      values$auto_login <- FALSE
     })
     
     # evaluation panels ===
@@ -349,9 +351,12 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     })
     
     # debug ====
-    observeEvent(input$debug_trigger, {
-      values$debug <- TRUE
-      load_access(input$debug_trigger)
+    observeEvent(input$auto_login_trigger, {
+      if (!is.null(auto_login_access_code)) {
+        message("Info: executing auto-login for access code ", auto_login_access_code)
+        values$auto_login <- TRUE
+        load_access(auto_login_access_code)
+      }
     })
     
   })
