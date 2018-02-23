@@ -4,11 +4,13 @@
 \alias{tbl_summarize_peer_evaluation_data}
 \title{Summarize peer evaluation data}
 \usage{
-tbl_summarize_peer_evaluation_data(data)
+tbl_summarize_peer_evaluation_data(data, submitted_only = FALSE)
 }
 \arguments{
 \item{data}{the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_dat}}
+
+\item{submitted_only}{only include evaluations that were actually submitted (rather than just saved)}
 }
 \description{
-Summarize peer evaluation data
+Summarizes the peer evaluation data. Preserves all roster information (last name, first name, team, + any custom fields).
 }
