@@ -38,7 +38,8 @@ test_that("test that peer evaluation functions throw the proper errors", {
   expect_error(tbl_deploy_peer_evaluation(folder = "."), "not.*contain a peer evaluation app")
   
   # app fetch data
-  expect_error(tbl_fetch_peer_evaluation_data(), "roster.*required")
+  expect_error(tbl_fetch_peer_evaluation_data(), "roster.*cannot be opened")
+  expect_error(tbl_fetch_peer_evaluation_data(roster = 5), "roster.*required")
   
   # summaarize
   expect_error(tbl_summarize_peer_evaluation_data(), "no data frame supplied")

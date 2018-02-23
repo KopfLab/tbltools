@@ -199,15 +199,17 @@ tbl_deploy_peer_evaluation <- function(folder = "peer_evaluation", ...) {
 
 #' Fetch the peer evaluation data
 #' 
-#' Fetches the peer evaluation data from the google spreadsheet.
+#' Fetches the peer evaluation data from the google spreadsheet. For standard installations of the peer evaluation app, all defaults should be sufficient with only parameter \code{data_gs_title} requiring a specification.
 #' 
 #' @inheritParams tbl_run_peer_evaluation
-#' @param folder folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter)
+#' @param folder folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter context)
 #' @export
-tbl_fetch_peer_evaluation_data <- function(folder = ".",roster, data_gs_title, gs_token = "gs_token.rds") {
+tbl_fetch_peer_evaluation_data <- function(folder = ".", data_gs_title, 
+                                           roster = read_excel(file.path(folder, "roster.xlsx")), 
+                                           gs_token = file.path(folder, "gs_token.rds")) {
   
   # safety checks
-  if (missing(roster)) stop("roster data frame required", call. = FALSE)
+  if (!is.data.frame(roster)) stop("roster data frame required", call. = FALSE)
   students <- check_student_roster(roster) 
   try_to_authenticate(gs_token)
   gs <- try_to_fetch_google_spreadsheet(data_gs_title)
