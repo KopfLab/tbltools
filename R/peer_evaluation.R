@@ -188,6 +188,8 @@ tbl_deploy_peer_evaluation <- function(folder = "peer_evaluation", ...) {
   deployApp(folder, ...)
 }
 
+# peer evals data functions -----
+
 #' Fetch the peer evaluation data
 #' 
 #' Fetches the peer evaluation data from the google spreadsheet.
@@ -203,13 +205,19 @@ tbl_fetch_peer_evaluation_data <- function(folder = ".",roster, data_gs_title, g
   try_to_authenticate(gs_token)
   gs <- try_to_fetch_google_spreadsheet(data_gs_title)
   
+  # downloading data
+  message("Info: downloading data... ", appendLF = FALSE)
+  local_path <- file.path(folder, "pe_data_downloaded.xlsx")
+  result <- quietly(gs_download)(gs, to = local_path, overwrite = TRUE)
+  message(result$messages, appendLF = FALSE)
+  
   # fetch student info
   access_code_prefix <- "id_"
   students <- students %>% mutate(access_code = str_c(access_code_prefix, access_code)) 
   pe_data <- students %>% 
     group_by(access_code) %>% 
     do({
-      data <- read_peer_eval(gs, .$access_code)
+      data <- read_peer_eval(local_path, .$access_code)
       if (is.null(data)) data <- data_frame()
       else data <- rename(data, evaluatee_access_code = access_code)
     })
@@ -222,11 +230,14 @@ tbl_fetch_peer_evaluation_data <- function(folder = ".",roster, data_gs_title, g
     pe_data %>% 
     mutate(
       started = !is.na(timestamp),
-      submitted = ifelse(is.na(submitted), FALSE, submitted),
-      submitted_timestamp = timestamp
+      submitted2 = ifelse(is.na(submitted), FALSE, submitted),
+      submitted_timestamp = timestamp,
+      self_evaluation = access_code == evaluatee_access_code
     ) %>% 
-    nest(evaluatee_access_code, plus, minus, score, .key = "evaluations") %>% 
-    select(access_code, last, first, team, started, submitted, submitted_timestamp, evaluations) 
+    # simplify column sorting
+    select(-submitted, -timestamp) %>% rename(submitted = submitted2) %>% 
+    # next data
+    nest(evaluatee_access_code, self_evaluation, plus, minus, score, .key = "evaluations")
   
   # update timestamp (can't do inside mutate, problems with the NA)
   pe_data <- within(pe_data, submitted_timestamp[!submitted] <- NA)
@@ -235,9 +246,13 @@ tbl_fetch_peer_evaluation_data <- function(folder = ".",roster, data_gs_title, g
 }
 
 #' Summarize peer evaluation data
+#' 
+#' Summarizes the peer evaluation data. Preserves all roster information (last name, first name, team, + any custom fields).
+#' 
 #' @param data the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_dat}
+#' @param submitted_only only include evaluations that were actually submitted (rather than just saved)
 #' @export
-tbl_summarize_peer_evaluation_data <- function(data) {
+tbl_summarize_peer_evaluation_data <- function(data, submitted_only = FALSE) {
   
   # safety
   if (missing(data) || !is.data.frame(data))
@@ -251,21 +266,78 @@ tbl_summarize_peer_evaluation_data <- function(data) {
   
   summarize_evals <- . %>% sample() %>% na.omit() %>% collapse(sep = "\n\n") %>% { ifelse(is.null(.), NA_character_, .) }
   
-  data %>% 
-    select(access_code, evaluations) %>% 
+  # make sure to preserve custom roster info
+  roster <- data %>% select(-started, -submitted, -submitted_timestamp, -evaluations) %>% 
+    select(evaluatee_access_code = access_code, everything())
+  
+  # summarize information
+  data_sum <- data %>% 
+    filter(submitted | !submitted_only) %>% 
+    select(access_code, evaluations) %>%
     unnest(evaluations) %>% 
-    mutate(self_evaluation = access_code == evaluatee_access_code) %>% 
     select(-access_code) %>% 
-    left_join(select(data, evaluatee_access_code = access_code, last, first), by = "evaluatee_access_code") %>% 
-    group_by(evaluatee_access_code, last, first) %>% 
-    summarise(
-      n_evaluations = length(score[!self_evaluation]),
-      score_avg = mean(score[!self_evaluation]),
+    group_by(evaluatee_access_code) %>%
+    summarize(
+      n_evaluations = sum(!self_evaluation, na.rm = TRUE),
+      score_avg = ifelse(n_evaluations > 0, mean(score[!self_evaluation]), NA_real_),
       self_plus = plus[self_evaluation] %>% summarize_evals,
       self_minus = minus[self_evaluation] %>% summarize_evals,
       team_plus = plus[!self_evaluation] %>% summarize_evals,
       team_minus = minus[!self_evaluation] %>% summarize_evals
-    )
+    ) 
+  
+  # return
+  left_join(roster, data_sum, by = "evaluatee_access_code") 
+}
+
+#' Export peer evaluation data
+#' 
+#' Exports peer evaluation data - both raw data and data summary (see \link{tbl_summarize_peer_evaluation_data} for details).
+#' 
+#' @inheritParams tbl_summarize_peer_evaluation_data
+#' @param filepath the excel file where to save the peer evaluation data summary
+#' @return returns the passed in data invisibly to permit use of this function inside pipelines
+#' @export
+tbl_export_peer_evaluation_data <- function(data, filepath = "pe_data_summary.xlsx") {
+  
+  # safety
+  if (missing(data) || !is.data.frame(data))
+    stop("no data frame supplied")
+  
+  glue("Info: exporting peer evaluation data and data summary to '{filepath}'... ") %>% 
+    message(appendLF = FALSE)
+  
+  # cell and header styles
+  style <- createStyle(valign = "top", wrapText = TRUE)
+  header_style <- createStyle(textDecoration = "bold", border="bottom", borderColour = "#000000", borderStyle = "medium")
+  
+  # data
+  data_all <- data %>% unnest(evaluations)
+  data_sum <- data %>% tbl_summarize_peer_evaluation_data()
+  
+  # work book
+  wb <- createWorkbook()
+  
+  # summary work sheet
+  ws <- addWorksheet(wb, "summary")
+  writeData(wb, ws, data_sum, headerStyle = header_style)
+  freezePane(wb, ws, firstRow = TRUE)
+  setColWidths(wb, ws, cols = 1:ncol(data_sum), widths = "auto")
+  addStyle(wb, ws, style, rows = 1:(nrow(data_sum) + 1), cols = 1:ncol(data_sum), gridExpand = TRUE, stack = TRUE)
+  
+  # data work sheet
+  ws <- addWorksheet(wb, "data")  
+  writeData(wb, ws, data_all, headerStyle = header_style)
+  freezePane(wb, ws, firstRow = TRUE)
+  setColWidths(wb, ws, cols = 1:ncol(data_all), widths = "auto")
+  addStyle(wb, ws, style, rows = 1:(nrow(data_all) + 1), cols = 1:ncol(data_all), gridExpand = TRUE, stack = TRUE)
+  
+  # save data sheet
+  saveWorkbook(wb, filepath, overwrite = TRUE)
+  
+  message("completed.")
+  
+  return(invisible(data))
 }
 
 # utility functions ====
@@ -346,17 +418,30 @@ try_to_fetch_google_spreadsheet <- function(gs_title) {
 # data loading/saving functions ==========
 
 # load peer evaluation
-read_peer_eval <- function(gs, access_code) {
-  # refresh sheet
-  gs <- gs_gs(gs)
+# @param ss - spreadsheet
+read_peer_eval <- function(ss, access_code) {
+  
+  is_gs <- is(ss, "googlesheet")
+  
+  if (is_gs) {
+    # refresh sheet
+    gs <- gs_gs(gs)
+    worksheets <- gs_ws_ls(gs)
+  } else {
+    # make sure file exists
+    if (!file.exists(ss)) 
+      glue("provided spreadsheet is neither a google spreadsheet nor a valid path to a local excel file") %>% 
+      stop(call. = FALSE)
+    worksheets <- excel_sheets(ss)
+  }
   
   # check if tab exists
-  if (!access_code %in% gs_ws_ls(gs)) {
+  if (!access_code %in% worksheets) {
     # does not exist
     return(NULL)
-  } else {
-    # does exist
-    gs %>% 
+  } else if (is_gs) {
+    # does exist and is a google spreadsheet
+    data <- gs %>% 
       # retrieve data
       gs_read_csv(
         ws = access_code, 
@@ -369,12 +454,19 @@ read_peer_eval <- function(gs, access_code) {
           score = col_integer()
         )) %>% 
       # convert timestamp
-      mutate(timestamp = ymd_hms(timestamp)) %>% 
-      # filter only most recent entry
-      filter(timestamp == max(timestamp)) %>% 
-      return()
+      mutate(timestamp = ymd_hms(timestamp))
+  } else {
+    # does exist and is a local file
+    data <- read_excel(ss, sheet = access_code)
   }
   
+  # return
+  data %>% 
+    # make sure score is numeric
+    mutate(score = quietly(as.numeric)(score)$result) %>% 
+    # filter only most recent entry
+    filter(timestamp == max(timestamp)) %>% 
+    return()
 }
 
 # save peer evaluation

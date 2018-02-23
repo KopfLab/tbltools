@@ -4,14 +4,15 @@
 #' @importFrom rlang is_quosure quo !! quo_text
 #' @importFrom glue glue collapse
 #' @importFrom tibble deframe
-#' @importFrom dplyr select rename mutate filter group_by arrange tally bind_rows everything starts_with ends_with left_join do data_frame
+#' @importFrom dplyr select rename mutate filter group_by arrange tally bind_rows everything starts_with ends_with left_join do data_frame summarize
 #' @importFrom tidyr nest unnest
 #' @importFrom lubridate now ymd_hms
-#' @importFrom purrr quietly map2 map2_chr
+#' @importFrom purrr quietly map2 map2_chr quietly
 #' @importFrom stringr str_c str_extract str_replace_na str_trim
 #' @importFrom readr write_rds read_rds cols col_character col_logical col_integer
 #' @importFrom readxl read_excel
-#' @importFrom googlesheets gs_auth gs_title gs_gs gs_ws_ls gs_ws_new gs_add_row gs_read_csv
+#' @importFrom openxlsx createStyle createWorkbook addWorksheet writeData freezePane setColWidths addStyle saveWorkbook
+#' @importFrom googlesheets gs_auth gs_title gs_gs gs_ws_ls gs_ws_new gs_add_row gs_read_csv gs_download
 #' @import shiny 
 #' @importFrom shinyjs useShinyjs hidden show hide inlineCSS 
 #' @importFrom shinycssloaders withSpinner

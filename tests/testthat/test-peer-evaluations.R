@@ -13,6 +13,9 @@ test_that("test that peer evaluation functions throw the proper errors", {
   roster <- bind_rows(roster, roster)
   expect_error(check_student_roster(roster), "not unique access code")
     
+  # read data
+  expect_error(tbltools:::read_peer_eval("DNE"), "neither a google spreadsheet nor a valid path")
+  
   # app setup
   tmp <- tempdir()
   expect_error(tbl_setup_peer_evaluation(folder = tmp, roster_file = "DNE"), "roster file.*does not exist")
@@ -36,4 +39,9 @@ test_that("test that peer evaluation functions throw the proper errors", {
   # summaarize
   expect_error(tbl_summarize_peer_evaluation_data(), "no data frame supplied")
   expect_error(tbl_summarize_peer_evaluation_data(5), "no data frame supplied")
+  
+  # export
+  expect_error(tbl_export_peer_evaluation_data(), "no data frame supplied")
+  expect_error(tbl_export_peer_evaluation_data(5), "no data frame supplied")
+  
 })

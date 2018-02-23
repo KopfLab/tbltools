@@ -1,7 +1,7 @@
 Package: tbltools
 Title: Tools for Team-Based-Learning
 Description: Tools for using Team-Based-Learning (TBL) approaches in the classroom.
-Version: 0.4.5.9999
+Version: 0.4.6.9999
 Authors@R: person("Sebastian", "Kopf", email = "sebastian.kopf@colorado.edu",
     role = c("aut", "cre"))
 URL: https://github.com/kopflab/tbltools
@@ -20,13 +20,13 @@ Imports:
     stringr,
     readr,
     readxl,
+    openxlsx,
     googlesheets,
     shiny,
     shinyjs,
     shinycssloaders,
     rsconnect
 Suggests:
-    openxlsx,
     testthat,
     knitr,
     rmarkdown,
