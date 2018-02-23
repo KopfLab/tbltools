@@ -138,6 +138,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     # load main UI ====
     observeEvent(values$access_code, {
       req(values$student)
+      req(values$access_code)
       message("Info: showing GUI for student ", values$student$full_name)
       if (values$auto_login == FALSE) {
         showModal(modalDialog(
@@ -172,7 +173,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         
         # full_name tag list
         tagList(
-          column(12, actionButton("save", "Save"), actionButton("submitted", "Submit"), align = "right"),
+          column(12, actionButton("save", "Save"), actionButton("submitted", "Submit"), actionButton("logout", "Logout"), align = "right"),
           column(12, 
                  do.call(tabsetPanel, args = c(tabs, list(selected = "Self evaluation")))
           )
@@ -278,6 +279,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     
     # save =====
     observeEvent(input$save, {
+      req(values$access_code)
       message("Saving for student ", values$student$full_name, "...")
       hide("main-panel")
       show("saving-panel")
@@ -295,6 +297,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     # submitted =====
     observeEvent(input$submitted, {
       # safety checks
+      req(values$access_code)
       req(values$data)
       req(length(values$data) > 0)
       errors <- c()
@@ -344,13 +347,22 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         p("Thank you, your evaluation has been submitted."),
         easyClose = TRUE, fade = FALSE
       ))
+      logout_user()
+    })
+    
+    # log out ====
+    
+    logout_user <- function() {
+      message("Info: logging out ", values$student$full_name)
       values$access_code <- NULL
+      updateTextInput(session, "access_code", value = "")
       hide("submit-panel")
       show("access-panel")
       hide("main-panel")
-    })
+    }
+    observeEvent(input$logout, logout_user())
     
-    # debug ====
+    # debug / auto-login ====
     observeEvent(input$auto_login_trigger, {
       if (!is.null(auto_login_access_code)) {
         message("Info: executing auto-login for access code ", auto_login_access_code)
