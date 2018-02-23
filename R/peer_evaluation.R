@@ -8,21 +8,23 @@
 #' 
 #' @inheritParams peer_evaluation_server
 #' @param folder target folder where to setup the peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
-#' @param roster_file path to an excel (.xslx) file that contains the student roster information - will use the package template by default
+#' @param template_roster_file path to an excel (.xslx) file that contains the student roster information to use as template for the peer evaluation app (can be edited later)  - will use the package template by default
 #' @param overwrite whether to overwrite the app in the target directory if it already exists
 #' @inheritParams tbl_run_peer_evaluation
 #' @return returns the \code{folder} invisibly for ease of use in pipelines
 #' @family peer evaluation functions
 #' @export
-tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", roster_file = system.file(package = "tbltools", "extdata", "roster_template.xlsx"), data_gs_title = "Peer Evaluation", gs_token = NULL, overwrite = FALSE) {
+tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title = "Peer Evaluation", 
+                                      template_roster_file = system.file(package = "tbltools", "extdata", "roster_template.xlsx"), 
+                                      gs_token = file.path(folder, "gs_token.rds"), overwrite = FALSE) {
   
   # check for roster file
-  if(!file.exists(roster_file))
-    glue("roster file '{roster_file}' does not exist") %>% stop(call. = FALSE)
+  if(!file.exists(template_roster_file))
+    glue("roster file '{template_roster_file}' does not exist") %>% stop(call. = FALSE)
   
   # try to read roster file
-  tryCatch(roster <- read_excel(roster_file), error = function(e) {
-    glue("could not read roster Excel file '{roster_file}': {e$message}") %>% 
+  tryCatch(roster <- read_excel(template_roster_file), error = function(e) {
+    glue("could not read roster Excel file '{template_roster_file}': {e$message}") %>% 
     stop(call. = FALSE)
   })
   
@@ -34,20 +36,24 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", roster_file = 
     glue("Info: an app already exists in folder '{folder}' ",
          "{if(overwrite) 'but will be overwritten' else 'and will NOT be overwritten}") %>% 
       message()
-    if (!overwrite) return(folder)
+    if (!overwrite) return(invisible(folder))
   }
   
   # copy roster file
   if (!file.exists(file.path(folder, "roster.xlsx")) || overwrite) {
-    glue("Info: copying '{basename(roster_file)}' to {folder}/roster.xlsx") %>% message()
-    file.copy(roster_file, to = file.path(folder, "roster.xlsx"), overwrite = TRUE)
+    glue("Info: copying '{basename(template_roster_file)}' to {folder}/roster.xlsx") %>% message()
+    file.copy(template_roster_file, to = file.path(folder, "roster.xlsx"), overwrite = TRUE)
   }
   
   # check roster file
   check_student_roster(roster)
 
   # google sheets authentication
-  token <- try_to_authenticate(gs_token)
+  if (!is.null(gs_token) && file.exists(gs_token))
+    token <- try_to_authenticate(gs_token)
+  else 
+    token <- try_to_authenticate()
+  
   
   # save token
   if (!file.exists(file.path(folder, "gs_token.rds")) || overwrite) {
@@ -386,21 +392,30 @@ check_student_roster <- function(roster) {
 
 
 # authenticate with google server
-try_to_authenticate <- function(gs_token) {
+try_to_authenticate <- function(gs_token = NULL) {
   # google sheets authentication
-  message("Info: authenticating with google server... ", appendLF = FALSE)
+  automatic <- is.null(getOption('httr_oob_default')) || !getOption('httr_oob_default')
   tryCatch({
-    if (!is.null(gs_token))
+    if (!is.null(gs_token)) {
       # authenticat quietly if token is provided
+      message("Info: authenticating with google server via token... ", appendLF = FALSE)
       token <- quietly(gs_auth)(token = gs_token, new_user = TRUE, cache=FALSE)
-    else
+    } else {
       # allow authentication info messages
-      token <- gs_auth(new_user = TRUE, cache=FALSE)
+      glue("Info: authenticating with google server {if(automatic) 'automatically' else 'manually'}... ") %>% 
+        message(appendLF = FALSE)
+      token <- gs_auth(token = NULL, new_user = TRUE, cache=FALSE)
+    }
     message("complete.")
   },
   error = function(e) {
-    glue("google spreadsheet authentication failed: {e$message}") %>% 
-      stop(call. = FALSE)
+    if (automatic && str_detect(e$message, fixed("Failed to create server"))) {
+      glue("could not authenticate automatically, please run 'options(httr_oob_default = TRUE)' and try again to authenticate manually: {e$message}") %>% 
+        stop(call. = FALSE)
+    } else {
+      glue("google spreadsheet authentication failed: {e$message}") %>% 
+        stop(call. = FALSE)
+    }
   })
   return(token)
 }

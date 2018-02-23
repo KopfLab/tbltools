@@ -18,8 +18,12 @@ test_that("test that peer evaluation functions throw the proper errors", {
   
   # app setup
   tmp <- tempdir()
-  expect_error(tbl_setup_peer_evaluation(folder = tmp, roster_file = "DNE"), "roster file.*does not exist")
-  expect_error(tbl_setup_peer_evaluation(folder = tmp, gs_token = "DNE"), "authentication failed")
+  expect_error(tbl_setup_peer_evaluation(folder = tmp, template_roster_file = "DNE"), "roster file.*does not exist")
+  tmp_file <- tempfile()
+  cat(file = tmp_file, "fake_token")
+  if (file.exists(tmp_file)) # safety measure to avoid test getting hung up on interactive authentication
+    expect_error(tbl_setup_peer_evaluation(folder = tmp, gs_token = tmp_file), "authentication failed")
+  unlink(tmp_file)
   expect_true(file.exists(file.path(tmp, "roster.xlsx")))
   
   # app start

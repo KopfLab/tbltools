@@ -4,7 +4,7 @@
 #' Generates the server part of the peer evaluation app
 #' @param roster data frame with the student roster
 #' @param data_gs_title name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.
-#' @param gs_token a google spreadsheet oauth 2.0 authentication token (see \link[httr]{Token-class}). If none is provided (\code{g_token = NULL}, the default), will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive. 
+#' @param gs_token path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive. 
 #' @param points_per_teammate points per teammate
 peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_teammate = 10) {
   

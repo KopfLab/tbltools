@@ -8,7 +8,7 @@
 #' @importFrom tidyr nest unnest
 #' @importFrom lubridate now ymd_hms
 #' @importFrom purrr quietly map2 map2_chr quietly
-#' @importFrom stringr str_c str_extract str_replace_na str_trim
+#' @importFrom stringr str_c str_extract str_replace_na str_trim str_detect fixed
 #' @importFrom readr write_rds read_rds cols col_character col_logical col_integer
 #' @importFrom readxl read_excel
 #' @importFrom openxlsx createStyle createWorkbook addWorksheet writeData freezePane setColWidths addStyle saveWorkbook
