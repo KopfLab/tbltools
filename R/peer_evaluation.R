@@ -34,7 +34,7 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title 
     dir.create(folder, recursive = TRUE)
   } else if (file.exists(file.path(folder, "app.R"))) {
     glue("Info: an app already exists in folder '{folder}' ",
-         "{if(overwrite) 'but will be overwritten' else 'and will NOT be overwritten}") %>% 
+         "{if(overwrite) 'but will be overwritten' else '(use \"overwrite = TRUE\" to overwrite)'}") %>% 
       message()
     if (!overwrite) return(invisible(folder))
   }
@@ -56,14 +56,15 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title 
   
   
   # save token
-  if (!file.exists(file.path(folder, "gs_token.rds")) || overwrite) {
+  save_path <- file.path(folder, "gs_token.rds")
+  if (!file.exists(save_path) || overwrite) {
     glue("Info: copying authentication token to {folder}/gs_token.rds") %>% message()
-    if (!is.null(gs_token))
+    if (!is.null(gs_token) && file.exists(save_path))
       # copy from location
-      file.copy(gs_token, to = file.path(folder, "gs_token.rds"))
+      file.copy(gs_token, to = save_path)
     else
       # copy from fresh authentication
-      write_rds(x = token, path = file.path(folder, "gs_token.rds"))
+      write_rds(x = token, path = save_path)
   }
   
   # check google sheet presence
