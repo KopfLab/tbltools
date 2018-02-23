@@ -33,8 +33,11 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 
+# Data files
+*.xlsx
+
 # Auxiliary package files
 /tmp/
-/peer_evaluation/
+/peer_evaluation*/
 ~*
 *.nb.html
