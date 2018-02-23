@@ -4,12 +4,14 @@
 \alias{tbl_export_peer_evaluation_data}
 \title{Export peer evaluation data}
 \usage{
-tbl_export_peer_evaluation_data(data, filepath = "pe_data_summary.xlsx")
+tbl_export_peer_evaluation_data(data, filepath = "pe_data_summary.xlsx", ...)
 }
 \arguments{
 \item{data}{the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_dat}}
 
 \item{filepath}{the excel file where to save the peer evaluation data summary}
+
+\item{...}{parameters passed on to \code{\link{tbl_summarize_peer_evaluation_data}}}
 }
 \value{
 returns the passed in data invisibly to permit use of this function inside pipelines

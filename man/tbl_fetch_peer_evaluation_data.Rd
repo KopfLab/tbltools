@@ -4,18 +4,19 @@
 \alias{tbl_fetch_peer_evaluation_data}
 \title{Fetch the peer evaluation data}
 \usage{
-tbl_fetch_peer_evaluation_data(folder = ".", roster, data_gs_title,
-  gs_token = "gs_token.rds")
+tbl_fetch_peer_evaluation_data(folder = ".", data_gs_title,
+  roster = read_excel(file.path(folder, "roster.xlsx")),
+  gs_token = file.path(folder, "gs_token.rds"))
 }
 \arguments{
-\item{folder}{folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter)}
-
-\item{roster}{data frame with the student roster}
+\item{folder}{folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter context)}
 
 \item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
 
-\item{gs_token}{a google spreadsheet oauth 2.0 authentication token (see \link[httr]{Token-class}). If none is provided (\code{g_token = NULL}, the default), will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
+\item{roster}{data frame with the student roster}
+
+\item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
 }
 \description{
-Fetches the peer evaluation data from the google spreadsheet.
+Fetches the peer evaluation data from the google spreadsheet. For standard installations of the peer evaluation app, all defaults should be sufficient with only parameter \code{data_gs_title} requiring a specification.
 }

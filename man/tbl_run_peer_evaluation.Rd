@@ -4,19 +4,22 @@
 \alias{tbl_run_peer_evaluation}
 \title{Start the peer evaluation user interface}
 \usage{
-tbl_run_peer_evaluation(roster, data_gs_title, gs_token,
-  app_title = "Peer Evaluation", points_per_teammate, ..., launch = FALSE)
+tbl_run_peer_evaluation(data_gs_title, roster, gs_token,
+  app_title = "Peer Evaluation", points_per_teammate,
+  auto_login_access_code = NULL, ..., launch = FALSE)
 }
 \arguments{
-\item{roster}{data frame with the student roster}
-
 \item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
 
-\item{gs_token}{a google spreadsheet oauth 2.0 authentication token (see \link[httr]{Token-class}). If none is provided (\code{g_token = NULL}, the default), will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
+\item{roster}{data frame with the student roster}
+
+\item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
 
 \item{app_title}{the title of the Peer Evaluation App, e.g. "Class name - Peer Evaluation #1"}
 
 \item{points_per_teammate}{points per teammate}
+
+\item{auto_login_access_code}{set an automatic login access code for testing and debugging purposes}
 
 \item{...}{passed on to the \code{\link[shiny]{runApp}} call (only if \code{launch = TRUE}), can include server-specific parameters such as host or port}
 

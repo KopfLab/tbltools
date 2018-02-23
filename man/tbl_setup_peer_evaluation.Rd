@@ -5,18 +5,19 @@
 \title{Set up a peer evaluation}
 \usage{
 tbl_setup_peer_evaluation(folder = "peer_evaluation",
-  roster_file = system.file(package = "tbltools", "extdata",
-  "roster_template.xlsx"), data_gs_title = "Peer Evaluation",
-  gs_token = NULL, overwrite = FALSE)
+  data_gs_title = "Peer Evaluation",
+  template_roster_file = system.file(package = "tbltools", "extdata",
+  "roster_template.xlsx"), gs_token = file.path(folder, "gs_token.rds"),
+  overwrite = FALSE)
 }
 \arguments{
 \item{folder}{target folder where to setup the peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.}
 
-\item{roster_file}{path to an excel (.xslx) file that contains the student roster information - will use the package template by default}
-
 \item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
 
-\item{gs_token}{a google spreadsheet oauth 2.0 authentication token (see \link[httr]{Token-class}). If none is provided (\code{g_token = NULL}, the default), will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
+\item{template_roster_file}{path to an excel (.xslx) file that contains the student roster information to use as template for the peer evaluation app (can be edited later)  - will use the package template by default}
+
+\item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
 
 \item{overwrite}{whether to overwrite the app in the target directory if it already exists}
 }
