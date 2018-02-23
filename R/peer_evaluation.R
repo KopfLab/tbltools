@@ -100,6 +100,15 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title 
     ")", .sep = "\n") %>% 
     cat(file = file.path(folder, "app.R"))
   
+  # copy evaluation template
+  glue("Info: creating {folder}/evaluation.Rmd evaluation file") %>% message()
+  
+  system.file(package = "tbltools", "extdata", "evaluation_template.Rmd") %>% 
+    read_lines() %>% 
+    collapse(sep = "\n") %>% 
+    str_interp(list(data_gs_title = data_gs_title)) %>% 
+    cat(file = file.path(folder, "evaluation.Rmd"))
+  
   glue("Info: set up of tbltools' Peer Evaluation app in directory '{folder}' is complete.\n",
        "Please modify the files in '{folder}' as appropriate before uploading to shiny server.") %>% 
     message()
@@ -210,7 +219,11 @@ tbl_fetch_peer_evaluation_data <- function(folder = ".", data_gs_title,
   
   # safety checks
   if (!is.data.frame(roster)) stop("roster data frame required", call. = FALSE)
-  students <- check_student_roster(roster) 
+  students <- check_student_roster(roster) %>% 
+    # get team member
+    group_by(team) %>% 
+    mutate(n_team_mates = n() - 1) %>% 
+    ungroup()
   try_to_authenticate(gs_token)
   gs <- try_to_fetch_google_spreadsheet(data_gs_title)
   
@@ -226,9 +239,8 @@ tbl_fetch_peer_evaluation_data <- function(folder = ".", data_gs_title,
   pe_data <- students %>% 
     group_by(access_code) %>% 
     do({
-      data <- read_peer_eval(local_path, .$access_code)
-      if (is.null(data)) data <- data_frame()
-      else data <- rename(data, evaluatee_access_code = access_code)
+      read_peer_eval(local_path, .$access_code) %>% 
+        rename(evaluatee_access_code = access_code)
     })
   
   # merge students in
@@ -281,10 +293,10 @@ tbl_summarize_peer_evaluation_data <- function(data, submitted_only = FALSE) {
   
   # summarize information
   data_sum <- data %>% 
-    filter(submitted | !submitted_only) %>% 
-    select(access_code, evaluations) %>%
+    select(access_code, submitted, evaluations) %>%
     unnest(evaluations) %>% 
-    select(-access_code) %>% 
+    filter(submitted | !submitted_only) %>% 
+    select(-access_code, -submitted) %>% 
     group_by(evaluatee_access_code) %>%
     summarize(
       n_evaluations = sum(!self_evaluation, na.rm = TRUE),
@@ -296,7 +308,8 @@ tbl_summarize_peer_evaluation_data <- function(data, submitted_only = FALSE) {
     ) 
   
   # return
-  left_join(roster, data_sum, by = "evaluatee_access_code") 
+  left_join(roster, data_sum, by = "evaluatee_access_code") %>% 
+    mutate(n_evaluations = ifelse(is.na(n_evaluations), 0, n_evaluations))
 }
 
 #' Export peer evaluation data
@@ -305,9 +318,10 @@ tbl_summarize_peer_evaluation_data <- function(data, submitted_only = FALSE) {
 #' 
 #' @inheritParams tbl_summarize_peer_evaluation_data
 #' @param filepath the excel file where to save the peer evaluation data summary
+#' @param ... parameters passed on to \code{\link{tbl_summarize_peer_evaluation_data}}
 #' @return returns the passed in data invisibly to permit use of this function inside pipelines
 #' @export
-tbl_export_peer_evaluation_data <- function(data, filepath = "pe_data_summary.xlsx") {
+tbl_export_peer_evaluation_data <- function(data, filepath = "pe_data_summary.xlsx", ...) {
   
   # safety
   if (missing(data) || !is.data.frame(data))
@@ -322,7 +336,7 @@ tbl_export_peer_evaluation_data <- function(data, filepath = "pe_data_summary.xl
   
   # data
   data_all <- data %>% unnest(evaluations)
-  data_sum <- data %>% tbl_summarize_peer_evaluation_data()
+  data_sum <- data %>% tbl_summarize_peer_evaluation_data(...)
   
   # work book
   wb <- createWorkbook()
@@ -456,7 +470,16 @@ read_peer_eval <- function(ss, access_code) {
   # check if tab exists
   if (!access_code %in% worksheets) {
     # does not exist
-    return(NULL)
+    return(
+      data_frame(
+        timestamp = now(),
+        submitted = logical(0),
+        access_code = character(0),
+        plus = character(0),
+        minus = character(0),
+        score = integer(0)
+      )
+    )
   } else if (is_gs) {
     # does exist and is a google spreadsheet
     data <- gs %>% 

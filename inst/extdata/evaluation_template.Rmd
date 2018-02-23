@@ -1,0 +1,38 @@
+---
+title: "${data_gs_title} Evaluation"
+date: "`r format(Sys.Date(), '%d %b %Y')`"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+    code_folding: show
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, warning=FALSE, message=FALSE}
+library(tbltools)
+```
+
+# Fetch evaluations
+
+```{r}
+pe_data <- tbl_fetch_peer_evaluation_data(data_gs_title = "${data_gs_title}")
+pe_data
+```
+
+# Summarize evaluations
+
+```{r}
+pe_data %>% tbl_summarize_peer_evaluation_data(submitted_only = FALSE)
+```
+
+# Export to Excel
+
+```{r}
+pe_data %>% tbl_export_peer_evaluation_data(submitted_only = FALSE)
+```
+
+
