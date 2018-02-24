@@ -1,0 +1,8 @@
+urls:
+  reference: http://tbltools.kopflab.org/reference
+  article: http://tbltools.kopflab.org/articles
+articles:
+  peer_evaluations: peer_evaluations.html
+  RAT_demo: RAT_demo.html
+  readiness_assessment_tests: readiness_assessment_tests.html
+

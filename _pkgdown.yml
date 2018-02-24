@@ -1,0 +1,27 @@
+title: Isoreader
+url: http://tbltools.kopflab.org
+template:
+  params:
+    bootswatch: simplex
+    
+home:
+  strip_header: true    
+
+navbar:
+  title: tbltools
+  type: default
+  left:
+  - text: "Home"
+    href: "index.html"
+  - text: "Peer Evaluations"
+    href: "articles/peer_evaluations.html"
+  - text: "Readiness Assessment Tests (RATs)"
+    menu:
+    - text: "Generating an iRAT/tRAT"
+      href: "articles/readiness_assessment_tests.html"
+    - text: "Demo iRAT/tRAT (HTML)"
+      href: "articles/RAT_demo.html"
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/kopflab/tbltools
+

@@ -32,8 +32,7 @@ Suggests:
     rmarkdown,
     covr
 Remotes: ropensci/ghql
-License: GPL (>= 3) | file LICENSE
+License: MIT
 Encoding: UTF-8
 LazyData: true
-VignetteBuilder: knitr
 RoxygenNote: 6.0.1
