@@ -2,7 +2,7 @@
 % Please edit documentation in R/peer_evaluation.R
 \name{tbl_setup_peer_evaluation}
 \alias{tbl_setup_peer_evaluation}
-\title{Set up a peer evaluation}
+\title{Set up a peer evaluation app}
 \usage{
 tbl_setup_peer_evaluation(folder = "peer_evaluation",
   data_gs_title = "Peer Evaluation",

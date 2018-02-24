@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate RAT choices — tbl_generate_RAT_choices • Isoreader</title>
+<title>Setup a demo RAT — tbl_setup_RAT_from_demo • Isoreader</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -27,9 +27,9 @@
 <script src="../pkgdown.js"></script>
   
   
-<meta property="og:title" content="Generate RAT choices — tbl_generate_RAT_choices" />
+<meta property="og:title" content="Setup a demo RAT — tbl_setup_RAT_from_demo" />
 
-<meta property="og:description" content="Generates the actual multiple choice questions in an RAT" />
+<meta property="og:description" content="Setup a demo RAT" />
 <meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
@@ -101,56 +101,20 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate RAT choices</h1>
+    <h1>Setup a demo RAT</h1>
     </div>
 
     
-    <p>Generates the actual multiple choice questions in an RAT</p>
+    <p>Setup a demo RAT</p>
     
 
-    <pre class="usage"><span class='fu'>tbl_generate_RAT_choices</span>(<span class='no'>rat</span>, <span class='kw'>iRAT_sel_per_q</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>iRAT_n_offset</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>answer_layout</span> <span class='kw'>=</span> <span class='st'>"vertical"</span>, <span class='kw'>answer_layout_column</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>answer_layout_funs</span> <span class='kw'>=</span> <span class='fu'>tbl_default_RAT_layouts</span>(), <span class='kw'>random_seed</span> <span class='kw'>=</span> <span class='fu'>random</span>())</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>rat</th>
-      <td><p>Readiness Assessment Test object</p></td>
-    </tr>
-    <tr>
-      <th>iRAT_sel_per_q</th>
-      <td><p>number of selections per question for the iRAT portion of this test</p></td>
-    </tr>
-    <tr>
-      <th>iRAT_n_offset</th>
-      <td><p>number that indicates by how much the iRAT should be offset from the question numbers (e.g. if tRAT starts at a higher IF-AT number but iRAT numbers should start low, this could be a negative offset).</p></td>
-    </tr>
-    <tr>
-      <th>answer_layout</th>
-      <td><p>how to arrange the answers, layouts supported by default are <code>"vertical"</code> and <code>"horizontal"</code> (recommended for image answers). The layout can be overwritten for individual questions by setting the <code>answer_layout_column</code> parameter. Custom answer layouts can be provided using the <code>answer_layout_funcs</code> parameter.</p></td>
-    </tr>
-    <tr>
-      <th>answer_layout_column</th>
-      <td><p>set this parameter to a column name in the questions data frame that has a different layout name for questions that are indended to deviate from the default layout (<code>answer_layout</code>). All layouts must be defined in the <code>answer_layout_funs</code> (<code>"vertical"</code> and <code>"horizontal"</code> by default).</p></td>
-    </tr>
-    <tr>
-      <th>random_seed</th>
-      <td><p>can overwrite with a fixed value (e.g. <code>random_seed=42</code>) to get a reproducible "random" order in <code>by="random"</code> or <code>by="semi-random"</code> mode.</p></td>
-    </tr>
-    <tr>
-      <th>answer_layout_funcs</th>
-      <td><p>Specify custom answer layouts by providing layout functions that differ from the default. See <code>tbl_default_RAT_layouts</code> for details on how these work.</p></td>
-    </tr>
-    </table>
-    
+    <pre class="usage"><span class='fu'>tbl_setup_RAT_from_demo</span>()</pre>
+        
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
                 </ul>
 
   </div>

@@ -2,7 +2,7 @@
 % Please edit documentation in R/peer_evaluation.R
 \name{tbl_run_peer_evaluation}
 \alias{tbl_run_peer_evaluation}
-\title{Start the peer evaluation user interface}
+\title{Run a peer evaluation app}
 \usage{
 tbl_run_peer_evaluation(data_gs_title, roster = read_excel("roster.xlsx"),
   gs_token = "gs_token.rds", app_title = "Peer Evaluation",

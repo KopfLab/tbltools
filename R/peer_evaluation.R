@@ -1,6 +1,6 @@
 # peer evaluation app functions =====
 
-#' Set up a peer evaluation
+#' Set up a peer evaluation app
 #' 
 #' This functions makes it easy to setup a peer evaluation app folder. It creates the app script \code{app.R} and copies the \code{roster_file} (an Excel spreadsheet) as well as the necessary google drive credentials for the \code{data_gsheet} to the same directory. It will ask for google drive credentials using \link[googlesheets]{gs_auth} and the entered credentials must have access to the \code{data_gsheet}. Both \code{app.R} and the \code{roster_file} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster_file} will be read only and all actual data will be stored in the google drive data file.
 #' 
@@ -126,7 +126,7 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title 
 }
 
 
-#' Start the peer evaluation user interface
+#' Run a peer evaluation app
 #'
 #' This function starts the peer evaluation user interface. Note that this function is typically NOT called directly but indirectly by setting up the peer evalution app using \link{tbl_setup_peer_evaluation}, adjusting the files in the peer evaluation app folder, and test running the app using \link{tbl_test_peer_evaluation}.
 #'

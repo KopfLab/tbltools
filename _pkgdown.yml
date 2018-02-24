@@ -29,22 +29,37 @@ navbar:
 
 
 reference:
-- title: Readiness Assessment Tests
-  desc: "Functions to generate readiness assessment tests (RATs)"
+- title: RAT Setup
+  desc: >
+    Functions to set up new readiness assessment tests (RAT). 
+    Each of these creates a template RMarkdown file that uses the RAT generation functions below to dynamically generate an iRAT/tRAT based on an Excel template with questions, answer options and answer keys.
+    Both the created RMarkdown and Excel template files can then be further customized to create the desired RAT.
   contents:
-  - tbl_arrange_RAT_questions
-  - tbl_create_RAT
-  - tbl_default_RAT_layouts
-  - tbl_generate_RAT_choices
+    - tbl_setup_RAT_from_scratch
+    - tbl_setup_RAT_from_demo
+- title: RAT Generation
+  desc: >
+    Functions to generate readiness assessment tests (RATs).
+    These provide the necessary functionality to create an RAT from its corresponding Excel file, arrange the questions in the desired fixed or random order, and generate the questions and answer choices based on the specified layout and answer key.
+  contents:
+  - tbl_create_RAT_from_data_frame
   - tbl_create_RAT_from_excel
-- title: Peer Evaluations
-  desc: "Functions to generate and evaluate peer evaluations."
+  - tbl_arrange_RAT_questions
+  - tbl_generate_RAT_choices
+  - tbl_default_RAT_layouts
+- title: Peer Evaluation Setup
+  desc: >
+    Functions to easily generate, test and deploy a shiny application for collecting team-based peer evaluations in a google spreadsheet.
   contents:
-  - tbl_summarize_peer_evaluation_data
-  - tbl_test_peer_evaluation
-  - tbl_run_peer_evaluation
   - tbl_setup_peer_evaluation
+  - tbl_test_peer_evaluation
   - tbl_deploy_peer_evaluation
-  - tbl_export_peer_evaluation_data
-  - tbl_fetch_peer_evaluation_data
+  - tbl_run_peer_evaluation
   - tbl_generate_access_codes
+- title: Peer Evaluation Data
+  desc: >
+    Functions to fetch and summarize peer evaluation data from a peer evaluation app.
+  contents:
+  - tbl_fetch_peer_evaluation_data
+  - tbl_summarize_peer_evaluation_data
+  - tbl_export_peer_evaluation_data

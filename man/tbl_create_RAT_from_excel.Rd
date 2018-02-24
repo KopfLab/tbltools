@@ -2,7 +2,7 @@
 % Please edit documentation in R/readiness_assessment_tests.R
 \name{tbl_create_RAT_from_excel}
 \alias{tbl_create_RAT_from_excel}
-\title{Create Readiness Assessment Test from Excel}
+\title{Create RAT from Excel}
 \usage{
 tbl_create_RAT_from_excel(filepath, questions_tab = "questions",
   key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE)

@@ -1,4 +1,22 @@
-#' Create Readiness Assessment Test from Excel
+# test setup =========
+
+#' Setup a new RAT from scratch
+#' 
+#' @export
+tbl_setup_RAT_from_scratch <- function() {
+  
+}
+
+#' Setup a demo RAT
+#'
+#' @export
+tbl_setup_RAT_from_demo <- function() {
+  
+}
+
+# test generation ==========
+
+#' Create RAT from Excel
 #' 
 #' Load RAT questions and answer key from Excel. Note that logical columns are evaluated to TRUE if they are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE.
 #' @param filepath the path to the excel file
@@ -43,14 +61,14 @@ tbl_create_RAT_from_excel <- function(filepath, questions_tab = "questions", key
   
   # return
   questions <- filter(questions, !is.na(question), !is.na(answer))
-  tbl_create_RAT(questions, answer_key)
+  tbl_create_RAT_from_data_frame(questions, answer_key)
 }
 
-#' Create RAT
+#' Create RAT from data frame
 #' @param questions data frame with questions (requires at minimum columns 'question', 'answer', and logical TRUE/FALSE 'correct')
 #' @param answer_key data frame with answer key (requires at mimimum columns 'number', 'option')
 #' @export
-tbl_create_RAT <- function(questions, answer_key) {
+tbl_create_RAT_from_data_frame <- function(questions, answer_key) {
   # check for required columns
   if (length(missing <- setdiff(c("question", "answer", "correct"), names(questions))) > 0) {
     sprintf("Missing required column(s) on %s tab: %s", questions_tab, str_c(missing, collapse = ", ")) %>% 
@@ -173,13 +191,13 @@ tbl_arrange_RAT_questions <- function(rat, by = "original", tRAT_n_offset = 0, f
   return(rat)
 }
 
-#' Generate RAT multiple choice questions
+#' Generate RAT choices
 #' 
-#' 
+#' Generates the actual multiple choice questions in an RAT
 #' 
 #' @inheritParams tbl_arrange_RAT_questions
 #' @param iRAT_sel_per_q number of selections per question for the iRAT portion of this test
-#' @param iRAT_n_offset number that indicates by how much the iRAT should be offset from the question numbers (e.g. if tRAT starts at a higher IF-AT but iRAT numbers should start low, this could be a negative offset).
+#' @param iRAT_n_offset number that indicates by how much the iRAT should be offset from the question numbers (e.g. if tRAT starts at a higher IF-AT number but iRAT numbers should start low, this could be a negative offset).
 #' @param answer_layout how to arrange the answers, layouts supported by default are \code{"vertical"} and \code{"horizontal"} (recommended for image answers). The layout can be overwritten for individual questions by setting the \code{answer_layout_column} parameter. Custom answer layouts can be provided using the \code{answer_layout_funcs} parameter. 
 #' @param answer_layout_column set this parameter to a column name in the questions data frame that has a different layout name for questions that are indended to deviate from the default layout (\code{answer_layout}). All layouts must be defined in the \code{answer_layout_funs} (\code{"vertical"} and \code{"horizontal"} by default).
 #' @param answer_layout_funcs Specify custom answer layouts by providing layout functions that differ from the default. See \code{tbl_default_RAT_layouts} for details on how these work.

@@ -115,52 +115,80 @@
       <tbody>
         <tr>
           <th colspan="2">
-            <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-            <p class="section-desc"></p>
+            <h2 id="section-rat-setup" class="hasAnchor"><a href="#section-rat-setup" class="anchor"></a>RAT Setup</h2>
+            <p class="section-desc"><p>Functions to set up new readiness assessment tests (RAT). Each of these creates a template RMarkdown file that uses the RAT generation functions below to dynamically generate an iRAT/tRAT based on an Excel template with questions, answer options and answer keys. Both the created RMarkdown and Excel template files can then be further customized to create the desired RAT.</p></p>
           </th>
         </tr>
         <tr>
           <!--  -->
           <td>
-            <p><code><a href="arrange_RAT_questions.html">arrange_RAT_questions</a></code> </p>
+            <p><code><a href="tbl_setup_RAT_from_scratch.html">tbl_setup_RAT_from_scratch</a></code> </p>
+          </td>
+          <td><p>Setup a new RAT from scratch</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="tbl_setup_RAT_from_demo.html">tbl_setup_RAT_from_demo</a></code> </p>
+          </td>
+          <td><p>Setup a demo RAT</p></td>
+        </tr>
+      </tbody><tbody>
+        <tr>
+          <th colspan="2">
+            <h2 id="section-rat-generation" class="hasAnchor"><a href="#section-rat-generation" class="anchor"></a>RAT Generation</h2>
+            <p class="section-desc"><p>Functions to generate readiness assessment tests (RATs). These provide the necessary functionality to create an RAT from its corresponding Excel file, arrange the questions in the desired fixed or random order, and generate the questions and answer choices based on the specified layout and answer key.</p></p>
+          </th>
+        </tr>
+        <tr>
+          <!--  -->
+          <td>
+            <p><code><a href="tbl_create_RAT_from_data_frame.html">tbl_create_RAT_from_data_frame</a></code> </p>
+          </td>
+          <td><p>Create RAT from data frame</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="tbl_create_RAT_from_excel.html">tbl_create_RAT_from_excel</a></code> </p>
+          </td>
+          <td><p>Create RAT from Excel</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="tbl_arrange_RAT_questions.html">tbl_arrange_RAT_questions</a></code> </p>
           </td>
           <td><p>Arrange RAT questions</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="create_RAT_from_excel.html">create_RAT_from_excel</a></code> </p>
+            <p><code><a href="tbl_generate_RAT_choices.html">tbl_generate_RAT_choices</a></code> </p>
           </td>
-          <td><p>Create Readiness Assessment Test from Excel</p></td>
+          <td><p>Generate RAT choices</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="create_RAT.html">create_RAT</a></code> </p>
-          </td>
-          <td><p>Create RAT</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="default_RAT_layouts.html">default_RAT_layouts</a></code> </p>
+            <p><code><a href="tbl_default_RAT_layouts.html">tbl_default_RAT_layouts</a></code> </p>
           </td>
           <td><p>Retrieve default RAT layouts</p></td>
+        </tr>
+      </tbody><tbody>
+        <tr>
+          <th colspan="2">
+            <h2 id="section-peer-evaluation-setup" class="hasAnchor"><a href="#section-peer-evaluation-setup" class="anchor"></a>Peer Evaluation Setup</h2>
+            <p class="section-desc"><p>Functions to easily generate, test and deploy a shiny application for collecting team-based peer evaluations in a google spreadsheet.</p></p>
+          </th>
+        </tr>
+        <tr>
+          <!--  -->
+          <td>
+            <p><code><a href="tbl_setup_peer_evaluation.html">tbl_setup_peer_evaluation</a></code> </p>
+          </td>
+          <td><p>Set up a peer evaluation app</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="generate_RAT_choices.html">generate_RAT_choices</a></code> </p>
+            <p><code><a href="tbl_test_peer_evaluation.html">tbl_test_peer_evaluation</a></code> </p>
           </td>
-          <td><p>Generate RAT multiple choice questions</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="peer_evaluation_server.html">peer_evaluation_server</a></code> </p>
-          </td>
-          <td><p>Peer Evaluation App Server</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="peer_evaluation_ui.html">peer_evaluation_ui</a></code> </p>
-          </td>
-          <td><p>Peer Evaluation App UI</p></td>
+          <td><p>Test run peer evaluation locally</p></td>
         </tr><tr>
           <!--  -->
           <td>
@@ -170,33 +198,29 @@
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="tbl_export_peer_evaluation_data.html">tbl_export_peer_evaluation_data</a></code> </p>
+            <p><code><a href="tbl_run_peer_evaluation.html">tbl_run_peer_evaluation</a></code> </p>
           </td>
-          <td><p>Export peer evaluation data</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="tbl_fetch_peer_evaluation_data.html">tbl_fetch_peer_evaluation_data</a></code> </p>
-          </td>
-          <td><p>Fetch the peer evaluation data</p></td>
+          <td><p>Run a peer evaluation app</p></td>
         </tr><tr>
           <!--  -->
           <td>
             <p><code><a href="tbl_generate_access_codes.html">tbl_generate_access_codes</a></code> </p>
           </td>
           <td><p>Generate random access codes</p></td>
-        </tr><tr>
+        </tr>
+      </tbody><tbody>
+        <tr>
+          <th colspan="2">
+            <h2 id="section-peer-evaluation-data" class="hasAnchor"><a href="#section-peer-evaluation-data" class="anchor"></a>Peer Evaluation Data</h2>
+            <p class="section-desc"><p>Functions to fetch and summarize peer evaluation data from a peer evaluation app.</p></p>
+          </th>
+        </tr>
+        <tr>
           <!--  -->
           <td>
-            <p><code><a href="tbl_run_peer_evaluation.html">tbl_run_peer_evaluation</a></code> </p>
+            <p><code><a href="tbl_fetch_peer_evaluation_data.html">tbl_fetch_peer_evaluation_data</a></code> </p>
           </td>
-          <td><p>Start the peer evaluation user interface</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="tbl_setup_peer_evaluation.html">tbl_setup_peer_evaluation</a></code> </p>
-          </td>
-          <td><p>Set up a peer evaluation</p></td>
+          <td><p>Fetch the peer evaluation data</p></td>
         </tr><tr>
           <!--  -->
           <td>
@@ -206,9 +230,9 @@
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="tbl_test_peer_evaluation.html">tbl_test_peer_evaluation</a></code> </p>
+            <p><code><a href="tbl_export_peer_evaluation_data.html">tbl_export_peer_evaluation_data</a></code> </p>
           </td>
-          <td><p>Test run peer evaluation locally</p></td>
+          <td><p>Export peer evaluation data</p></td>
         </tr>
       </tbody>
       </table>
@@ -218,7 +242,10 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#section-rat-setup">RAT Setup</a></li>
+      <li><a href="#section-rat-generation">RAT Generation</a></li>
+      <li><a href="#section-peer-evaluation-setup">Peer Evaluation Setup</a></li>
+      <li><a href="#section-peer-evaluation-data">Peer Evaluation Data</a></li>
     </ul>
   </div>
 </div>

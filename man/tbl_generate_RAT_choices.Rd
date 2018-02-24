@@ -2,7 +2,7 @@
 % Please edit documentation in R/readiness_assessment_tests.R
 \name{tbl_generate_RAT_choices}
 \alias{tbl_generate_RAT_choices}
-\title{Generate RAT multiple choice questions}
+\title{Generate RAT choices}
 \usage{
 tbl_generate_RAT_choices(rat, iRAT_sel_per_q = 1, iRAT_n_offset = 0,
   answer_layout = "vertical", answer_layout_column = NULL,
@@ -13,7 +13,7 @@ tbl_generate_RAT_choices(rat, iRAT_sel_per_q = 1, iRAT_n_offset = 0,
 
 \item{iRAT_sel_per_q}{number of selections per question for the iRAT portion of this test}
 
-\item{iRAT_n_offset}{number that indicates by how much the iRAT should be offset from the question numbers (e.g. if tRAT starts at a higher IF-AT but iRAT numbers should start low, this could be a negative offset).}
+\item{iRAT_n_offset}{number that indicates by how much the iRAT should be offset from the question numbers (e.g. if tRAT starts at a higher IF-AT number but iRAT numbers should start low, this could be a negative offset).}
 
 \item{answer_layout}{how to arrange the answers, layouts supported by default are \code{"vertical"} and \code{"horizontal"} (recommended for image answers). The layout can be overwritten for individual questions by setting the \code{answer_layout_column} parameter. Custom answer layouts can be provided using the \code{answer_layout_funcs} parameter.}
 
@@ -24,5 +24,5 @@ tbl_generate_RAT_choices(rat, iRAT_sel_per_q = 1, iRAT_n_offset = 0,
 \item{answer_layout_funcs}{Specify custom answer layouts by providing layout functions that differ from the default. See \code{tbl_default_RAT_layouts} for details on how these work.}
 }
 \description{
-Generate RAT multiple choice questions
+Generates the actual multiple choice questions in an RAT
 }
