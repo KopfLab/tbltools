@@ -4,9 +4,17 @@
 \alias{tbl_run_peer_evaluation}
 \title{Start the peer evaluation user interface}
 \usage{
-tbl_run_peer_evaluation(data_gs_title, roster, gs_token,
-  app_title = "Peer Evaluation", points_per_teammate,
-  auto_login_access_code = NULL, ..., launch = FALSE)
+tbl_run_peer_evaluation(data_gs_title, roster = read_excel("roster.xlsx"),
+  gs_token = "gs_token.rds", app_title = "Peer Evaluation",
+  welcome_md_file = "app_welcome.md",
+  self_eval_plus_md_file = "app_self_evaluation_plus.md",
+  self_eval_minus_md_file = "app_self_evaluation_minus.md",
+  teammate_eval_plus_md_file = "app_teammate_evaluation_plus.md",
+  teammate_eval_minus_md_file = "app_teammate_evaluation_minus.md",
+  quant_scores_md_file = "app_quantitative_scores.md",
+  points_per_teammate = 10, max_points = 15, min_points = 0,
+  min_point_difference = 2, auto_login_access_code = NULL, ...,
+  launch = FALSE)
 }
 \arguments{
 \item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
@@ -17,7 +25,25 @@ tbl_run_peer_evaluation(data_gs_title, roster, gs_token,
 
 \item{app_title}{the title of the Peer Evaluation App, e.g. "Class name - Peer Evaluation #1"}
 
+\item{welcome_md_file}{path to a markdown (.md) file for the login welcome message}
+
+\item{self_eval_plus_md_file}{markdown file for the "plus" self evaluation message}
+
+\item{self_eval_minus_md_file}{markdown file for the "minus" self evaluation message}
+
+\item{teammate_eval_plus_md_file}{markdown file for the "plus" teammate evaluation message}
+
+\item{teammate_eval_minus_md_file}{markdown file for the "minus" teammate evaluation message}
+
+\item{quant_scores_md_file}{markdown file for the quantiative scores message}
+
 \item{points_per_teammate}{points per teammate}
+
+\item{max_points}{the maximum number of points allowed per team member}
+
+\item{min_points}{the smallest number of points allowed per team member}
+
+\item{min_point_difference}{the minimum point difference required for the scores (set to 0 to allow all scores to be identical)}
 
 \item{auto_login_access_code}{set an automatic login access code for testing and debugging purposes}
 
@@ -26,7 +52,7 @@ tbl_run_peer_evaluation(data_gs_title, roster, gs_token,
 \item{launch}{whether to launch the app (TRUE) or return a shiny app object (FALSE) that then can be launched via \code{\link[shiny]{runApp}}}
 }
 \description{
-This function starts the peer evaluation user interface. This function is typically not called directly but indirectly by setting up the peer evalution app using \link{tbl_setup_peer_evaluation}, adjusting the files in the peer evaluation app folder, and test running the app using \link{tbl_test_peer_evaluation}.
+This function starts the peer evaluation user interface. Note that this function is typically NOT called directly but indirectly by setting up the peer evalution app using \link{tbl_setup_peer_evaluation}, adjusting the files in the peer evaluation app folder, and test running the app using \link{tbl_test_peer_evaluation}.
 }
 \seealso{
 Other peer evaluation functions: \code{\link{tbl_setup_peer_evaluation}},
