@@ -7,7 +7,7 @@
 #' @param filter_include if set, only keeps questions that have the 'include' column set
 #' @param fill_down_questions whether to fill down the questions column (i.e. if question an their parameters are only written in first row)
 #' @export
-create_RAT_from_excel <- function(filepath, questions_tab = "questions", key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE) {
+tbl_tbl_create_RAT_from_excel <- function(filepath, questions_tab = "questions", key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE) {
   questions <- read_excel(filepath, sheet = questions_tab) 
   answer_key <- read_excel(filepath, sheet = key_tab)
   
@@ -43,14 +43,14 @@ create_RAT_from_excel <- function(filepath, questions_tab = "questions", key_tab
   
   # return
   questions <- filter(questions, !is.na(question), !is.na(answer))
-  create_RAT(questions, answer_key)
+  tbl_create_RAT(questions, answer_key)
 }
 
 #' Create RAT
 #' @param questions data frame with questions (requires at minimum columns 'question', 'answer', and logical TRUE/FALSE 'correct')
 #' @param answer_key data frame with answer key (requires at mimimum columns 'number', 'option')
 #' @export
-create_RAT <- function(questions, answer_key) {
+tbl_create_RAT <- function(questions, answer_key) {
   # check for required columns
   if (length(missing <- setdiff(c("question", "answer", "correct"), names(questions))) > 0) {
     sprintf("Missing required column(s) on %s tab: %s", questions_tab, str_c(missing, collapse = ", ")) %>% 
@@ -92,9 +92,9 @@ create_RAT <- function(questions, answer_key) {
 #' @param fixed_number_column name of a column in the RAT questions data frame that indicates the fixed question number. Only relevant if \code{by="semi-random"} or \code{by="fixed"}
 #' @param group_by_column name of a column in the RAT questions data frame that indicates which questions to group together (groups will be arranged alphabetically, those with undefined group come last). Only relevant if \code{by="random"} or \code{by="semi-random"}. Throws an error if grouping and any fixed number questions are incompatible (e.g. a question has fixed number 5 but is part of the first group of only 3 questions).
 #' @param random_seed can overwrite with a fixed value (e.g. \code{random_seed=42}) to get a reproducible "random" order in \code{by="random"} or \code{by="semi-random"} mode.
-#' @return returns the RAT with the questions having a new 'number' column
+#' @return returns the RAT object with the $questions having a new 'number' column that specifies the location in the test
 #' @export
-arrange_RAT_questions <- function(rat, by = "original", tRAT_n_offset = 0, fixed_number_column = NULL, group_by_column = NULL, random_seed = random()) {
+tbl_arrange_RAT_questions <- function(rat, by = "original", tRAT_n_offset = 0, fixed_number_column = NULL, group_by_column = NULL, random_seed = random()) {
   if (!is(rat, "RAT")) 
     stop("can only arrange Readiness Assessment Test classes, found: ", class(rat)[1], call. = FALSE)
   
@@ -174,14 +174,17 @@ arrange_RAT_questions <- function(rat, by = "original", tRAT_n_offset = 0, fixed
 }
 
 #' Generate RAT multiple choice questions
-#' @inheritParams arrange_RAT_questions
+#' 
+#' 
+#' 
+#' @inheritParams tbl_arrange_RAT_questions
 #' @param iRAT_sel_per_q number of selections per question for the iRAT portion of this test
 #' @param iRAT_n_offset number that indicates by how much the iRAT should be offset from the question numbers (e.g. if tRAT starts at a higher IF-AT but iRAT numbers should start low, this could be a negative offset).
 #' @param answer_layout how to arrange the answers, layouts supported by default are \code{"vertical"} and \code{"horizontal"} (recommended for image answers). The layout can be overwritten for individual questions by setting the \code{answer_layout_column} parameter. Custom answer layouts can be provided using the \code{answer_layout_funcs} parameter. 
 #' @param answer_layout_column set this parameter to a column name in the questions data frame that has a different layout name for questions that are indended to deviate from the default layout (\code{answer_layout}). All layouts must be defined in the \code{answer_layout_funs} (\code{"vertical"} and \code{"horizontal"} by default).
-#' @param answer_layout_funcs Specific custom answer layouts by providing layout functions that differ from the default. See \code{default_RAT_layouts} for details on how these work.
+#' @param answer_layout_funcs Specify custom answer layouts by providing layout functions that differ from the default. See \code{tbl_default_RAT_layouts} for details on how these work.
 #' @export
-generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, iRAT_n_offset = 0, answer_layout = "vertical", answer_layout_column = NULL, answer_layout_funs = default_RAT_layouts(), random_seed = random()) {
+tbl_generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, iRAT_n_offset = 0, answer_layout = "vertical", answer_layout_column = NULL, answer_layout_funs = tbl_default_RAT_layouts(), random_seed = random()) {
   if (!is(rat, "RAT")) 
     stop("can only arrange Readiness Assessment Test classes, found: ", class(rat)[1], call. = FALSE)
   
@@ -198,7 +201,7 @@ generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, iRAT_n_offset = 0, ans
   
   # default sort (if none used before)
   if (!"number" %in% names(rat$questions)) {
-    rat <- arrange_RAT_questions(rat, by = "original")
+    rat <- tbl_arrange_RAT_questions(rat, by = "original")
   }
   
   # join in answer key
@@ -281,8 +284,11 @@ generate_RAT_choices <- function(rat, iRAT_sel_per_q = 1, iRAT_n_offset = 0, ans
 # utilities functions -----
 
 #' Retrieve default RAT layouts
+#' 
+#' This function provides the default layout options for TBL questions (horizontal and vertical arrangment) but can easily be expanded with custom layouts. To introduce additional/alternative question layouts, simply overwrite the \code{answer_layout_funs} parameter in \link{tbl_generate_RAT_choices} with a list of functions that have the layout names as keys and functions that take two parameters (a vector of \code{answer_option} letters A, B, C, D, etc. and an \code{answer} vector of the same length with the actual answers) as values. The functions must return valid markdown. 
+#' 
 #' @export
-default_RAT_layouts <- function() {
+tbl_default_RAT_layouts <- function() {
   list(
     horizontal = function(answer_option, answer) { 
       str_c(str_c(answer_option, ": ", answer), collapse = ", ")
@@ -297,7 +303,7 @@ default_RAT_layouts <- function() {
 print.RAT <- function(x, ...) {
   # default sort
   if (!"number" %in% names(x$questions)) {
-    x <- arrange_RAT_questions(x, by = "original")
+    x <- tbl_arrange_RAT_questions(x, by = "original")
   }
   
   # get number in there
