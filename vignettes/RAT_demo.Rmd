@@ -50,7 +50,7 @@ Choose the **best** answer among the alternatives. Remember that RATs are **clos
 
 ```{r, include = FALSE}
 RAT <-
-  tbl_tbl_create_RAT_from_excel(
+  tbl_create_RAT_from_excel(
     "RAT_demo.xlsx",
     filter_include = TRUE,
     fill_down_questions = TRUE

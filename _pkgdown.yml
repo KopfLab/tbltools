@@ -12,18 +12,39 @@ navbar:
   type: default
   left:
   - text: "Home"
-    href: "index.html"
+    href: index.html
   - text: "Peer Evaluations"
-    href: "articles/peer_evaluations.html"
+    href: articles/peer_evaluations.html
   - text: "Readiness Assessment Tests (RATs)"
     menu:
     - text: "Generating an iRAT/tRAT"
-      href: "articles/readiness_assessment_tests.html"
+      href: articles/readiness_assessment_tests.html
     - text: "Demo iRAT/tRAT (HTML)"
-      href: "articles/RAT_demo.html"
+      href: articles/RAT_demo.html
   - text: "Reference"
-    href: "reference/index.html"
+    href: reference/index.html
   right:
   - icon: fa-github fa-lg
     href: https://github.com/kopflab/tbltools
 
+
+reference:
+- title: Readiness Assessment Tests
+  desc: "Functions to generate readiness assessment tests (RATs)"
+  contents:
+  - tbl_arrange_RAT_questions
+  - tbl_create_RAT
+  - tbl_default_RAT_layouts
+  - tbl_generate_RAT_choices
+  - tbl_create_RAT_from_excel
+- title: Peer Evaluations
+  desc: "Functions to generate and evaluate peer evaluations."
+  contents:
+  - tbl_summarize_peer_evaluation_data
+  - tbl_test_peer_evaluation
+  - tbl_run_peer_evaluation
+  - tbl_setup_peer_evaluation
+  - tbl_deploy_peer_evaluation
+  - tbl_export_peer_evaluation_data
+  - tbl_fetch_peer_evaluation_data
+  - tbl_generate_access_codes

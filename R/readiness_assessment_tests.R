@@ -7,7 +7,7 @@
 #' @param filter_include if set, only keeps questions that have the 'include' column set
 #' @param fill_down_questions whether to fill down the questions column (i.e. if question an their parameters are only written in first row)
 #' @export
-tbl_tbl_create_RAT_from_excel <- function(filepath, questions_tab = "questions", key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE) {
+tbl_create_RAT_from_excel <- function(filepath, questions_tab = "questions", key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE) {
   questions <- read_excel(filepath, sheet = questions_tab) 
   answer_key <- read_excel(filepath, sheet = key_tab)
   
