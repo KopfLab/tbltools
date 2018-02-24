@@ -71,16 +71,26 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title 
   gs <- try_to_fetch_google_spreadsheet(data_gs_title)
   
   # generate function call
-  glue("Info: creating {folder}/app.R application file") %>% message()
+  glue("Info: creating {folder}/app.R application file and application content") %>% message()
+  
+  # md template files
+  system.file(package = "tbltools", "extdata", "app_template_files") %>% 
+    list.files(pattern = "*\\.md$", full.names = TRUE, include.dirs = FALSE, recursive = TRUE) %>% 
+    file.copy(to = folder, overwrite = TRUE)
+  
+  if (!dir.exists(file.path(folder, "www"))) dir.create(file.path(folder, "www"))
+  system.file(package = "tbltools", "extdata", "app_template_files", "www", "app.css") %>% 
+    file.copy(to = file.path(folder, "www"), overwrite = TRUE)
   
   # generate function call parameters ======
   parameters <- 
     list(
       data_gs_title = data_gs_title,
-      roster = quo(readxl::read_excel("roster.xlsx")),
-      gs_token = "gs_token.rds",
       app_title = "Peer Evaluation",
-      points_per_teammate = 10
+      points_per_teammate = 10,
+      min_points = 0,
+      max_points = 15,
+      min_point_difference = 2
     ) %>% {
       map2_chr(names(.), ., function(var, val) {
         val <- 
@@ -118,7 +128,7 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title 
 
 #' Start the peer evaluation user interface
 #'
-#' This function starts the peer evaluation user interface. This function is typically not called directly but indirectly by setting up the peer evalution app using \link{tbl_setup_peer_evaluation}, adjusting the files in the peer evaluation app folder, and test running the app using \link{tbl_test_peer_evaluation}.
+#' This function starts the peer evaluation user interface. Note that this function is typically NOT called directly but indirectly by setting up the peer evalution app using \link{tbl_setup_peer_evaluation}, adjusting the files in the peer evaluation app folder, and test running the app using \link{tbl_test_peer_evaluation}.
 #'
 #' @inheritParams peer_evaluation_server
 #' @inheritParams peer_evaluation_ui
@@ -126,19 +136,35 @@ tbl_setup_peer_evaluation <- function(folder = "peer_evaluation", data_gs_title 
 #' @param launch whether to launch the app (TRUE) or return a shiny app object (FALSE) that then can be launched via \code{\link[shiny]{runApp}}
 #' @family peer evaluation functions
 #' @export
-tbl_run_peer_evaluation <- function(data_gs_title, roster, gs_token, app_title = "Peer Evaluation", 
-                                    points_per_teammate, auto_login_access_code = NULL, ..., launch = FALSE) {
+tbl_run_peer_evaluation <- function(data_gs_title, 
+                                    roster = read_excel("roster.xlsx"), 
+                                    gs_token = "gs_token.rds", 
+                                    app_title = "Peer Evaluation", 
+                                    welcome_md_file = "app_welcome.md", 
+                                    self_eval_plus_md_file = "app_self_evaluation_plus.md", 
+                                    self_eval_minus_md_file = "app_self_evaluation_minus.md", 
+                                    teammate_eval_plus_md_file = "app_teammate_evaluation_plus.md", 
+                                    teammate_eval_minus_md_file = "app_teammate_evaluation_minus.md", 
+                                    quant_scores_md_file = "app_quantitative_scores.md",
+                                    points_per_teammate = 10, max_points = 15, min_points = 0, min_point_difference = 2,
+                                    auto_login_access_code = NULL, ..., 
+                                    launch = FALSE) {
   
   # safety checks
-  if (missing(roster)) stop("roster data frame required", call. = FALSE)
- 
+  if (!is.data.frame(roster)) stop("roster data frame required", call. = FALSE)
+  content_files <- c(welcome_md_file, self_eval_plus_md_file, self_eval_minus_md_file, teammate_eval_plus_md_file, teammate_eval_minus_md_file, quant_scores_md_file)
+  if (any(missing <- !file.exists(content_files)))
+    glue("content files do not exist: '{collapse(content_files[missing], sep = \"', '\")}'") %>% 
+    stop(call. = FALSE)
+  
   # start-up message
   glue(
     "\n***************************************************************",
     "\nInfo: launching Peer Evaluation GUI (version {packageVersion('tbltools')})...",
     "\nInfo: app title: '{app_title}'",
     "\nInfo: roster: {nrow(roster)} students in {length(unique(roster$team))} teams",
-    "\nInfo: points per teammate: {points_per_teammate}"
+    "\nInfo: points per teammate: {points_per_teammate} ", 
+    "(min: {min_points}, max: {max_points}, min diff: {min_point_difference})"
   ) %>% message()
 
   # generate app
@@ -148,7 +174,16 @@ tbl_run_peer_evaluation <- function(data_gs_title, roster, gs_token, app_title =
       roster = roster,
       data_gs_title = data_gs_title,
       gs_token = gs_token,
+      welcome_md_file = welcome_md_file, 
+      self_eval_plus_md_file = self_eval_plus_md_file, 
+      self_eval_minus_md_file = self_eval_minus_md_file, 
+      teammate_eval_plus_md_file = teammate_eval_plus_md_file, 
+      teammate_eval_minus_md_file = teammate_eval_minus_md_file, 
+      quant_scores_md_file = quant_scores_md_file,
       points_per_teammate = points_per_teammate,
+      max_points = max_points,
+      min_points = min_points,
+      min_point_difference = min_point_difference,
       auto_login_access_code = auto_login_access_code
     )
   )
@@ -459,7 +494,7 @@ read_peer_eval <- function(ss, access_code) {
   
   if (is_gs) {
     # refresh sheet
-    gs <- gs_gs(gs)
+    gs <- gs_gs(ss)
     worksheets <- gs_ws_ls(gs)
   } else {
     # make sure file exists

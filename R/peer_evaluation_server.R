@@ -5,9 +5,22 @@
 #' @param roster data frame with the student roster
 #' @param data_gs_title name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.
 #' @param gs_token path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive. 
+#' @param welcome_md_file path to a markdown (.md) file for the login welcome message
+#' @param self_eval_plus_md_file markdown file for the "plus" self evaluation message
+#' @param self_eval_minus_md_file markdown file for the "minus" self evaluation message
+#' @param teammate_eval_plus_md_file markdown file for the "plus" teammate evaluation message
+#' @param teammate_eval_minus_md_file markdown file for the "minus" teammate evaluation message
+#' @param quant_scores_md_file markdown file for the quantiative scores message
 #' @param points_per_teammate points per teammate
+#' @param max_points the maximum number of points allowed per team member
+#' @param min_points the smallest number of points allowed per team member
+#' @param min_point_difference the minimum point difference required for the scores (set to 0 to allow all scores to be identical)
 #' @param auto_login_access_code set an automatic login access code for testing and debugging purposes
-peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_teammate = 10, auto_login_access_code = NULL) {
+peer_evaluation_server <- function(roster, data_gs_title, gs_token, 
+                                   welcome_md_file, self_eval_plus_md_file, self_eval_minus_md_file, 
+                                   teammate_eval_plus_md_file, teammate_eval_minus_md_file, quant_scores_md_file,
+                                   points_per_teammate = 10, max_points = 15, min_points = 0, min_point_difference = 2,
+                                   auto_login_access_code = NULL) {
   
   # access code prefix (must stay the same as in tbl_fetch_peer_evaluation_data!)
   access_code_prefix <- "id_"
@@ -44,6 +57,8 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       fields <- c("plus", "minus", "score")
       for (team_mate in names(values$data)) {
         for (field in fields) {
+          # never update score when it's the self-evaluation
+          if (field == "score" && team_mate == values$student$access_code) next
           value <- input[[str_c(field, "_", team_mate)]]
           if (!is.null(value))
             values$data[[team_mate]][[field]] <- value
@@ -61,7 +76,9 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     }
     
     calculate_scores <- reactive({
-      get_data_as_df()$score %>% na.omit()
+      data <- get_data_as_df()
+      if (nrow(data) == 0) return(c(0))
+      else data$score %>% na.omit()
     })
     
     calculate_diff <- reactive({
@@ -87,14 +104,9 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         pe_data <- read_peer_eval(gs, entered_access_code)
 
         # figure out what to do with the data
-        if (is.null(pe_data) || nrow(pe_data) == 0) {
+        if (nrow(pe_data) == 0) {
           # completely new data set (i.e. no tab yet)
           message("Into: first time session - creating new data frame")
-          pe_data <- students %>% 
-            filter(team == values$student$team) %>% 
-            arrange(access_code) %>% 
-            select(access_code) %>% 
-            mutate(plus = "", minus = "", score = NA_integer_)
           load_access_code <- TRUE
         } else if (pe_data$submitted[1]) {
           # already submitted
@@ -103,14 +115,27 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         } else {
           # resuming
           message("Info: resuming previous session")
-          pe_data <- select(pe_data, access_code, plus, minus, score)
           load_access_code <- TRUE
         }
+    
       }
       
       # load access code
       if (load_access_code) {
         message("Info: loading GUI for access code: ", entered_access_code)
+        
+        # merge in student info in case any are missing from the data
+        pe_data <- select(pe_data, access_code, plus, minus, score)
+        pe_data <- students %>% 
+          filter(team == values$student$team) %>% 
+          arrange(access_code) %>% 
+          select(access_code) %>% 
+          left_join(pe_data, by = "access_code") %>% 
+          mutate(
+            plus = ifelse(is.na(plus), "", plus), 
+            minus = ifelse(is.na(minus), "", minus)
+          )
+        
         values$access_code <- entered_access_code 
         values$data <- list()
         for (i in 1:nrow(pe_data)) {
@@ -144,8 +169,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         showModal(modalDialog(
           h2(str_c("Welcome ", values$student$first)),
           h4(str_c("Team: ", values$student$team)),
-          p("Please reflect on your own efforts and provide qualitative and quantitative feedback on your teammates' contributions to your team's performance in the class. The quantitative feedback will be used as part of the overall course grade. For the qualitative feedback, focus on specific behaviors and their impacts on team performance. Write about something you or your teammate does well and at least one area for improvement for their future teamwork."),
-          p("You can save your answers at any point by clicking the ", strong("Save"), " button and resume the peer evaluation at a later point simply by returning to this page and entering your access code again. To submitted your peer evaluation, please click the ", strong("submitted"), " button. Once you submitted, you can no longer change your answers."),
+          includeMarkdown(welcome_md_file),
           footer = modalButton("Ok"),
           easyClose = TRUE, fade = FALSE
         ))
@@ -156,7 +180,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     # evaluation panels ===
     output$main <- renderUI({
       values$access_code
-      if (is.null(values$access_code)) return(NULL)
+      if (is.null(values$access_code))  return(NULL)
       
       isolate({
         req(values$student)
@@ -186,12 +210,12 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       tabPanel(
         "Self evaluation",
         column(6, 
-               h5("What have you done well to positively impact your team's performance?"),
+               includeMarkdown(self_eval_plus_md_file),
                textAreaInput(
                  str_c("plus_", team_mate_access_code), width = "100%", height = "200px", resize = "both",
                  value = get_student_data(team_mate_access_code, "plus"), label = NULL)),
         column(6, 
-               h5("What could you do differently to increase your contribution to your team?"),
+               includeMarkdown(self_eval_minus_md_file),
                textAreaInput(
                  str_c("minus_", team_mate_access_code), width = "100%", height = "200px", resize = "both",
                  value = get_student_data(team_mate_access_code, "minus"), label = NULL))
@@ -202,14 +226,12 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       tabPanel(
         team_mate_name,
         column(6, 
-               h5(str_c("What did ", str_extract(team_mate_name, "^(\\w+)"), 
-                        " do well to positively impact your team's performance?")),
+               includeMarkdown(teammate_eval_plus_md_file),
                textAreaInput(
                  str_c("plus_", team_mate_access_code), width = "100%", height = "200px", resize = "vertical",
                  value = get_student_data(team_mate_access_code, "plus"), label = NULL)),
         column(6, 
-               h5(str_c("What could ", str_extract(team_mate_name, "^(\\w+)"), 
-                        " do differently to increase his/her/their contribution to your team?")),
+               includeMarkdown(teammate_eval_minus_md_file),
                textAreaInput(
                  str_c("minus_", team_mate_access_code), width = "100%", height = "200px", resize = "vertical",
                  value = get_student_data(team_mate_access_code, "minus"), label = NULL))
@@ -224,40 +246,29 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
                 column(9, numericInput(
                   str_c("score_", team_mate_access_code), NULL, 
                   value = get_student_data(team_mate_access_code, "score", default = points_per_teammate), 
-                  min=0, max=15, step=1, width = "80px")))
+                  min=min_points, max=max_points, step=1, width = "80px")))
       }
       
       tabPanel(
         "Quantitative Scores",
         br(),
-        p("Please assign scores that reflect how you really feel about the extent to which the other members of your team contributed to your learning and/or your team’s performance. This is an opportunity to reward the members of your team who worked hard on your behalf. (Note: If you give everyone pretty much the same score you will be hurting those who did the most and helping those who did the least)."),
-        
-        h4("Some things to consider:"),
-        
-        tags$ul(
-          tags$li("Preparation – Were they prepared when they came to class? "),
-          tags$li("Contribution – Did they contribute productively to team discussion and work?"),
-          tags$li("Respect for others’ ideas – Did they encourage others to contribute their ideas? "),
-          tags$li("Flexibility – Were they flexible when disagreements occurred?")
-        ),
-        
-        h4("Instructions:"),
-        p("In the space below please rate each of the other members of your team. Each member's peer evaluation score will be the average of the points they receive from the other members of the team. To complete the evaluation you must:"),
+        includeMarkdown(quant_scores_md_file),
         
         tags$ol(
-          tags$li(str_c(
-            "Assign an average of ten points to the other members of your team. Thus, you will assign a total of ", 
-            values$total_score, " points.")),
-          tags$li("Assign points from 0 to 15 (inclusive), whole numbers only."),
-          tags$li("Differentiate some in your ratings. Your score range (max-min) must be at least 2. For example, you must give at least one score of 11 or higher and one score of 9 or lower.")
+          tags$li(
+            glue("Assign an average of {points_per_teammate} points to the other members of your team. Thus, you will assign a total of {values$total_score} points.")),
+          tags$li(
+            glue("Assign points from {min_points} to {max_points} (inclusive), whole numbers only.")),
+          if (min_point_difference > 0)
+            tags$li(
+              glue("Differentiate some in your ratings. Your score range (max-min) must be at least {min_point_difference}. For example, you must give at least one score of {points_per_teammate + min_point_difference/2} or higher and one score of {points_per_teammate - min_point_difference/2} or lower."))
         ),
         
-        h4("Scores:"),
         do.call(tagList, map2(names(team_mates), team_mates, team_mate_tags)),
         column(3, h5("Total:")),
         column(9, h5(textOutput("total_score"))),
-        column(3, h5("Difference:")),
-        column(9, h5(textOutput("score_diff")))
+        if (min_point_difference > 0) column(3, h5("Difference:")),
+        if (min_point_difference > 0) column(9, h5(textOutput("score_diff")))
       )
     }
     
@@ -271,8 +282,8 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     })
     output$score_diff <- renderText({
       diffs <- calculate_diff()
-      if (diffs < 2)
-        str_c(diffs, " (must be at least 2)")
+      if (diffs < min_point_difference)
+        str_c(diffs, " (must be at least ", min_point_difference, ")")
       else
         diffs
     })
@@ -313,8 +324,8 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
       }
       if (sum(calculate_scores()) != values$total_score)
         errors <- c(errors, str_c("quantitative scores must add up to ", values$total_score))
-      if (calculate_diff() < 2)
-        errors <- c(errors, str_c("quantitative scores must have a minimum difference of 2"))
+      if (calculate_diff() < min_point_difference)
+        errors <- c(errors, str_c("quantitative scores must have a minimum difference of ", min_point_difference))
       
       if (length(errors) > 0) {
         # show errors
@@ -328,7 +339,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
         # ask if they really want to submitted 
         showModal(modalDialog(
           h2("submitted"),
-          p("Are you sure you want to submitted? You cannot go back."),
+          p("Are you sure you want to submit? You cannot go back."),
           footer = tagList(actionButton("confirm", "Yes"), modalButton("Not yet")),
           easyClose = TRUE, fade = FALSE
         ))
@@ -355,6 +366,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token, points_per_t
     logout_user <- function() {
       message("Info: logging out ", values$student$full_name)
       values$access_code <- NULL
+      values$data <- list()
       updateTextInput(session, "access_code", value = "")
       hide("submit-panel")
       show("access-panel")

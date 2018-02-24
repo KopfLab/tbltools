@@ -27,7 +27,8 @@ test_that("test that peer evaluation functions throw the proper errors", {
   expect_true(file.exists(file.path(tmp, "roster.xlsx")))
   
   # app start
-  expect_error(tbl_run_peer_evaluation(), "roster.*required")
+  expect_error(tbl_run_peer_evaluation(roster = 5), "roster.*required")
+  expect_error(tbl_run_peer_evaluation(roster = data_frame()), "files do not exist")
 
   # app testing
   expect_error(tbl_test_peer_evaluation(folder = "DNE"), "does not exist")

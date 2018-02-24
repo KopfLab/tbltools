@@ -5,36 +5,27 @@
 #' @param app_title the title of the Peer Evaluation App, e.g. "Class name - Peer Evaluation #1"
 peer_evaluation_ui <- function(app_title) {
 
-  appCSS <- "
-.message-panel {
-  position: absolute;
-  background: #ffffff;
-  opacity: 0.9;
-  z-index: 100;
-  left: 0;
-  right: 0;
-  height: 100%;
-  text-align: center;
-  color: #000000;
-}
-"
-  
   # Define UI ----
   ui <- fluidPage(
     
-    useShinyjs(),  # Set up shinyjs
-    inlineCSS(appCSS), # loading
+    # Set up shinyjs
+    useShinyjs(),  
+    
+    # Stylesheet
+    tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "app.css")),
+    
     titlePanel(app_title),
     
     fluidRow(
       
       div(id = "loading-panel", class = "message-panel", 
-          br(), br(), br(), h2("Loading...")) %>% hidden(),
+          h2("Loading..."),
+          p("Please wait, this may take a few seconds.")) %>% hidden(),
       div(id = "saving-panel", class = "message-panel", 
-          br(), br(), br(), h2("Saving..."), 
+          h2("Saving..."), 
           p("Please wait, this may take a few seconds.")) %>% hidden(),
       div(id = "submit-panel", class = "message-panel", 
-          br(), br(), br(), h2("Submitting..."), 
+          h2("Submitting..."), 
           p("Please wait, this may take a few seconds.")) %>% hidden(),
       
       div(id = "access-panel",
