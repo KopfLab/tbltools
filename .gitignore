@@ -40,6 +40,7 @@ vignettes/*.pdf
 # Auxiliary package files
 /tmp/
 /peer_evaluation*/
+/module*/
 *.nb.html
 
 # temp OS files
