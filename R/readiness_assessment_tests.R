@@ -409,7 +409,7 @@ get_RAT_options <- function(rat) {
   # join in answer key
   rat_options <- left_join(rat$questions, rat$answer_key, by = c("tRAT_n" = "number")) 
   if (nrow(missing <- filter(rat_options, is.na(option))) > 0) {
-    stop("Missing answer key for question numbers\n ", str_c(missing$number %>% unique(), collapse = ", "), call. = FALSE)
+    stop("Missing answer key for question numbers\n ", str_c(missing$tRAT_n %>% unique(), collapse = ", "), call. = FALSE)
   }
   
   # check for troubles where not as many answers as options
