@@ -11,8 +11,6 @@ navbar:
   title: tbltools
   type: default
   left:
-  - text: "Home"
-    href: index.html
   - text: "Peer Evaluations"
     href: articles/peer_evaluations.html
   - text: "Readiness Assessment Tests"
