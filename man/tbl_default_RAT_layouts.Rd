@@ -7,5 +7,5 @@
 tbl_default_RAT_layouts()
 }
 \description{
-This function provides the default layout options for TBL questions (horizontal and vertical arrangment) but can easily be expanded with custom layouts. To introduce additional/alternative question layouts, simply overwrite the \code{answer_layout_funs} parameter in \link{tbl_generate_RAT_choices} with a list of functions that have the layout names as keys and functions that take two parameters (a vector of \code{answer_option} letters A, B, C, D, etc. and an \code{answer} vector of the same length with the actual answers) as values. The functions must return valid markdown.
+This function provides the default layout options for TBL questions (horizontal and vertical arrangement) but can easily be expanded with custom layouts. To introduce additional/alternative question layouts, simply overwrite the \code{answer_layout_funs} parameter in \link{tbl_generate_RAT_choices} with a list of functions that have the layout names as keys and functions that take two parameters (a vector of \code{answer_option} letters A, B, C, D, etc. and an \code{answer} vector of the same length with the actual answers) as values. The functions must return valid markdown.
 }

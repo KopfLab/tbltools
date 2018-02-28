@@ -87,6 +87,9 @@ test_that("test that RAT generation works properly", {
   expect_true(all(c("number", "option") %in% names(rat$answer_key)))
   expect_equal(nrow(rat$answer_key), nrow(answer_key))
   
+  ## RAT from excel
+  expect_error(tbl_create_RAT_from_excel("DNE"), "file.*does not exist")
+  
   # RAT arranging ====
   expect_error(tbl_arrange_RAT_questions(), "argument.*missing")
   expect_error(tbl_arrange_RAT_questions(5), "can only arrange.*objects")

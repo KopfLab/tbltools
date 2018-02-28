@@ -1,4 +1,4 @@
-title: Isoreader
+title: "TBL Tools"
 url: http://tbltools.kopflab.org
 template:
   params:
@@ -15,12 +15,22 @@ navbar:
     href: index.html
   - text: "Peer Evaluations"
     href: articles/peer_evaluations.html
-  - text: "Readiness Assessment Tests (RATs)"
+  - text: "Readiness Assessment Tests"
     menu:
     - text: "Generating an iRAT/tRAT"
-      href: articles/readiness_assessment_tests.html
+      href: articles/assessment_tests.html
+    - text: "Template iRAT/tRAT (HTML)"
+      href: articles/module.html
+    - text: "Template iRAT/tRAT (PDF)"
+      href: articles/module.pdf
+    - text: "Template iRAT/tRAT (Word)"
+      href: articles/module.docx
     - text: "Demo iRAT/tRAT (HTML)"
-      href: articles/RAT_demo.html
+      href: articles/demo.html
+    - text: "Demo iRAT/tRAT (PDF)"
+      href: articles/demo.pdf
+    - text: "Demo iRAT/tRAT (Word)"
+      href: articles/demo.docx
   - text: "Reference"
     href: reference/index.html
   right:
@@ -35,8 +45,8 @@ reference:
     Each of these creates a template RMarkdown file that uses the RAT generation functions below to dynamically generate an iRAT/tRAT based on an Excel template with questions, answer options and answer keys.
     Both the created RMarkdown and Excel template files can then be further customized to create the desired RAT.
   contents:
-    - tbl_setup_RAT_from_scratch
-    - tbl_setup_RAT_from_demo
+    - tbl_setup_RAT_template
+    - tbl_setup_RAT_demo
 - title: RAT Generation
   desc: >
     Functions to generate readiness assessment tests (RATs).

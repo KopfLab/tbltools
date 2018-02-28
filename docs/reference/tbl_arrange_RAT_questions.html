@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Arrange RAT questions — tbl_arrange_RAT_questions • Isoreader</title>
+<title>Arrange RAT questions — tbl_arrange_RAT_questions • TBL Tools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -29,7 +29,7 @@
   
 <meta property="og:title" content="Arrange RAT questions — tbl_arrange_RAT_questions" />
 
-<meta property="og:description" content="Arrange RAT questions" />
+<meta property="og:description" content="Function to make it easy to arrange an RAT either by fixed numbers (fixed_number_column) or semi-randomly or completely randomly. Can also arrange questions within specific groups using the group_by_column, and can use specific starting numbers for iRAT and tRAT numbering (which need not be the same in case tRATs need to match a specific IF-AT number sequence and iRATs should match a scantron). In case iRAT numbers are different from tRAT numbers, the tRAT numbering is the one matched to the answer key since this needs to match the IF-AT scratch-off." />
 <meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
@@ -65,16 +65,31 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Readiness Assessment Tests (RATs)
+    Readiness Assessment Tests
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/readiness_assessment_tests.html">Generating an iRAT/tRAT</a>
+      <a href="../articles/assessment_tests.html">Generating an iRAT/tRAT</a>
     </li>
     <li>
-      <a href="../articles/RAT_demo.html">Demo iRAT/tRAT (HTML)</a>
+      <a href="../articles/module.html">Template iRAT/tRAT (HTML)</a>
+    </li>
+    <li>
+      <a href="../articles/module.pdf">Template iRAT/tRAT (PDF)</a>
+    </li>
+    <li>
+      <a href="../articles/module.docx">Template iRAT/tRAT (Word)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.html">Demo iRAT/tRAT (HTML)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.pdf">Demo iRAT/tRAT (PDF)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.docx">Demo iRAT/tRAT (Word)</a>
     </li>
   </ul>
 </li>
@@ -105,10 +120,11 @@
     </div>
 
     
-    <p>Arrange RAT questions</p>
+    <p>Function to make it easy to arrange an RAT either by fixed numbers (<code>fixed_number_column</code>) or semi-randomly or completely randomly. Can also arrange questions within specific groups using the <code>group_by_column</code>, and can use specific starting numbers for iRAT and tRAT numbering (which need not be the same in case tRATs need to match a specific IF-AT number sequence and iRATs should match a scantron). In case iRAT numbers are different from tRAT numbers, the tRAT numbering is the one matched to the answer key since this needs to match the IF-AT scratch-off.</p>
     
 
-    <pre class="usage"><span class='fu'>tbl_arrange_RAT_questions</span>(<span class='no'>rat</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"original"</span>, <span class='kw'>tRAT_n_offset</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+    <pre class="usage"><span class='fu'>tbl_arrange_RAT_questions</span>(<span class='no'>rat</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"original"</span>, <span class='kw'>tRAT_n_start</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>iRAT_n_start</span> <span class='kw'>=</span> <span class='no'>tRAT_n_start</span>, <span class='kw'>iRAT_sel_per_q</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>fixed_number_column</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>group_by_column</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>random_seed</span> <span class='kw'>=</span> <span class='fu'>random</span>())</pre>
     
@@ -121,11 +137,19 @@
     </tr>
     <tr>
       <th>by</th>
-      <td><p>what to arrange by, options: <code>by="original"</code> leaves the original order as encountered, <code>by="random"</code> generates a random order, <code>by="semi-random"</code> generates a random order except for questions that have the <code>fixed_number_column</code> set, and <code>by="fixed"</code> uses the <code>fixed_number_column</code> (which has to be set for all questions!).</p></td>
+      <td><p>what to arrange by, options: <code>by="original"</code> leaves the original order as encountered, <code>by="random"</code> generates a random order, <code>by="semi-random"</code> generates a random order except for questions that have the <code>fixed_number_column</code> set, and <code>by="fixed"</code> uses the <code>fixed_number_column</code> (which has to be set for all questions in the latter case!).</p></td>
     </tr>
     <tr>
-      <th>tRAT_n_offset</th>
-      <td><p>the offset for the question numbering (if there should be an offset to fit a different part of an IF-AT), only matters if <code>by</code> is not <code>"fixed"</code>. Default is 0 (so numbering starts at 1).</p></td>
+      <th>tRAT_n_start</th>
+      <td><p>the start number for the tRAT question numbering (if the rRAT should fit a different part of an IF-AT), only matters if <code>by</code> is NOT <code>"fixed"</code>. Default is 1.</p></td>
+    </tr>
+    <tr>
+      <th>iRAT_n_start</th>
+      <td><p>the start number for the iRAT question numbering. By default the same as <code>tRAT_n_start</code>. Specify a different value from <code>tRAT_n_start</code> e.g. if tRAT starts at a higher IF-AT number but iRAT numbers should start at 1.</p></td>
+    </tr>
+    <tr>
+      <th>iRAT_sel_per_q</th>
+      <td><p>number of selections per question for the iRAT portion of this test, e.g. when using scantrons and giving the students the option to hedge their bets on the iRAT portion of the test.</p></td>
     </tr>
     <tr>
       <th>fixed_number_column</th>
@@ -143,7 +167,7 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>returns the RAT object with the $questions having a new 'number' column that specifies the location in the test</p>
+    <p>returns the RAT object with the location in the test specified</p>
     
 
   </div>

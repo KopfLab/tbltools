@@ -1,17 +1,113 @@
 # test setup =========
 
-#' Setup a new RAT from scratch
+#' Setup a new RAT template
 #' 
+#' This function templates an RAT. All parameters are merely the defaults used for templating the new RAT and all can be modified as needed in the RAT excel spreadsheet and RMarkdown that this function creates.
+#' 
+#' @param module name of the module, this will be used as the default folder and file name for the RAT. Can be a folder path in which case only the sub-directory name will be used for file names.
+#' @param n_questions number of questions to template the RAT with
+#' @param n_options_per_q default number of options per question
 #' @export
-tbl_setup_RAT_from_scratch <- function() {
+tbl_setup_RAT_template <- function(module = "module 1", n_questions = 10, n_options_per_q = 5, overwrite = FALSE) {
   
+  if (n_options_per_q < 2)
+    stop("there most be at least 2 options per question in the template", call. = FALSE)
+  if (n_questions < 1)
+    stop("there most be at least 1 question in the template", call. = FALSE)
+  
+  # check for folder
+  if(!dir.exists(module)) {
+    glue("Info: creating RAT directory '{module}' in 'getwd()'") %>% message()
+    dir.create(module, recursive = TRUE)
+  } else {
+    glue("Info: RAT directory '{module}' already exists ",
+         "{if(overwrite) 'but will be overwritten' else '(use \"overwrite = TRUE\" to overwrite)'}") %>% 
+      message()
+    if (!overwrite) return(invisible(NULL))
+  }
+  
+  # excel file
+  excel_file <- file.path(module, str_c(basename(module), ".xlsx"))
+  glue("Info: creating '{excel_file}' RAT questions template... ") %>% message(appendLF = FALSE)
+  
+  ## data
+  questions <- 
+    data_frame(
+      include = c("x", rep(NA, n_options_per_q - 1)),
+      layout = NA_character_,
+      question = c("Question ", rep(NA, n_options_per_q - 1)),
+      answer = c("Incorrect Answer", "Correct Answer", rep("Incorrect Answer", n_options_per_q - 2)),
+      correct = c(NA, "x", rep(NA, n_options_per_q - 2)),
+      notes = NA_character_
+    ) %>% 
+    merge(data_frame(q = 1:n_questions)) %>% tbl_df() %>% 
+    mutate(question = ifelse(!is.na(question), str_c(question, q), NA)) %>% 
+    select(-q)
+  
+  answer_key <- 
+    data_frame(
+      number = 1:n_questions,
+      option = sample(LETTERS[1:n_options_per_q], n_questions, replace = TRUE)
+    )
+  
+  ## create work book
+  style <- createStyle(valign = "top", wrapText = TRUE)
+  header_style <- createStyle(textDecoration = "bold", border="bottom", borderColour = "#000000", borderStyle = "medium")
+  wb <- createWorkbook()
+  ws <- addWorksheet(wb, "questions")
+  writeData(wb, ws, questions, headerStyle = header_style)
+  freezePane(wb, ws, firstRow = TRUE)
+  setColWidths(wb, ws, cols = 1:ncol(questions), widths = "auto")
+  addStyle(wb, ws, style, rows = 1:(nrow(questions) + 1), cols = 1:ncol(questions), gridExpand = TRUE, stack = TRUE)
+  ws <- addWorksheet(wb, "key")
+  writeData(wb, ws, answer_key, headerStyle = header_style)
+  freezePane(wb, ws, firstRow = TRUE)
+  setColWidths(wb, ws, cols = 1:ncol(answer_key), widths = "auto")
+  addStyle(wb, ws, style, rows = 1:(nrow(answer_key) + 1), cols = 1:ncol(answer_key), gridExpand = TRUE, stack = TRUE)
+  saveWorkbook(wb, excel_file, overwrite = TRUE)
+  message("complete")
+  
+  # rmd file
+  rmd_file <- file.path(module, str_c(basename(module), ".Rmd"))
+  glue("Info: creating '{rmd_file}' RAT generation template... ") %>% message(appendLF = FALSE)
+  system.file(package = "tbltools", "extdata", "RAT_template.Rmd") %>% 
+    read_lines() %>% 
+    collapse(sep = "\n") %>% 
+    str_interp(list(
+      module = basename(module),
+      excel_file = basename(excel_file))) %>% 
+    cat(file = rmd_file)
+  message("complete")
+  
+  glue("Finished: ",
+       "Please modify '{excel_file}' to write questions and answer options on the 'questions' tab, and fill in the correct IF-AT answer key on the 'key' tab. ",
+       "Please knit '{rmd_file}' to HTML/PDF/Word to generate the RAT. Adjust function call parameters as needed.") %>% 
+    message()
 }
 
 #' Setup a demo RAT
 #'
 #' @export
-tbl_setup_RAT_from_demo <- function() {
+tbl_setup_RAT_demo <- function(overwrite = FALSE) {
   
+  # check for folder
+  folder <- "demo"
+  if(!dir.exists(folder)) {
+    glue("Info: creating '{folder}' directory") %>% message()
+    dir.create(folder, recursive = TRUE)
+  } else {
+    glue("Info: '{folder}' directory already exists ",
+         "{if(overwrite) 'but will be overwritten' else '(use \"overwrite = TRUE\" to overwrite)'}") %>% 
+      message()
+    if (!overwrite) return(invisible(NULL))
+  }
+  
+  # files
+  glue("Info: copying demo RAT files... ") %>% message(appendLF = FALSE)
+  system.file(package = "tbltools", "extdata", "demo_RAT") %>% 
+    list.files(full.names = TRUE, include.dirs = FALSE, recursive = FALSE) %>% 
+    file.copy(to = folder, overwrite = TRUE)
+  glue("finished. Please knit 'demo.Rmd' to HTML/PDF/Word.") %>% message()
 }
 
 # test generation ==========
@@ -27,6 +123,9 @@ tbl_setup_RAT_from_demo <- function() {
 #' @param fill_down_questions whether to fill down the questions column (i.e. if question an their parameters are only written in first row)
 #' @export
 tbl_create_RAT_from_excel <- function(filepath, questions_tab = "questions", key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE) {
+  
+  if (!file.exists(filepath))
+    glue("file '{filepath}' does not exist in working directory '{getwd()}'") %>% stop(call. = FALSE)
   questions <- read_excel(filepath, sheet = questions_tab) 
   answer_key <- read_excel(filepath, sheet = key_tab)
   
@@ -131,7 +230,7 @@ tbl_create_RAT_from_data_frame <- function(questions, answer_key) {
 #' @param rat Readiness Assessment Test object
 #' @param by what to arrange by, options: \code{by="original"} leaves the original order as encountered, \code{by="random"} generates a random order, \code{by="semi-random"} generates a random order except for questions that have the \code{fixed_number_column} set, and \code{by="fixed"} uses the \code{fixed_number_column} (which has to be set for all questions in the latter case!). 
 #' @param tRAT_n_start the start number for the tRAT question numbering (if the rRAT should fit a different part of an IF-AT), only matters if \code{by} is NOT \code{"fixed"}. Default is 1.
-#' @param iRAT_n_start the start number for the iRAT question numbering. By default the same as \cde{tRAT_n_start}. Specify a different value from \code{tRAT_n_start} e.g. if tRAT starts at a higher IF-AT number but iRAT numbers should start at 1. 
+#' @param iRAT_n_start the start number for the iRAT question numbering. By default the same as \code{tRAT_n_start}. Specify a different value from \code{tRAT_n_start} e.g. if tRAT starts at a higher IF-AT number but iRAT numbers should start at 1. 
 #' @param iRAT_sel_per_q number of selections per question for the iRAT portion of this test, e.g. when using scantrons and giving the students the option to hedge their bets on the iRAT portion of the test. 
 #' @param fixed_number_column name of a column in the RAT questions data frame that indicates the fixed question number. Only relevant if \code{by="semi-random"} or \code{by="fixed"}
 #' @param group_by_column name of a column in the RAT questions data frame that indicates which questions to group together (groups will be arranged alphabetically, those with undefined group come last). Only relevant if \code{by="random"} or \code{by="semi-random"}. Throws an error if grouping and any fixed number questions are incompatible (e.g. a question has fixed number 5 but is part of the first group of only 3 questions).

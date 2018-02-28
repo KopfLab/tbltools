@@ -2,7 +2,8 @@ urls:
   reference: http://tbltools.kopflab.org/reference
   article: http://tbltools.kopflab.org/articles
 articles:
+  assessment_tests: assessment_tests.html
+  demo: demo.html
+  module: module.html
   peer_evaluations: peer_evaluations.html
-  RAT_demo: RAT_demo.html
-  readiness_assessment_tests: readiness_assessment_tests.html
 

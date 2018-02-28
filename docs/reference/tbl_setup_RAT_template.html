@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate random access codes — tbl_generate_access_codes • TBL Tools</title>
+<title>Setup a new RAT template — tbl_setup_RAT_template • TBL Tools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -27,9 +27,9 @@
 <script src="../pkgdown.js"></script>
   
   
-<meta property="og:title" content="Generate random access codes — tbl_generate_access_codes" />
+<meta property="og:title" content="Setup a new RAT template — tbl_setup_RAT_template" />
 
-<meta property="og:description" content="Utility function to generate a list of random access codes that can be copied into an Excel column." />
+<meta property="og:description" content="This function templates an RAT. All parameters are merely the defaults used for templating the new RAT and all can be modified as needed in the RAT excel spreadsheet and RMarkdown that this function creates." />
 <meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
@@ -116,31 +116,32 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate random access codes</h1>
+    <h1>Setup a new RAT template</h1>
     </div>
 
     
-    <p>Utility function to generate a list of random access codes that can be copied into an Excel column.</p>
+    <p>This function templates an RAT. All parameters are merely the defaults used for templating the new RAT and all can be modified as needed in the RAT excel spreadsheet and RMarkdown that this function creates.</p>
     
 
-    <pre class="usage"><span class='fu'>tbl_generate_access_codes</span>(<span class='no'>n</span>, <span class='kw'>length</span> <span class='kw'>=</span> <span class='fl'>4</span>)</pre>
+    <pre class="usage"><span class='fu'>tbl_setup_RAT_template</span>(<span class='kw'>module</span> <span class='kw'>=</span> <span class='st'>"module 1"</span>, <span class='kw'>n_questions</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>n_options_per_q</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>n</th>
-      <td><p>how many access codes to generate</p></td>
+      <th>module</th>
+      <td><p>name of the module, this will be used as the default folder and file name for the RAT. Can be a folder path in which case only the sub-directory name will be used for file names.</p></td>
     </tr>
     <tr>
-      <th>length</th>
-      <td><p>how many characters for each acccess code</p></td>
+      <th>n_questions</th>
+      <td><p>number of questions to template the RAT with</p></td>
+    </tr>
+    <tr>
+      <th>n_options_per_q</th>
+      <td><p>default number of options per question</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>returns the access codes invisible</p>
     
 
   </div>
@@ -148,9 +149,7 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

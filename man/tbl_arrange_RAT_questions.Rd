@@ -4,16 +4,21 @@
 \alias{tbl_arrange_RAT_questions}
 \title{Arrange RAT questions}
 \usage{
-tbl_arrange_RAT_questions(rat, by = "original", tRAT_n_offset = 0,
+tbl_arrange_RAT_questions(rat, by = "original", tRAT_n_start = 1,
+  iRAT_n_start = tRAT_n_start, iRAT_sel_per_q = 1,
   fixed_number_column = NULL, group_by_column = NULL,
   random_seed = random())
 }
 \arguments{
 \item{rat}{Readiness Assessment Test object}
 
-\item{by}{what to arrange by, options: \code{by="original"} leaves the original order as encountered, \code{by="random"} generates a random order, \code{by="semi-random"} generates a random order except for questions that have the \code{fixed_number_column} set, and \code{by="fixed"} uses the \code{fixed_number_column} (which has to be set for all questions!).}
+\item{by}{what to arrange by, options: \code{by="original"} leaves the original order as encountered, \code{by="random"} generates a random order, \code{by="semi-random"} generates a random order except for questions that have the \code{fixed_number_column} set, and \code{by="fixed"} uses the \code{fixed_number_column} (which has to be set for all questions in the latter case!).}
 
-\item{tRAT_n_offset}{the offset for the question numbering (if there should be an offset to fit a different part of an IF-AT), only matters if \code{by} is not \code{"fixed"}. Default is 0 (so numbering starts at 1).}
+\item{tRAT_n_start}{the start number for the tRAT question numbering (if the rRAT should fit a different part of an IF-AT), only matters if \code{by} is NOT \code{"fixed"}. Default is 1.}
+
+\item{iRAT_n_start}{the start number for the iRAT question numbering. By default the same as \code{tRAT_n_start}. Specify a different value from \code{tRAT_n_start} e.g. if tRAT starts at a higher IF-AT number but iRAT numbers should start at 1.}
+
+\item{iRAT_sel_per_q}{number of selections per question for the iRAT portion of this test, e.g. when using scantrons and giving the students the option to hedge their bets on the iRAT portion of the test.}
 
 \item{fixed_number_column}{name of a column in the RAT questions data frame that indicates the fixed question number. Only relevant if \code{by="semi-random"} or \code{by="fixed"}}
 
@@ -22,8 +27,8 @@ tbl_arrange_RAT_questions(rat, by = "original", tRAT_n_offset = 0,
 \item{random_seed}{can overwrite with a fixed value (e.g. \code{random_seed=42}) to get a reproducible "random" order in \code{by="random"} or \code{by="semi-random"} mode.}
 }
 \value{
-returns the RAT object with the $questions having a new 'number' column that specifies the location in the test
+returns the RAT object with the location in the test specified
 }
 \description{
-Arrange RAT questions
+Function to make it easy to arrange an RAT either by fixed numbers (\code{fixed_number_column}) or semi-randomly or completely randomly. Can also arrange questions within specific groups using the \code{group_by_column}, and can use specific starting numbers for iRAT and tRAT numbering (which need not be the same in case tRATs need to match a specific IF-AT number sequence and iRATs should match a scantron). In case iRAT numbers are different from tRAT numbers, the tRAT numbering is the one matched to the answer key since this needs to match the IF-AT scratch-off.
 }

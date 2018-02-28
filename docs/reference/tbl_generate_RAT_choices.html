@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate RAT choices — tbl_generate_RAT_choices • Isoreader</title>
+<title>Generate RAT choices — tbl_generate_RAT_choices • TBL Tools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -65,16 +65,31 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Readiness Assessment Tests (RATs)
+    Readiness Assessment Tests
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/readiness_assessment_tests.html">Generating an iRAT/tRAT</a>
+      <a href="../articles/assessment_tests.html">Generating an iRAT/tRAT</a>
     </li>
     <li>
-      <a href="../articles/RAT_demo.html">Demo iRAT/tRAT (HTML)</a>
+      <a href="../articles/module.html">Template iRAT/tRAT (HTML)</a>
+    </li>
+    <li>
+      <a href="../articles/module.pdf">Template iRAT/tRAT (PDF)</a>
+    </li>
+    <li>
+      <a href="../articles/module.docx">Template iRAT/tRAT (Word)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.html">Demo iRAT/tRAT (HTML)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.pdf">Demo iRAT/tRAT (PDF)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.docx">Demo iRAT/tRAT (Word)</a>
     </li>
   </ul>
 </li>
@@ -108,9 +123,9 @@
     <p>Generates the actual multiple choice questions in an RAT</p>
     
 
-    <pre class="usage"><span class='fu'>tbl_generate_RAT_choices</span>(<span class='no'>rat</span>, <span class='kw'>iRAT_sel_per_q</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>iRAT_n_offset</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>answer_layout</span> <span class='kw'>=</span> <span class='st'>"vertical"</span>, <span class='kw'>answer_layout_column</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>answer_layout_funs</span> <span class='kw'>=</span> <span class='fu'>tbl_default_RAT_layouts</span>(), <span class='kw'>random_seed</span> <span class='kw'>=</span> <span class='fu'>random</span>())</pre>
+    <pre class="usage"><span class='fu'>tbl_generate_RAT_choices</span>(<span class='no'>rat</span>, <span class='kw'>answer_layout</span> <span class='kw'>=</span> <span class='st'>"vertical"</span>,
+  <span class='kw'>answer_layout_column</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>answer_layout_funs</span> <span class='kw'>=</span> <span class='fu'><a href='tbl_default_RAT_layouts.html'>tbl_default_RAT_layouts</a></span>(), <span class='kw'>random_seed</span> <span class='kw'>=</span> <span class='fu'>random</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -118,14 +133,6 @@
     <tr>
       <th>rat</th>
       <td><p>Readiness Assessment Test object</p></td>
-    </tr>
-    <tr>
-      <th>iRAT_sel_per_q</th>
-      <td><p>number of selections per question for the iRAT portion of this test</p></td>
-    </tr>
-    <tr>
-      <th>iRAT_n_offset</th>
-      <td><p>number that indicates by how much the iRAT should be offset from the question numbers (e.g. if tRAT starts at a higher IF-AT number but iRAT numbers should start low, this could be a negative offset).</p></td>
     </tr>
     <tr>
       <th>answer_layout</th>
@@ -137,7 +144,7 @@
     </tr>
     <tr>
       <th>random_seed</th>
-      <td><p>can overwrite with a fixed value (e.g. <code>random_seed=42</code>) to get a reproducible "random" order in <code>by="random"</code> or <code>by="semi-random"</code> mode.</p></td>
+      <td><p>can overwrite with a fixed value (e.g. <code>random_seed=42</code>) to get a reproducible "random" order of the answer options</p></td>
     </tr>
     <tr>
       <th>answer_layout_funcs</th>

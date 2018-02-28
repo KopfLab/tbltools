@@ -3,7 +3,7 @@
 tbltools
 ========
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tbltools)](https://cran.r-project.org/package=tbltools) [![Git\_Hub\_Version](https://img.shields.io/badge/GitHub-0.4.7.9999-orange.svg?style=flat-square)](/commits) [![Last-Update](https://img.shields.io/badge/updated-2018--02--24-yellowgreen.svg)](/commits) [![Build Status](https://travis-ci.org/KopfLab/tbltools.svg?branch=master)](https://travis-ci.org/KopfLab/tbltools) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/KopfLab/tbltools?branch=master&svg=true)](https://ci.appveyor.com/project/KopfLab/tbltools)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tbltools)](https://cran.r-project.org/package=tbltools) [![Git\_Hub\_Version](https://img.shields.io/badge/GitHub-0.4.7.9999-orange.svg?style=flat-square)](/commits) [![Last-Update](https://img.shields.io/badge/updated-2018--02--27-yellowgreen.svg)](/commits) [![Documentation](https://img.shields.io/badge/docs-online-green.svg)](https://kopflab.github.io/tbltools/reference/) [![Build Status](https://travis-ci.org/KopfLab/tbltools.svg?branch=master)](https://travis-ci.org/KopfLab/tbltools) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/KopfLab/tbltools?branch=master&svg=true)](https://ci.appveyor.com/project/KopfLab/tbltools)
 
 About
 -----
@@ -25,7 +25,7 @@ Functionality
 
 ### iRAT/tRAT Generation
 
-The [tbltools](https://kopflab.github.io/tbltools/) package provides functionality to easily generate Readiness Assessment Tests from a collection of questions and answers and any IF-AT answer key. For an example of how to use this functionality, see the vignette on [Generating a Readiness Assessment Test](https://kopflab.github.io/tbltools/articles/readiness_assessment_tests.html).
+The [tbltools](https://kopflab.github.io/tbltools/) package provides functionality to easily generate Readiness Assessment Tests from a collection of questions and answers (including images and equations) and any IF-AT answer key. For an example of how to use this functionality, see the vignette on [Generating a Readiness Assessment Test](https://kopflab.github.io/tbltools/articles/assessment_tests.html).
 
 ### Peer Evaluations
 

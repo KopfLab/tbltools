@@ -12,5 +12,5 @@ tbl_create_RAT_from_data_frame(questions, answer_key)
 \item{answer_key}{data frame with answer key (requires at mimimum columns 'number', 'option')}
 }
 \description{
-Create RAT from data frame
+Note that the logical column 'correct' is evaluated to TRUE if values are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE.
 }

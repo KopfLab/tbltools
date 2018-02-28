@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Retrieve default RAT layouts — tbl_default_RAT_layouts • Isoreader</title>
+<title>Retrieve default RAT layouts — tbl_default_RAT_layouts • TBL Tools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -29,7 +29,7 @@
   
 <meta property="og:title" content="Retrieve default RAT layouts — tbl_default_RAT_layouts" />
 
-<meta property="og:description" content="This function provides the default layout options for TBL questions (horizontal and vertical arrangment) but can easily be expanded with custom layouts. To introduce additional/alternative question layouts, simply overwrite the answer_layout_funs parameter in tbl_generate_RAT_choices with a list of functions that have the layout names as keys and functions that take two parameters (a vector of answer_option letters A, B, C, D, etc. and an answer vector of the same length with the actual answers) as values. The functions must return valid markdown." />
+<meta property="og:description" content="This function provides the default layout options for TBL questions (horizontal and vertical arrangement) but can easily be expanded with custom layouts. To introduce additional/alternative question layouts, simply overwrite the answer_layout_funs parameter in tbl_generate_RAT_choices with a list of functions that have the layout names as keys and functions that take two parameters (a vector of answer_option letters A, B, C, D, etc. and an answer vector of the same length with the actual answers) as values. The functions must return valid markdown." />
 <meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
@@ -65,16 +65,31 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Readiness Assessment Tests (RATs)
+    Readiness Assessment Tests
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/readiness_assessment_tests.html">Generating an iRAT/tRAT</a>
+      <a href="../articles/assessment_tests.html">Generating an iRAT/tRAT</a>
     </li>
     <li>
-      <a href="../articles/RAT_demo.html">Demo iRAT/tRAT (HTML)</a>
+      <a href="../articles/module.html">Template iRAT/tRAT (HTML)</a>
+    </li>
+    <li>
+      <a href="../articles/module.pdf">Template iRAT/tRAT (PDF)</a>
+    </li>
+    <li>
+      <a href="../articles/module.docx">Template iRAT/tRAT (Word)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.html">Demo iRAT/tRAT (HTML)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.pdf">Demo iRAT/tRAT (PDF)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.docx">Demo iRAT/tRAT (Word)</a>
     </li>
   </ul>
 </li>
@@ -105,7 +120,7 @@
     </div>
 
     
-    <p>This function provides the default layout options for TBL questions (horizontal and vertical arrangment) but can easily be expanded with custom layouts. To introduce additional/alternative question layouts, simply overwrite the <code>answer_layout_funs</code> parameter in tbl_generate_RAT_choices with a list of functions that have the layout names as keys and functions that take two parameters (a vector of <code>answer_option</code> letters A, B, C, D, etc. and an <code>answer</code> vector of the same length with the actual answers) as values. The functions must return valid markdown.</p>
+    <p>This function provides the default layout options for TBL questions (horizontal and vertical arrangement) but can easily be expanded with custom layouts. To introduce additional/alternative question layouts, simply overwrite the <code>answer_layout_funs</code> parameter in <a href='tbl_generate_RAT_choices.html'>tbl_generate_RAT_choices</a> with a list of functions that have the layout names as keys and functions that take two parameters (a vector of <code>answer_option</code> letters A, B, C, D, etc. and an <code>answer</code> vector of the same length with the actual answers) as values. The functions must return valid markdown.</p>
     
 
     <pre class="usage"><span class='fu'>tbl_default_RAT_layouts</span>()</pre>

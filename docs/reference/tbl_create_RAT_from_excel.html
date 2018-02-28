@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create RAT from Excel — tbl_create_RAT_from_excel • Isoreader</title>
+<title>Create RAT from Excel — tbl_create_RAT_from_excel • TBL Tools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -29,7 +29,7 @@
   
 <meta property="og:title" content="Create RAT from Excel — tbl_create_RAT_from_excel" />
 
-<meta property="og:description" content="Load RAT questions and answer key from Excel. Note that logical columns are evaluated to TRUE if they are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE." />
+<meta property="og:description" content="Load RAT questions and answer key from Excel. Note that logical columns ('correct' and 'include') are evaluated to TRUE if they are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE. Uses tbl_create_RAT_from_data_frame internally." />
 <meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
@@ -65,16 +65,31 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Readiness Assessment Tests (RATs)
+    Readiness Assessment Tests
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/readiness_assessment_tests.html">Generating an iRAT/tRAT</a>
+      <a href="../articles/assessment_tests.html">Generating an iRAT/tRAT</a>
     </li>
     <li>
-      <a href="../articles/RAT_demo.html">Demo iRAT/tRAT (HTML)</a>
+      <a href="../articles/module.html">Template iRAT/tRAT (HTML)</a>
+    </li>
+    <li>
+      <a href="../articles/module.pdf">Template iRAT/tRAT (PDF)</a>
+    </li>
+    <li>
+      <a href="../articles/module.docx">Template iRAT/tRAT (Word)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.html">Demo iRAT/tRAT (HTML)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.pdf">Demo iRAT/tRAT (PDF)</a>
+    </li>
+    <li>
+      <a href="../articles/demo.docx">Demo iRAT/tRAT (Word)</a>
     </li>
   </ul>
 </li>
@@ -105,7 +120,7 @@
     </div>
 
     
-    <p>Load RAT questions and answer key from Excel. Note that logical columns are evaluated to TRUE if they are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE.</p>
+    <p>Load RAT questions and answer key from Excel. Note that logical columns ('correct' and 'include') are evaluated to TRUE if they are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE. Uses <a href='tbl_create_RAT_from_data_frame.html'>tbl_create_RAT_from_data_frame</a> internally.</p>
     
 
     <pre class="usage"><span class='fu'>tbl_create_RAT_from_excel</span>(<span class='no'>filepath</span>, <span class='kw'>questions_tab</span> <span class='kw'>=</span> <span class='st'>"questions"</span>,
@@ -120,7 +135,7 @@
     </tr>
     <tr>
       <th>questions_tab</th>
-      <td><p>the name of the questions tab (requires at minimum columns 'question', 'answer', and logical TRUE/FALSE 'correct', plus logical 'include' if <code>filter_inclue=TRUE</code>)</p></td>
+      <td><p>the name of the questions tab (requires at minimum columns 'question', 'answer', and logical TRUE/FALSE 'correct', plus logical 'include' if <code>filter_include=TRUE</code>)</p></td>
     </tr>
     <tr>
       <th>filter_include</th>

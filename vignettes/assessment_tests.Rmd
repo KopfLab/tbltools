@@ -1,0 +1,68 @@
+---
+title: "Generating a Readiness Assessment Test"
+output:
+  html_document: default
+editor_options:
+  chunk_output_type: inline
+---
+
+Individual and tem-based Readiness Assessment Tests (iRAT/tRAT) are an important component of the Team-Based Learning (TBL) style flipped classroom. However, they can be tedious to generate and modify over time because of the requirement to fit a specific IF-AT answer key. This package provides tools to generate RATs in HTML, PDF or Word format straight from a collection of questions, answer options, and answer keys maintained in Excel. Due to the use of the [RMarkdown](https://rmarkdown.rstudio.com/) document format, it is easy to customize RAT worksheets and all RMarkdown supported text formatting is supported for questions and answers (including complex [Latex equations](https://www.sharelatex.com/learn/Mathematical_expressions) and PNG/JPG images).
+
+## Software requirements
+
+To generate an HTML, PDF or Word document for an iRAT/tRAT, you need the following software installed:
+
+ - R and a good RMarkdown editor ([RStudio](https://www.rstudio.com/) is strongly recommended)
+ - The [tbltools R package](https://kopflab.github.io/tbltools/)
+ - A [$\LaTeX$ distribution](https://www.latex-project.org/) if generating PDFs for RATs
+ - Microscoft Word or OpenOffice if using RAT-generated Word files
+ 
+## Getting started
+
+The easiest way to get started is to run the following chunk in your R console (adjust the parameters as appropriate for your RAT):
+
+```{r}
+library(tbltools)
+tbl_setup_RAT_template(
+  module = "module",
+  n_questions = 10,
+  n_options_per_q = 5
+)
+```
+
+```{r, include=FALSE}
+file.copy(file.path("module", "module.Rmd"), to = ".", overwrite = TRUE)
+file.copy(file.path("module", "module.xlsx"), to = ".", overwrite = TRUE)
+unlink("module", recursive = TRUE)
+```
+
+That's it, you have successfully generated an RAT template! The new RAT starts out with place holder questions and answers in the generated `module.xlsx` file (note that if you changed the `module` parameter above, the file named accordingly). You can see what the resulting RAT would look like simply by opening and [knitting](https://rmarkdown.rstudio.com/index.html) the `module.Rmd` (again, file name corresponds to your `module` parameter) to the desired document format. If you do this for the first time, RStudio may ask you to install some additional packages and software including [pandoc](https://pandoc.org/). If you are not working in RStudio, you will have to manually knit the document and call pandoc to generate the PDF.
+
+**See the resulting [HTML](module.html), [PDF](module.pdf), and [Word](module.docx) files**.
+
+
+#### Customizing your iRAT/tRAT
+
+You can design your RAT any way you like by modifying:
+
+ - The **questions** tab in the `module.xlsx` Excel file. This is where you can modify your questions and answers. The only columns that are absolutely necessary are **question**, **answer** and **correct** but **include** is useful to change which questions to include in the RAT and **layout** can be useful for additional formatting. The questions and answers themselves are also in [Markdown](http://rmarkdown.rstudio.com/authoring_basics.html) format and support the inclusion of images as well as equations (in latex format). 
+ - The answer **key** tab in the `module.xlsx` Excel file. This should reflect the correct answers on the IF-AT for the test. The tbltools functions will automatically ensure that the correct option is placed with the right answer when generating the questions. If any questions don't have enough answer options to fit their location on the test (e.g. a TRUE/FALSE question but the correct answer is D) you will get an error message from tbltools. See the Demo RAT for examples of how to place specific questions in specific locations even if the question order is randomly generated.
+ - The text in the `module.Rmd` file to include whichever instructions you would like to show on your test. All standard [Markdown](http://rmarkdown.rstudio.com/authoring_basics.html) formatting is supported. 
+ - The `tbl_...` commands in the chunks of the `module.Rmd` file. You can run each chunk locally in RStudio to see what is generated and modify any of the parameters to change how the questions are arranged. Additional functionality includes, for example,  possibilities for randomizing the question order across the whole test or within question groups, changing the starting number associated with the tRAT (if re-using an IF-AT sheet across multiple tests), and giving students the option to choose multiple answers for bet-hedging during the iRAT. For details on the functions and parameters, consult the [tbltools reference documentation](https://kopflab.github.io/tbltools/reference/) or type `?tbl_create_RAT_from_excel`, `?tbl_arrange_RAT_questions`, and `?tbl_generate_RAT_choices` in your R console. 
+ 
+After making any edits, simply re-knit the Rmarkdown file to HTML, PDF or Word. For a few examples on some of the customization options, please see the Demo RAT below.
+
+## Demo RAT
+
+For an example of a full RAT that demonstrates several customization features, please run the following code in your R console. This will create a `demo` subfolder in your working directory with the RAT `demo.Rmd` and `demo.xlsx` files (+ image files used in the RAT). As with the `tbl_setup_RAT_template` above, you can simply knit the Rmd file to generate the RAT yourself or **take a look at the resulting [HTML](demo.html), [PDF](demo.pdf), and [Word](demo.docx) files online**.
+
+```{r}
+library(tbltools)
+tbl_setup_RAT_demo()
+```
+
+```{r, include=FALSE}
+file.copy(list.files("demo", full.names = TRUE), to = ".", overwrite = TRUE)
+unlink("demo", recursive = TRUE)
+```
+
