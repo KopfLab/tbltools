@@ -21,6 +21,11 @@ To generate an HTML, PDF or Word document for an iRAT/tRAT, you need the followi
 
 The easiest way to get started is to run the following chunk in your R console (adjust the parameters as appropriate for your RAT):
 
+```{r, include=FALSE}
+set.seed(42) # to make sure the documentation stays constant
+```
+
+
 ```{r}
 library(tbltools)
 tbl_setup_RAT_template(
