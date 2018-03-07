@@ -20,7 +20,7 @@ vignettes: $(VIGNETTES_PDF)
 	mv -f vignettes/*.pdf docs/articles/
 	mv -f vignettes/*.docx docs/articles/
 	# remove other intermediates (HTML should come from build_site)
-	rm -f vignettes/*.html docs/articles/
+	rm -f vignettes/*.html
 	rm -f vignettes/*.xlsx
 	rm -f vignettes/*.png
 
