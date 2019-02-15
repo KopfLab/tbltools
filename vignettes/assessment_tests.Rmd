@@ -23,6 +23,7 @@ The easiest way to get started is to run the following chunk in your R console (
 
 ```{r, include=FALSE}
 set.seed(42) # to make sure the documentation stays constant
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 
