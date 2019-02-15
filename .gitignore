@@ -44,6 +44,7 @@ vignettes/*.tex
 /peer_evaluation*/
 /module*/
 *.nb.html
+Gemfile.lock
 
 # temp OS files
 .DS_Store
