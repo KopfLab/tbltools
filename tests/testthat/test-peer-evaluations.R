@@ -1,5 +1,7 @@
 context("Peer Evaluation")
 
+# errors throws -----
+
 test_that("test that peer evaluation functions throw the proper errors", {
 
   # student roster
@@ -39,8 +41,18 @@ test_that("test that peer evaluation functions throw the proper errors", {
   expect_error(tbl_deploy_peer_evaluation(folder = "."), "not.*contain a peer evaluation app")
   
   # app fetch data
-  expect_error(tbl_fetch_peer_evaluation_data(), "roster.*cannot be opened")
+  expect_error(tbl_fetch_peer_evaluation_data(), "does not exist")
   expect_error(tbl_fetch_peer_evaluation_data(roster = 5), "roster.*required")
+  expect_error(tbl_fetch_peer_evaluation_data(
+    roster = data_frame(last = "bond", first = "james", access_code = "1234", team = "MI6")),
+    "spreadsheet must be identified")
+  
+  # read data
+  expect_error(tbl_read_peer_evaluation_data(), "does not exist")
+  expect_error(tbl_read_peer_evaluation_data(roster = 5), "roster.*required")
+  expect_error(tbl_read_peer_evaluation_data(
+    roster = data_frame(last = "bond", first = "james", access_code = "1234", team = "MI6"), download_file = "DNE"),
+    "peer evaluation data file.*does not exist")
   
   # summaarize
   expect_error(tbl_summarize_peer_evaluation_data(), "no data frame supplied")
@@ -49,5 +61,71 @@ test_that("test that peer evaluation functions throw the proper errors", {
   # export
   expect_error(tbl_export_peer_evaluation_data(), "no data frame supplied")
   expect_error(tbl_export_peer_evaluation_data(5), "no data frame supplied")
+  
+  # example data
+  expect_error(tbltools::get_example_gs_key("DNE"), "could not retrieve")
+})
+
+# example data ----
+
+test_that("test that example peer evaluations can be accessed the processed", {
+  
+  # example sheets
+  expect_equal(tbl_example_peer_evaluation()$sheet_title, "Peer Evaluations Example")
+  expect_equal(tbl_example_empty_peer_evaluation()$sheet_title, "Peer Evaluations Example Empty")
+  
+  # example roster
+  expect_true(file.exists(system.file(package = "tbltools", "extdata", "roster_template.xlsx")))
+  expect_true(is.data.frame(roster <- readxl::read_excel(system.file(package = "tbltools", "extdata", "roster_template.xlsx"))))
+  
+  # example empty data from sheets
+  expect_message(
+    pe_data <- tbl_fetch_peer_evaluation_data(
+      roster = roster,
+      data_gs_key = tbl_example_empty_peer_evaluation(),
+      download_to = "empty_example.xlsx"
+    ),
+    "successfully downloaded")
+  expect_true(is.data.frame(pe_data))
+  expect_equal(pe_data %>% select(-evaluations, -submitted_timestamp),
+               roster %>% group_by(team) %>% 
+                 mutate(
+                   access_code = str_c("id_", access_code),
+                   n_team_mates = n() - 1L, 
+                   started = FALSE, submitted = FALSE) %>% 
+                 ungroup())
+  
+  # make sure direct fetch and data read work the same way
+  expect_true(is.data.frame(pe_data2 <- 
+                              tbl_read_peer_evaluation_data(
+                                roster = roster,
+                                download_file = "empty_example.xlsx")))
+  expect_equal(pe_data %>% tidyr::unnest(evaluations), pe_data2 %>% tidyr::unnest(evaluations))
+  
+  # example full data
+  expect_message(
+    pe_data_full <- tbl_fetch_peer_evaluation_data(
+      roster = roster,
+      data_gs_key = tbl_example_peer_evaluation(),
+      download_to = "full_example.xlsx"
+    ),
+    "successfully downloaded")
+  
+  # NOTE: example sheet via title testing not possible without token
+  
+  # make sure downloaded files are deleted if found
+  on.exit({
+    if(file.exists("empty_example.xlsx"))
+      file.remove("empty_example.xlsx")
+    if(file.exists("full_example.xlsx"))
+      file.remove("full_example.xlsx")
+  })
+})
+
+# peer evaluation app -----
+
+test_that("test that settin up peer evaluation works", {
+  
+  
   
 })

@@ -187,7 +187,7 @@ test_that("test that RAT generation works properly", {
   expect_error(tbl_generate_RAT_choices(rat4, answer_layout_column = "layout"), "unrecognized layout setting")
   
   ## actual choices
-  expect_message(tbl_generate_RAT_choices(rat), "generating.*with.*random_seed")
+  expect_message(capture.output(tbl_generate_RAT_choices(rat)), "generating.*with.*random_seed")
   expect_output(tbl_generate_RAT_choices(rat, random_seed = 42), "### 2.*what says the cow")
   
 })
