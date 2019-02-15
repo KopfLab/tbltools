@@ -5,9 +5,10 @@
 \title{Peer Evaluation App Server}
 \usage{
 peer_evaluation_server(roster, data_gs_title, gs_token, welcome_md_file,
-  self_eval_plus_md_file, self_eval_minus_md_file, teammate_eval_plus_md_file,
-  teammate_eval_minus_md_file, quant_scores_md_file, points_per_teammate = 10,
-  max_points = 15, min_points = 0, min_point_difference = 2,
+  self_eval_plus_md_file, self_eval_minus_md_file,
+  teammate_eval_plus_md_file, teammate_eval_minus_md_file,
+  quant_scores_md_file, points_per_teammate = 10, max_points = 15,
+  min_points = 0, min_point_difference = 2,
   auto_login_access_code = NULL)
 }
 \arguments{

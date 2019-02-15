@@ -69,5 +69,9 @@ reference:
     Functions to fetch and summarize peer evaluation data from a peer evaluation app.
   contents:
   - tbl_fetch_peer_evaluation_data
+  - tbl_read_peer_evaluation_data
   - tbl_summarize_peer_evaluation_data
   - tbl_export_peer_evaluation_data
+  - tbl_example_peer_evaluation
+  - tbl_example_empty_peer_evaluation
+

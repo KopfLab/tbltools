@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Peer Evaluation App Server — peer_evaluation_server • TBL Tools</title>
+<title>Example files — tbl_example_peer_evaluation • TBL Tools</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Peer Evaluation App Server — peer_evaluation_server" />
+<meta property="og:title" content="Example files — tbl_example_peer_evaluation" />
 
-<meta property="og:description" content="Generates the server part of the peer evaluation app" />
+<meta property="og:description" content="Example files" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,92 +126,34 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Peer Evaluation App Server</h1>
-    <small class="dont-index">Source: <a href='https://github.com/kopflab/tbltools/blob/master/R/peer_evaluation_server.R'><code>R/peer_evaluation_server.R</code></a></small>
-    <div class="hidden name"><code>peer_evaluation_server.Rd</code></div>
+    <h1>Example files</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kopflab/tbltools/blob/master/R/peer_evaluation.R'><code>R/peer_evaluation.R</code></a></small>
+    <div class="hidden name"><code>tbl_example.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Generates the server part of the peer evaluation app</p>
+    <p>Example files</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>peer_evaluation_server</span>(<span class='no'>roster</span>, <span class='no'>data_gs_title</span>, <span class='no'>gs_token</span>, <span class='no'>welcome_md_file</span>,
-  <span class='no'>self_eval_plus_md_file</span>, <span class='no'>self_eval_minus_md_file</span>,
-  <span class='no'>teammate_eval_plus_md_file</span>, <span class='no'>teammate_eval_minus_md_file</span>,
-  <span class='no'>quant_scores_md_file</span>, <span class='kw'>points_per_teammate</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>max_points</span> <span class='kw'>=</span> <span class='fl'>15</span>,
-  <span class='kw'>min_points</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>min_point_difference</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>auto_login_access_code</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>roster</th>
-      <td><p>data frame with the student roster</p></td>
-    </tr>
-    <tr>
-      <th>data_gs_title</th>
-      <td><p>name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.</p></td>
-    </tr>
-    <tr>
-      <th>gs_token</th>
-      <td><p>path to a google spreadsheet oauth 2.0 authentication token file (see <a href='https://www.rdocumentation.org/packages/httr/topics/Token-class'>Token-class</a>). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.</p></td>
-    </tr>
-    <tr>
-      <th>welcome_md_file</th>
-      <td><p>path to a markdown (.md) file for the login welcome message</p></td>
-    </tr>
-    <tr>
-      <th>self_eval_plus_md_file</th>
-      <td><p>markdown file for the "plus" self evaluation message</p></td>
-    </tr>
-    <tr>
-      <th>self_eval_minus_md_file</th>
-      <td><p>markdown file for the "minus" self evaluation message</p></td>
-    </tr>
-    <tr>
-      <th>teammate_eval_plus_md_file</th>
-      <td><p>markdown file for the "plus" teammate evaluation message</p></td>
-    </tr>
-    <tr>
-      <th>teammate_eval_minus_md_file</th>
-      <td><p>markdown file for the "minus" teammate evaluation message</p></td>
-    </tr>
-    <tr>
-      <th>quant_scores_md_file</th>
-      <td><p>markdown file for the quantiative scores message</p></td>
-    </tr>
-    <tr>
-      <th>points_per_teammate</th>
-      <td><p>points per teammate</p></td>
-    </tr>
-    <tr>
-      <th>max_points</th>
-      <td><p>the maximum number of points allowed per team member</p></td>
-    </tr>
-    <tr>
-      <th>min_points</th>
-      <td><p>the smallest number of points allowed per team member</p></td>
-    </tr>
-    <tr>
-      <th>min_point_difference</th>
-      <td><p>the minimum point difference required for the scores (set to 0 to allow all scores to be identical)</p></td>
-    </tr>
-    <tr>
-      <th>auto_login_access_code</th>
-      <td><p>set an automatic login access code for testing and debugging purposes</p></td>
-    </tr>
-    </table>
+    <pre class="usage"><span class='fu'>tbl_example_peer_evaluation</span>()
+
+<span class='fu'>tbl_example_empty_peer_evaluation</span>()</pre>
+        
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><code>tbl_example_peer_evaluation</code> returns the google spreadsheet key (gs_key) for an example peer evaluation dataset.</p>
+<p><code>tbl_example_empty_peer_evaluation</code> returns the google spreadsheet key (gs_key) for an example empty/newly set-up peer evaluation.</p>
     
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#details">Details</a></li>
+          </ul>
 
   </div>
 </div>

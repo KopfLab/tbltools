@@ -1,7 +1,7 @@
 Package: tbltools
 Title: Tools for Team-Based-Learning
 Description: Tools for using Team-Based-Learning (TBL) approaches in the classroom.
-Version: 0.4.7.9999
+Version: 0.4.8
 Authors@R: person("Sebastian", "Kopf", email = "sebastian.kopf@colorado.edu",
     role = c("aut", "cre"))
 URL: https://github.com/kopflab/tbltools
@@ -13,6 +13,7 @@ Imports:
     rlang,
     glue, 
     tibble,
+    magrittr,
     dplyr (>= 0.7.0),
     tidyr,
     lubridate,
@@ -35,4 +36,4 @@ Remotes: ropensci/ghql
 License: MIT
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

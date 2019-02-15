@@ -9,8 +9,9 @@ tbl_deploy_peer_evaluation(folder = "peer_evaluation", ...)
 \arguments{
 \item{folder}{folder where the peer evaluation app is located (see \link{tbl_setup_peer_evaluation} for details)}
 
-\item{...}{passed on to \link[rsconnect]{deployApp}}
+\item{...}{optional parameters passed on to \link[rsconnect]{deployApp}}
 }
 \description{
-Upload the peer evaluation app to a shiny server via rsconnect. This requires rsconnect credentials to be already set --> see \link[rsconnect]{setAccountInfo}
+Upload the peer evaluation app to a shiny server via \link[rsconnect]{rsconnect}. This uses the rsconnect function link[rsconnect]{deployApp} to upload or update a peer evaluation and thus requires rsconnect credentials to be already set. See \link[rsconnect]{setAccountInfo} or https://shiny.rstudio.com/articles/shinyapps.html#configure-rsconnect for details on how to set your credentials for the https://www.shinyapps.io platform.
 }
+\concept{peer evaluation functionsde}

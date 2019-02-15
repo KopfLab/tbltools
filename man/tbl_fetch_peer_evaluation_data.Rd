@@ -4,19 +4,24 @@
 \alias{tbl_fetch_peer_evaluation_data}
 \title{Fetch the peer evaluation data}
 \usage{
-tbl_fetch_peer_evaluation_data(folder = ".", data_gs_title,
-  roster = read_excel(file.path(folder, "roster.xlsx")),
-  gs_token = file.path(folder, "gs_token.rds"))
+tbl_fetch_peer_evaluation_data(folder = ".", data_gs_title = NULL,
+  data_gs_key = NULL, roster = read_excel(file.path(folder,
+  "roster.xlsx")), gs_token = file.path(folder, "gs_token.rds"),
+  download_to = file.path(folder, "pe_data_downloaded.xlsx"))
 }
 \arguments{
 \item{folder}{folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter context)}
 
 \item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
 
+\item{data_gs_key}{alternatively to the \code{data_gs_title} and \code{gs_token}, a google spread sheet key object generated via \code{\link[googlesheets]{gs_key}} can be provided. This allows the use of externally registered spreadsheets such as public example sheets. If provided, it takes precedence over the data_gs_title parameter. Note that this is NOT an option for running peer evaluations which need write access to the google spreadsheet.}
+
 \item{roster}{data frame with the student roster}
 
 \item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
+
+\item{download_to}{location where the whole peer evaluation data sheet will be downloaded to for more efficient read access}
 }
 \description{
-Fetches the peer evaluation data from the google spreadsheet. For standard installations of the peer evaluation app, all defaults should be sufficient with only parameter \code{data_gs_title} requiring a specification.
+Fetches the peer evaluation data from the google spreadsheet and reads it (using \link{tbl_read_peer_evaluation_data}). For standard installations of the peer evaluation app, all defaults should be sufficient with only parameter \code{data_gs_title} requiring a specification.
 }

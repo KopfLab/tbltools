@@ -8,7 +8,7 @@ tbl_setup_peer_evaluation(folder = "peer_evaluation",
   data_gs_title = "Peer Evaluation",
   template_roster_file = system.file(package = "tbltools", "extdata",
   "roster_template.xlsx"), gs_token = file.path(folder, "gs_token.rds"),
-  overwrite = FALSE)
+  overwrite = FALSE, check_gs_access = TRUE)
 }
 \arguments{
 \item{folder}{target folder where to setup the peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.}
@@ -20,6 +20,8 @@ tbl_setup_peer_evaluation(folder = "peer_evaluation",
 \item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
 
 \item{overwrite}{whether to overwrite the app in the target directory if it already exists}
+
+\item{check_gs_access}{whether to confirm google spreadsheet access. Note that if this is set to \code{FALSE} (e.g. for avoiding a re-check when overwriting an existing peer evaluation folder), this function will NOT ask for google spreadsheet credenticals and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the user has access to. Make sure to provide the necessary access credentials manually (e.g. a \code{gs_token.rds} file in the application folder), otherwise the peer evaluation application will not be able to run (locally or on the shiny apps server).}
 }
 \value{
 returns the \code{folder} invisibly for ease of use in pipelines
@@ -28,9 +30,10 @@ returns the \code{folder} invisibly for ease of use in pipelines
 This functions makes it easy to setup a peer evaluation app folder. It creates the app script \code{app.R} and copies the \code{roster_file} (an Excel spreadsheet) as well as the necessary google drive credentials for the \code{data_gsheet} to the same directory. It will ask for google drive credentials using \link[googlesheets]{gs_auth} and the entered credentials must have access to the \code{data_gsheet}. Both \code{app.R} and the \code{roster_file} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster_file} will be read only and all actual data will be stored in the google drive data file.
 }
 \details{
-Use \link{tbl_test_peer_evaluation} with the same \code{folder} as parameter to test run the peer evaluation application locally on your computer.
+Use \link{tbl_test_peer_evaluation} with the same \code{folder} as parameter to test run the peer evaluation application locally on your computer. It is recommended to always test the peer evaluation application locally before uploading it to the shiny application server.
 }
 \seealso{
 Other peer evaluation functions: \code{\link{tbl_run_peer_evaluation}},
   \code{\link{tbl_test_peer_evaluation}}
 }
+\concept{peer evaluation functions}

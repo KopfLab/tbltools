@@ -4,9 +4,9 @@
 \alias{tbl_run_peer_evaluation}
 \title{Run a peer evaluation app}
 \usage{
-tbl_run_peer_evaluation(data_gs_title, roster = read_excel("roster.xlsx"),
-  gs_token = "gs_token.rds", app_title = "Peer Evaluation",
-  welcome_md_file = "app_welcome.md",
+tbl_run_peer_evaluation(data_gs_title,
+  roster = read_excel("roster.xlsx"), gs_token = "gs_token.rds",
+  app_title = "Peer Evaluation", welcome_md_file = "app_welcome.md",
   self_eval_plus_md_file = "app_self_evaluation_plus.md",
   self_eval_minus_md_file = "app_self_evaluation_minus.md",
   teammate_eval_plus_md_file = "app_teammate_evaluation_plus.md",
@@ -58,3 +58,4 @@ This function starts the peer evaluation user interface. Note that this function
 Other peer evaluation functions: \code{\link{tbl_setup_peer_evaluation}},
   \code{\link{tbl_test_peer_evaluation}}
 }
+\concept{peer evaluation functions}
