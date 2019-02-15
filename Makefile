@@ -23,6 +23,7 @@ vignettes: $(VIGNETTES_PDF)
 	rm -f vignettes/*.html
 	rm -f vignettes/*.xlsx
 	rm -f vignettes/*.png
+	rm -f vignettes/*.tex
 
 vignettes/%.pdf: vignettes/%.Rmd
 	Rscript -e "require(rmarkdown); render('$<', output_format = 'all')"
