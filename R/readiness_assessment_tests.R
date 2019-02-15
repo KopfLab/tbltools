@@ -17,7 +17,7 @@ tbl_setup_RAT_template <- function(module = "module 1", n_questions = 10, n_opti
   
   # check for folder
   if(!dir.exists(module)) {
-    glue("Info: creating RAT directory '{module}' in 'getwd()'") %>% message()
+    glue("Info: creating RAT directory '{module}' in working directory") %>% message()
     dir.create(module, recursive = TRUE)
   } else {
     glue("Info: RAT directory '{module}' already exists ",
@@ -212,7 +212,7 @@ tbl_create_RAT_from_data_frame <- function(questions, answer_key) {
   }
   
   # numbering (in order encountered)
-  questions <- questions %>% nest(-question) %>% mutate(tRAT_n = row_number(), iRAT_n = tRAT_n) %>% unnest()
+  questions <- questions %>% nest(-question) %>% mutate(tRAT_n = dplyr::row_number(), iRAT_n = tRAT_n) %>% unnest()
   
   # return
   structure(
@@ -288,8 +288,8 @@ tbl_arrange_RAT_questions <- function(rat, by = "original",
     # us original order (i.e. as encountered) ====
     rat$questions <- rat$questions %>% 
       nest(-question) %>% 
-      mutate(tRAT_n = row_number() + tRAT_n_start - 1L, 
-             iRAT_n = iRAT_sel_per_q * (row_number() - 1L) + iRAT_n_start) %>% 
+      mutate(tRAT_n = dplyr::row_number() + tRAT_n_start - 1L, 
+             iRAT_n = iRAT_sel_per_q * (dplyr::row_number() - 1L) + iRAT_n_start) %>% 
       unnest()
   } else if (by == "fixed") {
     # use fixed order =====
@@ -315,7 +315,7 @@ tbl_arrange_RAT_questions <- function(rat, by = "original",
       # initial numbering (in groups)
       ungroup() %>% 
       arrange(.group) %>% 
-      mutate(.init_n = row_number() + tRAT_n_start - 1L) %>% 
+      mutate(.init_n = dplyr::row_number() + tRAT_n_start - 1L) %>% 
       # get group ranges
       group_by(.group) %>% 
       mutate(.group_n_min = min(.init_n), .group_n_max = max(.init_n))
