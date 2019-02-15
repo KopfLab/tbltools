@@ -167,11 +167,11 @@ test_that("test that RAT generation works properly", {
   ## options
   rat3 <- rat
   rat3$answer_key <- filter(rat$answer_key, number < 3)
-  expect_error(tbltools::get_RAT_options(rat3), "Missing answer key")
+  expect_error(get_RAT_options(rat3), "Missing answer key")
   rat3$answer_key <- mutate(rat$answer_key, option = ifelse(number != 3, "F", option))
-  expect_error(tbltools::get_RAT_options(rat3), "NOT have enough possible answers")
+  expect_error(get_RAT_options(rat3), "NOT have enough possible answers")
   expect_true(is(random_rat <- tbl_arrange_RAT_questions(rat, by = "random"), "RAT"))
-  expect_true(is(rat_options <- tbltools::get_RAT_options(random_rat), "data.frame"))
+  expect_true(is(rat_options <- get_RAT_options(random_rat), "data.frame"))
   expect_equal(
     nest(rat_options, -question, -option, -n_options, -n_correct)$option, 
     left_join(random_rat$questions %>% nest(-question, -tRAT_n), answer_key, by = c("tRAT_n" = "number"))$option)
