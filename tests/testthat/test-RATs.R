@@ -39,16 +39,16 @@ answer_key <-
 
 test_that("test that is_true works properly", {
   
-  expect_true(tbltools::is_true(TRUE))
-  expect_true(tbltools::is_true("TRUE"))
-  expect_true(tbltools::is_true("true"))
-  expect_true(tbltools::is_true("True"))
-  expect_true(tbltools::is_true("x"))
-  expect_true(tbltools::is_true("yes"))
-  expect_false(tbltools::is_true("FALSE"))
-  expect_false(tbltools::is_true("no"))
-  expect_false(tbltools::is_true(""))
-  expect_false(tbltools::is_true(NA_character_))
+  expect_true(tbltools:::is_true(TRUE))
+  expect_true(tbltools:::is_true("TRUE"))
+  expect_true(tbltools:::is_true("true"))
+  expect_true(tbltools:::is_true("True"))
+  expect_true(tbltools:::is_true("x"))
+  expect_true(tbltools:::is_true("yes"))
+  expect_false(tbltools:::is_true("FALSE"))
+  expect_false(tbltools:::is_true("no"))
+  expect_false(tbltools:::is_true(""))
+  expect_false(tbltools:::is_true(NA_character_))
   
 })
 
