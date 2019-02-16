@@ -16,7 +16,7 @@ test_that("test that peer evaluation functions throw the proper errors", {
   expect_error(check_student_roster(roster), "not unique access code")
     
   # read data
-  expect_error(tbltools:::read_peer_eval("DNE"), "neither a google spreadsheet nor a valid path")
+  expect_error(read_peer_eval("DNE"), "neither a google spreadsheet nor a valid path")
   
   # app setup
   tmp <- tempdir()
@@ -63,7 +63,7 @@ test_that("test that peer evaluation functions throw the proper errors", {
   expect_error(tbl_export_peer_evaluation_data(5), "no data frame supplied")
   
   # example data
-  expect_error(tbltools::get_example_gs_key("DNE"), "could not retrieve")
+  expect_error(get_example_gs_key("DNE"), "could not retrieve")
 })
 
 # example data ----
