@@ -19,14 +19,31 @@ test_that("test that peer evaluation functions throw the proper errors", {
   expect_error(read_peer_eval("DNE"), "neither a google spreadsheet nor a valid path")
   
   # app setup
-  tmp <- tempdir()
+  tmp <- file.path(tempdir(), "pe1")
   expect_error(tbl_setup_peer_evaluation(folder = tmp, template_roster_file = "DNE"), "roster file.*does not exist")
   tmp_file <- tempfile()
   cat(file = tmp_file, "fake_token")
-  if (file.exists(tmp_file)) # safety measure to avoid test getting hung up on interactive authentication
-    expect_error(tbl_setup_peer_evaluation(folder = tmp, gs_token = tmp_file), "authentication failed")
+  expect_error(tbl_setup_peer_evaluation(folder = tmp, gs_token = tmp_file, overwrite = TRUE), "authentication failed")
+  expect_message(tbl_setup_peer_evaluation(folder = tmp, gs_token = tmp_file), "app already exists.*to overwrite")
+  expect_message(tbl_setup_peer_evaluation(folder = tmp, gs_token = tmp_file, overwrite = TRUE, check_gs_access = FALSE), "will be overwritten")
+  expect_message(tbl_setup_peer_evaluation(folder = tmp, gs_token = tmp_file, overwrite = TRUE, check_gs_access = FALSE), "complete")
   unlink(tmp_file)
+  expect_true(file.exists(file.path(tmp, "gs_token.rds")))
   expect_true(file.exists(file.path(tmp, "roster.xlsx")))
+  
+  # duplicate app
+  tmp2 <- file.path(tempdir(), "pe2")
+  expect_error(tbl_duplicate_peer_evaluation(tmp, tmp2, overwrite = TRUE), "authentication failed")
+  expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2), "app already exists.*to overwrite")
+  expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2, overwrite = TRUE, check_gs_access = FALSE), "will be overwritten")
+  expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2, overwrite = TRUE, check_gs_access = FALSE, data_gs_title = "NEW"), "changing spreadsheet title")
+  expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2, overwrite = TRUE, check_gs_access = FALSE), "fully duplicated")
+  
+  # check access
+  expect_error(tbl_check_gs_access(folder = tmp), "authentication failed")
+  expect_error(tbl_check_gs_access(gs_token = file.path(tmp, "gs_token.rds")), "authentication failed")
+  expect_error(tbl_check_gs_access(folder = tmp2), "authentication failed")
+  expect_error(tbl_check_gs_access(gs_token = file.path(tmp2, "gs_token.rds")), "authentication failed")
   
   # app start
   expect_error(tbl_run_peer_evaluation(roster = 5), "roster.*required")
@@ -35,6 +52,7 @@ test_that("test that peer evaluation functions throw the proper errors", {
   # app testing
   expect_error(tbl_test_peer_evaluation(folder = "DNE"), "does not exist")
   expect_error(tbl_test_peer_evaluation(folder = "."), "not.*contain a peer evaluation app")
+  expect_error(tbl_test_peer_evaluation(tmp), "authentication failed")
   
   # app deployment
   expect_error(tbl_deploy_peer_evaluation(folder = "DNE"), "does not exist")
@@ -64,6 +82,10 @@ test_that("test that peer evaluation functions throw the proper errors", {
   
   # example data
   expect_error(get_example_gs_key("DNE"), "could not retrieve")
+  
+  # cleanup
+  unlink(tmp, recursive = TRUE)
+  unlink(tmp2, recursive = TRUE)
 })
 
 # example data ----

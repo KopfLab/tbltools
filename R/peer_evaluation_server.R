@@ -4,7 +4,7 @@
 #' Generates the server part of the peer evaluation app
 #' @param roster data frame with the student roster
 #' @param data_gs_title name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.
-#' @param gs_token path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive. 
+#' @param gs_token path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive. 
 #' @param welcome_md_file path to a markdown (.md) file for the login welcome message
 #' @param self_eval_plus_md_file markdown file for the "plus" self evaluation message
 #' @param self_eval_minus_md_file markdown file for the "minus" self evaluation message
@@ -35,8 +35,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
     )
 
   # spreadsheet
-  try_to_authenticate(gs_token)
-  gs <- try_to_fetch_google_spreadsheet(data_gs_title)
+  gs <- tbl_check_gs_access(gs_token = gs_token, data_gs_title = data_gs_title)
   
   shinyServer(function(input, output, session) {
     

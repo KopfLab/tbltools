@@ -2,15 +2,18 @@
 
 #' Set up a peer evaluation app
 #' 
-#' This functions makes it easy to setup a peer evaluation app folder. It creates the app script \code{app.R} and copies the \code{roster_file} (an Excel spreadsheet) as well as the necessary google drive credentials for the \code{data_gsheet} to the same directory. It will ask for google drive credentials using \link[googlesheets]{gs_auth} and the entered credentials must have access to the \code{data_gsheet}. Both \code{app.R} and the \code{roster_file} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster_file} will be read only and all actual data will be stored in the google drive data file.
+#' This functions makes it easy to setup a peer evaluation app folder. It creates the app script \code{app.R} and copies the \code{roster_file} (an Excel spreadsheet) as well as the necessary google drive credentials for the \code{data_gs_title} to the same directory. Unless \code{check_gs_access = FALSE}, it will call the \code{\link{tbl_check_gs_access}} function and ask for google drive credentials using \link[googlesheets]{gs_auth}. The entered credentials (or provided \code{gs_token}) must have access to the google spreadsheet (\code{data_gs_title}). Both \code{app.R} and the \code{roster_file} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster_file} will be read-only and all actual data will be stored in the google drive data file.
 #' 
 #' Use \link{tbl_test_peer_evaluation} with the same \code{folder} as parameter to test run the peer evaluation application locally on your computer. It is recommended to always test the peer evaluation application locally before uploading it to the shiny application server.
+#' 
+#' Use \link{tbl_duplicate_peer_evaluation} to create a copy of an existing peer evaluation rather than setting one up from scratch.
 #' 
 #' @inheritParams peer_evaluation_server
 #' @param folder target folder where to setup the peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
 #' @param template_roster_file path to an excel (.xslx) file that contains the student roster information to use as template for the peer evaluation app (can be edited later)  - will use the package template by default
+#' @param gs_token path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.
 #' @param overwrite whether to overwrite the app in the target directory if it already exists
-#' @param check_gs_access whether to confirm google spreadsheet access. Note that if this is set to \code{FALSE} (e.g. for avoiding a re-check when overwriting an existing peer evaluation folder), this function will NOT ask for google spreadsheet credenticals and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the user has access to. Make sure to provide the necessary access credentials manually (e.g. a \code{gs_token.rds} file in the application folder), otherwise the peer evaluation application will not be able to run (locally or on the shiny apps server).
+#' @param check_gs_access whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE} (e.g. for avoiding a re-check when overwriting an existing peer evaluation folder), this function will NOT ask for google spreadsheet credenticals and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the user has access to. Make sure to provide the necessary access credentials manually (e.g. a \code{gs_token.rds} file in the application folder), otherwise the peer evaluation application will not be able to run (locally or on the shiny apps server).
 #' @inheritParams tbl_run_peer_evaluation
 #' @return returns the \code{folder} invisibly for ease of use in pipelines
 #' @family peer evaluation functions
@@ -50,38 +53,6 @@ tbl_setup_peer_evaluation <- function(
   # check roster file
   check_student_roster(roster)
 
-  # token save path
-  save_path <- file.path(folder, "gs_token.rds")
-  
-  if (check_gs_access) {
-    # google sheets authentication
-    if (!is.null(gs_token) && file.exists(gs_token))
-      token <- try_to_authenticate(gs_token)
-    else 
-      token <- try_to_authenticate()
-    
-    # save token
-    if (!file.exists(save_path) || overwrite) {
-      glue("Info: copying authentication token to {folder}/gs_token.rds") %>% message()
-      if (!is.null(gs_token) && file.exists(gs_token))
-        # copy from location
-        file.copy(gs_token, to = save_path)
-      else
-        # copy from fresh authentication
-        write_rds(x = token, path = save_path)
-    }
-    
-    # check google sheet presence
-    gs <- try_to_fetch_google_spreadsheet(data_gs_title)
-    
-  } else {
-    # not checking gs access (but copying token if provided)
-    if (!is.null(gs_token) && file.exists(gs_token) && (!file.exists(save_path) || overwrite)) {
-      glue("Info: copying authentication token (but without checking gs access) to {folder}/gs_token.rds") %>% message()
-      file.copy(gs_token, to = save_path) 
-    }
-  }
-  
   # generate function call
   glue("Info: creating {folder}/app.R application file and application content") %>% message()
   
@@ -131,12 +102,95 @@ tbl_setup_peer_evaluation <- function(
     str_interp(list(data_gs_title = data_gs_title)) %>% 
     cat(file = file.path(folder, "evaluation.Rmd"))
   
+  # token save path
+  gs_token_save_path <- file.path(folder, "gs_token.rds")
+  
+  # copy token
+  if (!is.null(gs_token) && file.exists(gs_token) && (!file.exists(gs_token_save_path) || overwrite)) {
+    if (check_gs_access)
+      glue("Info: copying authentication token to {folder}/gs_token.rds") %>% message()
+    else
+      glue("Info: copying authentication token (but without checking gs access) to {folder}/gs_token.rds") %>% message()
+    file.copy(gs_token, to = gs_token_save_path) 
+  }
+  
+  # check gs_access
+  if (check_gs_access) {
+    tbl_check_gs_access(folder = folder, data_gs_title = data_gs_title, gs_token = gs_token_save_path)
+  }
+  
   glue("Info: set up of tbltools' Peer Evaluation app in directory '{folder}' is complete.\n",
        "Please modify the files in '{folder}' as appropriate before uploading to shiny server.") %>% 
     message()
+  
   return(invisible(folder))
 }
 
+#' Duplicate a peer evaluation app
+#' 
+#' This functions makes it easy to duplicate an existing peer evaluation by copying all relevant files into a new folder. You can optionally change the google spreadsheet the new peer evaluation is linked to by specifying the \code{data_gs_title} parameter. To create a new peer evaluation from scratch, use \link{tbl_setup_peer_evaluation} instead. 
+#' 
+#' @param old_folder folder where the existing peer evaluation that is to be duplicated is located (path must be either relative to the current working directory or an absolute file path on the operating system).
+#' @param new_folder target folder where to setup the duplicated peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
+#' @inheritParams peer_evaluation_server
+#' @inheritParams tbl_setup_peer_evaluation
+#' @return returns the \code{new_folder} invisibly for ease of use in pipelines
+#' @family peer evaluation functions
+#' @export
+tbl_duplicate_peer_evaluation <- function(old_folder = "peer_evaluation", new_folder = "peer_evaluation2", data_gs_title = NULL, overwrite = FALSE, check_gs_access = TRUE) {
+  
+  # check old folder
+  check_peer_evaluation_folder(old_folder)
+  
+  # check new folder
+  if(!dir.exists(new_folder)) {
+    glue("Info: creating app directory '{new_folder}'") %>% message()
+    dir.create(new_folder, recursive = TRUE)
+  } else if (file.exists(file.path(new_folder, "app.R"))) {
+    glue("Info: an app already exists in folder '{new_folder}' ",
+         "{if(overwrite) 'but will be overwritten' else '(use \"overwrite = TRUE\" to overwrite)'}") %>% 
+      message()
+    if (!overwrite) return(invisible(new_folder))
+  }
+  
+  # copy files
+  files <- list.files(old_folder, all.files = TRUE, recursive = TRUE, full.names = TRUE)
+  glue("Info: copying {length(files)} files into '{new_folder}'...") %>% 
+    message()
+  purrr::map(files, file.copy, to = new_folder, overwrite = TRUE)
+  
+  # find data gs title
+  app_lines <- readr::read_lines(file = file.path(new_folder, "app.R"))
+  old_data_gs_title_line <- stringr::str_detect(app_lines, "data_gs_title")
+  if (sum(old_data_gs_title_line) != 1) {
+    stop("could not identify where in the app.R file the 'data_gs_title' parameter is located", call. = FALSE)
+  }
+  
+  if (!is.null(data_gs_title)) {
+    # switching to new title
+    glue("Info: changing spreadsheet title to '{data_gs_title}'.") %>% message()
+    app_lines[old_data_gs_title_line] <- sprintf("\tdata_gs_title = \"%s\",", data_gs_title)
+    cat(app_lines, file = file.path(new_folder, "app.R"), sep = "\n")
+  } else {
+    # keeping old title
+    data_gs_title <-
+      app_lines[old_data_gs_title_line] %>% 
+      stringr::str_match("data_gs_title ?= ?\\\"([^\"]*)\\\"") %>% 
+      { .[,2] }
+  }
+  
+  # check gs_access
+  if (check_gs_access) {
+    tbl_check_gs_access(folder = new_folder, data_gs_title = data_gs_title)
+  }
+  
+  # finalize
+  glue("Info: peer evaluation app from '{old_folder}' is now fully duplicated in directory '{new_folder}'.\n",
+       "Please modify the files in '{new_folder}' as appropriate before uploading to shiny server.") %>% 
+    message()
+  
+  return(invisible(new_folder))
+}
 
 #' Run a peer evaluation app
 #'
@@ -151,7 +205,6 @@ tbl_setup_peer_evaluation <- function(
 tbl_run_peer_evaluation <- function(
   data_gs_title, 
   roster = read_excel("roster.xlsx"), 
-  gs_token = "gs_token.rds", 
   app_title = "Peer Evaluation", 
   welcome_md_file = "app_welcome.md", 
   self_eval_plus_md_file = "app_self_evaluation_plus.md", 
@@ -163,12 +216,16 @@ tbl_run_peer_evaluation <- function(
   auto_login_access_code = NULL, ..., 
   launch = FALSE) {
   
+  # require specific gs token location for simplicity
+  gs_token <- "gs_token.rds"
+  
   # safety checks
   if (!is.data.frame(roster)) stop("roster data frame required", call. = FALSE)
   content_files <- c(welcome_md_file, self_eval_plus_md_file, self_eval_minus_md_file, teammate_eval_plus_md_file, teammate_eval_minus_md_file, quant_scores_md_file)
   if (any(missing <- !file.exists(content_files)))
     glue("content files do not exist: '{collapse(content_files[missing], sep = \"', '\")}'") %>% 
     stop(call. = FALSE)
+  if (!file.exists(gs_token)) glue("no authentication token file found ({gs_token} is missing)") %>% stop(call. = FALSE)
   
   # start-up message
   glue(
@@ -186,7 +243,7 @@ tbl_run_peer_evaluation <- function(
     server = peer_evaluation_server(
       roster = roster,
       data_gs_title = data_gs_title,
-      gs_token = gs_token,
+      gs_token = "gs_token.rds",
       welcome_md_file = welcome_md_file, 
       self_eval_plus_md_file = self_eval_plus_md_file, 
       self_eval_minus_md_file = self_eval_minus_md_file, 
@@ -218,7 +275,12 @@ tbl_run_peer_evaluation <- function(
 #' @family peer evaluation functions
 #' @export
 tbl_test_peer_evaluation <- function(folder = "peer_evaluation", ...) {
-  
+  check_peer_evaluation_folder(folder)
+  runApp(folder, ...)
+}
+
+# convenience function for app existence check
+check_peer_evaluation_folder <- function(folder) {
   if(!dir.exists(folder)) {
     glue("peer evaluation app folder '{folder}' does not exist") %>% 
       stop(call. = FALSE)
@@ -228,8 +290,6 @@ tbl_test_peer_evaluation <- function(folder = "peer_evaluation", ...) {
     glue("the folder '{folder}' does not seem to contain a peer evaluation app ('app.R' is missing)") %>% 
       stop(call. = FALSE)
   }
-  
-  runApp(folder, ...)
 }
 
 #' Deploy peer evaluation app
@@ -297,6 +357,7 @@ tbl_example_empty_peer_evaluation <- function() {
 #' 
 #' Fetches the peer evaluation data from the google spreadsheet and reads it (using \link{tbl_read_peer_evaluation_data}). For standard installations of the peer evaluation app, all defaults should be sufficient with only parameter \code{data_gs_title} requiring a specification.
 #' 
+#' @inheritParams tbl_setup_peer_evaluation
 #' @inheritParams tbl_run_peer_evaluation
 #' @param folder folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter context)
 #' @param data_gs_key alternatively to the \code{data_gs_title} and \code{gs_token}, a google spread sheet key object generated via \code{\link[googlesheets]{gs_key}} can be provided. This allows the use of externally registered spreadsheets such as public example sheets. If provided, it takes precedence over the data_gs_title parameter. Note that this is NOT an option for running peer evaluations which need write access to the google spreadsheet.
@@ -320,8 +381,7 @@ tbl_fetch_peer_evaluation_data <- function(
     gs <- gs_gs(data_gs_key, verbose = FALSE)
   } else {
     # authenticate and get gs via title
-    try_to_authenticate(gs_token)
-    gs <- try_to_fetch_google_spreadsheet(data_gs_title)
+    gs <- tbl_check_gs_access(gs_token = gs_token, data_gs_title = data_gs_title)
   }
   
   # downloading data
@@ -538,9 +598,45 @@ check_student_roster <- function(roster) {
   return(mutate(roster, access_code = as.character(access_code)))
 }
 
+# authentication =======
+
+#' Check google spreadsheet access
+#' 
+#' This function checks whether google spreadsheet credentials are established and there is access to the \code{data_gs_title} google sheet. If the \code{gs_token} file does not exist yet or \code{new_credentials = TRUE}, it will establish new google drive credentials using \link[googlesheets]{gs_auth}.
+#' 
+#' @inheritParams tbl_setup_peer_evaluation
+#' @param new_credentials if set to TRUE, will always prompt the user to establish new google drive credentials. If FALSE (the default), will only do so if the \code{gs_token} file does not exist yet.
+#' @return returns the retrieved google spreadsheet key invisibly
+#' @family peer evaluation functions
+#' @export
+tbl_check_gs_access <- function(folder = "peer_evaluation", data_gs_title = "Peer Evaluation", 
+                                gs_token = file.path(folder, "gs_token.rds"), new_credentials = FALSE) {
+  
+  # error msg 
+  err_msg <- glue(
+    "\n\nNote: there may be a problem with your authentication credentials (e.g. expired token, wrong account, etc.), ",
+    "please run the following function for the peer evaluation folder and google spreadsheet to establish new credentials and confirm access to the google sheet:\n\n",
+    "tbl_check_gs_access(folder = \"{if(!missing(folder)) {folder} else {'ENTER FOLDER'}}\", ",
+    "data_gs_title = \"{data_gs_title}\", new_credentials = TRUE)"
+  )
+  
+  # google sheets authentication
+  if (file.exists(gs_token) && !new_credentials) {
+    token <- try_to_authenticate(gs_token, err_msg = err_msg)
+  } else {
+    token <- try_to_authenticate(err_msg = err_msg)
+    glue("Info: storing new authentication token in {gs_token}") %>% message()
+    write_rds(x = token, path = gs_token)
+  }
+  
+  # check google sheet presence
+  gs <- try_to_fetch_google_spreadsheet(data_gs_title, err_msg = err_msg)
+  
+  return(invisible(gs))
+}
 
 # authenticate with google server
-try_to_authenticate <- function(gs_token = NULL) {
+try_to_authenticate <- function(gs_token = NULL, err_msg = "") {
   # google sheets authentication
   automatic <- is.null(getOption('httr_oob_default')) || !getOption('httr_oob_default')
   tryCatch({
@@ -560,12 +656,8 @@ try_to_authenticate <- function(gs_token = NULL) {
     if (automatic && str_detect(e$message, fixed("Failed to create server"))) {
       glue("could not authenticate automatically, please run 'options(httr_oob_default = TRUE)' and try again to authenticate manually: {e$message}") %>% 
         stop(call. = FALSE)
-    } else if (!is.null(gs_token)) {
-      glue("google spreadsheet authentication failed: {e$message}\n",
-           "NOTE: if you are using a token, it may be expired and needs to be recreated, please delete the token file and rerun your previous command.") %>% 
-        stop(call. = FALSE)
     } else {
-      glue("google spreadsheet authentication failed: {e$message}") %>% 
+      glue("google spreadsheet authentication failed: {e$message}{err_msg}") %>% 
         stop(call. = FALSE)
     }
   })
@@ -573,10 +665,10 @@ try_to_authenticate <- function(gs_token = NULL) {
 }
 
 # find google spreadsheet
-try_to_fetch_google_spreadsheet <- function(gs_title) {
+try_to_fetch_google_spreadsheet <- function(gs_title, err_msg = "") {
   message("Info: looking for spreadsheet... ", appendLF = FALSE)
   tryCatch(gs <- gs_title(gs_title), error = function(e) {
-    glue("google spreadsheet with title '{gs_title}' could not be retrieved: {e$message}") %>% 
+    glue("google spreadsheet with title '{gs_title}' could not be retrieved: {e$message}{err_msg}") %>% 
       stop(call. = FALSE)
   })
   return(gs)
