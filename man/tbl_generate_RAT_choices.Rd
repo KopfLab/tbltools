@@ -16,9 +16,9 @@ tbl_generate_RAT_choices(rat, answer_layout = "vertical",
 
 \item{answer_layout_column}{set this parameter to a column name in the questions data frame that has a different layout name for questions that are indended to deviate from the default layout (\code{answer_layout}). All layouts must be defined in the \code{answer_layout_funs} (\code{"vertical"} and \code{"horizontal"} by default).}
 
-\item{random_seed}{can overwrite with a fixed value (e.g. \code{random_seed=42}) to get a reproducible "random" order of the answer options}
+\item{answer_layout_funs}{Specify custom answer layouts by providing layout functions that differ from the default. See \code{tbl_default_RAT_layouts} for details on how these work.}
 
-\item{answer_layout_funcs}{Specify custom answer layouts by providing layout functions that differ from the default. See \code{tbl_default_RAT_layouts} for details on how these work.}
+\item{random_seed}{can overwrite with a fixed value (e.g. \code{random_seed=42}) to get a reproducible "random" order of the answer options}
 }
 \description{
 Generates the actual multiple choice questions in an RAT

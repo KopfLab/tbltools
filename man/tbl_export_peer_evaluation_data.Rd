@@ -8,7 +8,7 @@ tbl_export_peer_evaluation_data(data, filepath = "pe_data_summary.xlsx",
   ...)
 }
 \arguments{
-\item{data}{the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_dat}}
+\item{data}{the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_data}}
 
 \item{filepath}{the excel file where to save the peer evaluation data summary}
 

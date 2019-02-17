@@ -6,6 +6,9 @@
 \usage{
 tbl_setup_RAT_demo(overwrite = FALSE)
 }
+\arguments{
+\item{overwrite}{whether to overwrite the folder if it already exists (default is not to overwrite anything)}
+}
 \description{
 Setup a demo RAT
 }

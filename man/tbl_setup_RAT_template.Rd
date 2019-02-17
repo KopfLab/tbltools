@@ -13,6 +13,8 @@ tbl_setup_RAT_template(module = "module 1", n_questions = 10,
 \item{n_questions}{number of questions to template the RAT with}
 
 \item{n_options_per_q}{default number of options per question}
+
+\item{overwrite}{whether to overwrite the folder if it already exists (default is not to overwrite anything)}
 }
 \description{
 This function templates an RAT. All parameters are merely the defaults used for templating the new RAT and all can be modified as needed in the RAT excel spreadsheet and RMarkdown that this function creates.

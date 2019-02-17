@@ -12,11 +12,11 @@ tbl_create_RAT_from_excel(filepath, questions_tab = "questions",
 
 \item{questions_tab}{the name of the questions tab (requires at minimum columns 'question', 'answer', and logical TRUE/FALSE 'correct', plus logical 'include' if \code{filter_include=TRUE})}
 
+\item{key_tab}{the name of th keys tab (requires at mimimum columns 'number', 'option')}
+
 \item{filter_include}{if set, only keeps questions that have the 'include' column set}
 
 \item{fill_down_questions}{whether to fill down the questions column (i.e. if question an their parameters are only written in first row)}
-
-\item{keys_tab}{the name of th keys tab (requires at mimimum columns 'number', 'option')}
 }
 \description{
 Load RAT questions and answer key from Excel. Note that logical columns ('correct' and 'include') are evaluated to TRUE if they are =1, =TRUE, ='TRUE', ='yes' or ='x', everything else is FALSE. Uses \link{tbl_create_RAT_from_data_frame} internally.

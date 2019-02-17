@@ -60,10 +60,12 @@ reference:
     Functions to easily generate, test and deploy a shiny application for collecting team-based peer evaluations in a google spreadsheet.
   contents:
   - tbl_setup_peer_evaluation
+  - tbl_duplicate_peer_evaluation
   - tbl_test_peer_evaluation
   - tbl_deploy_peer_evaluation
   - tbl_run_peer_evaluation
   - tbl_generate_access_codes
+  - tbl_check_gs_access
 - title: Peer Evaluation Data
   desc: >
     Functions to fetch and summarize peer evaluation data from a peer evaluation app.

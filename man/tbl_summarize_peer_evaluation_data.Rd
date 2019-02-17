@@ -7,7 +7,7 @@
 tbl_summarize_peer_evaluation_data(data, submitted_only = FALSE)
 }
 \arguments{
-\item{data}{the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_dat}}
+\item{data}{the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_data}}
 
 \item{submitted_only}{only include evaluations that were actually submitted (rather than just saved)}
 }
