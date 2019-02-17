@@ -425,12 +425,15 @@ tbl_read_peer_evaluation_data <- function(
   roster = read_excel(file.path(folder, "roster.xlsx")),
   download_file = file.path(folder, "pe_data_downloaded.xlsx")) {
     
+  # global vars
+  team <- access_code <- timestamp <- submitted <- evaluatee_access_code <- submitted2 <- self_evaluation <- plus <- minus <- score <- NULL
+  
   # safety checks
   if (!is.data.frame(roster)) stop("roster data frame required", call. = FALSE)
   students <- check_student_roster(roster) %>% 
     # get team member
     group_by(team) %>% 
-    mutate(n_team_mates = n() - 1L) %>% 
+    mutate(n_team_mates = dplyr::n() - 1L) %>% 
     ungroup() 
   
   # path
@@ -478,10 +481,13 @@ tbl_read_peer_evaluation_data <- function(
 #' 
 #' Summarizes the peer evaluation data. Preserves all roster information (last name, first name, team, + any custom fields).
 #' 
-#' @param data the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_dat}
+#' @param data the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_data}
 #' @param submitted_only only include evaluations that were actually submitted (rather than just saved)
 #' @export
 tbl_summarize_peer_evaluation_data <- function(data, submitted_only = FALSE) {
+  
+  # global vars
+  started <- submitted <- submitted_timestamp <- evaluations <- access_code <- evaluatee_access_code <- self_evaluation <- n_evaluations <- score <- plus <- minus <- NULL
   
   # safety
   if (missing(data) || !is.data.frame(data))
@@ -493,7 +499,7 @@ tbl_summarize_peer_evaluation_data <- function(data, submitted_only = FALSE) {
     glue("missing column(s) in data frame: {collapse(missing, sep=', ')}") %>% 
     stop(call. = FALSE)
   
-  summarize_evals <- . %>% sample() %>% na.omit() %>% collapse(sep = "\n\n") %>% { ifelse(is.null(.), NA_character_, .) }
+  summarize_evals <- . %>% sample() %>% stats::na.omit() %>% collapse(sep = "\n\n") %>% { ifelse(is.null(.), NA_character_, .) }
   
   # make sure to preserve custom roster info
   roster <- data %>% select(-started, -submitted, -submitted_timestamp, -evaluations) %>% 
@@ -530,6 +536,9 @@ tbl_summarize_peer_evaluation_data <- function(data, submitted_only = FALSE) {
 #' @return returns the passed in data invisibly to permit use of this function inside pipelines
 #' @export
 tbl_export_peer_evaluation_data <- function(data, filepath = "pe_data_summary.xlsx", ...) {
+  
+  # global vars
+  evaluations <- NULL
   
   # safety
   if (missing(data) || !is.data.frame(data))
@@ -594,6 +603,10 @@ tbl_generate_access_codes <- function(n, length = 4) {
 
 # safety checks for student roster data frame
 check_student_roster <- function(roster) {
+  
+  # global vars:
+  access_code <- n <- NULL
+  
   # check for data frame
   if(!is.data.frame(roster))
     stop("student roster must be a data frame", call. = FALSE)
@@ -697,6 +710,9 @@ try_to_fetch_google_spreadsheet <- function(gs_title, err_msg = "") {
 # @param ss - spreadsheet
 read_peer_eval <- function(ss, access_code) {
   
+  # global vars
+  timestamp <- score <- NULL
+  
   is_gs <- is(ss, "googlesheet")
   
   if (is_gs) {
@@ -756,6 +772,9 @@ read_peer_eval <- function(ss, access_code) {
 
 # save peer evaluation
 save_peer_eval <- function(gs, access_code, data, submitted = FALSE) {
+  
+  # global vars
+  timestamp <- NULL
   
   # refresh sheet
   gs <- gs_gs(gs)

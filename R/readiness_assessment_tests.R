@@ -7,9 +7,13 @@
 #' @param module name of the module, this will be used as the default folder and file name for the RAT. Can be a folder path in which case only the sub-directory name will be used for file names.
 #' @param n_questions number of questions to template the RAT with
 #' @param n_options_per_q default number of options per question
+#' @param overwrite whether to overwrite the folder if it already exists (default is not to overwrite anything)
 #' @export
 tbl_setup_RAT_template <- function(module = "module 1", n_questions = 10, n_options_per_q = 5, overwrite = FALSE) {
-  
+
+  # global vars
+  question <- NULL
+    
   if (n_options_per_q < 2)
     stop("there most be at least 2 options per question in the template", call. = FALSE)
   if (n_questions < 1)
@@ -87,6 +91,7 @@ tbl_setup_RAT_template <- function(module = "module 1", n_questions = 10, n_opti
 
 #' Setup a demo RAT
 #'
+#' @inheritParams tbl_setup_RAT_template
 #' @export
 tbl_setup_RAT_demo <- function(overwrite = FALSE) {
   
@@ -118,11 +123,14 @@ tbl_setup_RAT_demo <- function(overwrite = FALSE) {
 #' 
 #' @param filepath the path to the excel file
 #' @param questions_tab the name of the questions tab (requires at minimum columns 'question', 'answer', and logical TRUE/FALSE 'correct', plus logical 'include' if \code{filter_include=TRUE})
-#' @param keys_tab the name of th keys tab (requires at mimimum columns 'number', 'option')
+#' @param key_tab the name of th keys tab (requires at mimimum columns 'number', 'option')
 #' @param filter_include if set, only keeps questions that have the 'include' column set
 #' @param fill_down_questions whether to fill down the questions column (i.e. if question an their parameters are only written in first row)
 #' @export
 tbl_create_RAT_from_excel <- function(filepath, questions_tab = "questions", key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE) {
+  
+  # global vars
+  .group <- include <- keep <- question <- answer <- option <- NULL
   
   if (!file.exists(filepath))
     glue("file '{filepath}' does not exist in working directory '{getwd()}'") %>% stop(call. = FALSE)
@@ -173,6 +181,10 @@ tbl_create_RAT_from_excel <- function(filepath, questions_tab = "questions", key
 #' @param answer_key data frame with answer key (requires at mimimum columns 'number', 'option')
 #' @export
 tbl_create_RAT_from_data_frame <- function(questions, answer_key) {
+  
+  # global vars
+  correct <- number <- question <- tRAT_n <- NULL
+  
   # check for required columns
   if (length(missing <- setdiff(c("question", "answer", "correct"), names(questions))) > 0) {
     glue("Missing required column(s): {collapse(missing, sep = ', ')}") %>% 
@@ -240,6 +252,10 @@ tbl_create_RAT_from_data_frame <- function(questions, answer_key) {
 tbl_arrange_RAT_questions <- function(rat, by = "original", 
                                       tRAT_n_start = 1, iRAT_n_start = tRAT_n_start, iRAT_sel_per_q = 1, 
                                       fixed_number_column = NULL, group_by_column = NULL, random_seed = random()) {
+  
+  # global vars
+  tRAT_n <- iRAT_n <- question <- .fixed_number <- .init_n <- .group_n_min <- .group_n_max <- .group <- NULL
+  
   if (!is(rat, "RAT")) 
     stop("can only arrange Readiness Assessment Test objects, found: ", class(rat)[1], call. = FALSE)
   
@@ -382,7 +398,7 @@ tbl_arrange_RAT_questions <- function(rat, by = "original",
 #' @inheritParams tbl_arrange_RAT_questions
 #' @param answer_layout how to arrange the answers, layouts supported by default are \code{"vertical"} and \code{"horizontal"} (recommended for image answers). The layout can be overwritten for individual questions by setting the \code{answer_layout_column} parameter. Custom answer layouts can be provided using the \code{answer_layout_funcs} parameter. 
 #' @param answer_layout_column set this parameter to a column name in the questions data frame that has a different layout name for questions that are indended to deviate from the default layout (\code{answer_layout}). All layouts must be defined in the \code{answer_layout_funs} (\code{"vertical"} and \code{"horizontal"} by default).
-#' @param answer_layout_funcs Specify custom answer layouts by providing layout functions that differ from the default. See \code{tbl_default_RAT_layouts} for details on how these work.
+#' @param answer_layout_funs Specify custom answer layouts by providing layout functions that differ from the default. See \code{tbl_default_RAT_layouts} for details on how these work.
 #' @param random_seed can overwrite with a fixed value (e.g. \code{random_seed=42}) to get a reproducible "random" order of the answer options
 #' @export
 tbl_generate_RAT_choices <- function(rat, answer_layout = "vertical", 
@@ -390,6 +406,9 @@ tbl_generate_RAT_choices <- function(rat, answer_layout = "vertical",
                                      random_seed = random()) {
   if (!is(rat, "RAT")) 
     stop("can only use Readiness Assessment Test objects, found: ", class(rat)[1], call. = FALSE)
+  
+  # global vars
+  question <- .layout <- tRAT_n <- correct <- option <- n_options <- answer_option <- NULL
   
   # safety checks
   layout_options <- names(answer_layout_funs)
@@ -504,7 +523,10 @@ get_question_number <- function(iRAT_n, tRAT_n) {
 # helper function to check that each question has a sufficient number of answer options for the designated answer key
 # returns RAT options
 get_RAT_options <- function(rat) {
-  
+
+  # global vars:
+  option <- question <- n_correct <- n_options <- tRAT_n <- NULL 
+    
   # join in answer key
   rat_options <- left_join(rat$questions, rat$answer_key, by = c("tRAT_n" = "number")) 
   if (nrow(missing <- filter(rat_options, is.na(option))) > 0) {
@@ -515,7 +537,7 @@ get_RAT_options <- function(rat) {
   rat_options <- rat_options %>% 
     group_by(question) %>%
     mutate(
-      n_options = n(),
+      n_options = dplyr::n(),
       n_correct = which(LETTERS == option[1])
     ) %>% 
     ungroup()
@@ -535,10 +557,14 @@ get_RAT_options <- function(rat) {
 
 #' @export
 print.RAT <- function(x, ...) {
+  
+  # global vars
+  question <- iRAT_n <- tRAT_n <- answers <- NULL
+  
   # get number in there
   x_sum <- x$questions %>% 
     group_by(question, iRAT_n, tRAT_n) %>% 
-    summarize(answers = n()) %>% 
+    summarize(answers = dplyr::n()) %>% 
     ungroup() %>% 
     mutate(label = str_c("#", get_question_number(iRAT_n, tRAT_n), ": ", question, " (", answers, " answers)")) %>% 
     arrange(iRAT_n)

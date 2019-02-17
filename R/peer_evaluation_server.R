@@ -22,6 +22,9 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
                                    points_per_teammate = 10, max_points = 15, min_points = 0, min_point_difference = 2,
                                    auto_login_access_code = NULL) {
   
+  # gloval vars
+  access_code <- first <- last <- plus <- minus <- team <- full_name <- score <- NULL
+  
   # access code prefix (must stay the same as in tbl_fetch_peer_evaluation_data!)
   access_code_prefix <- "id_"
   
@@ -77,7 +80,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
     calculate_scores <- reactive({
       data <- get_data_as_df()
       if (nrow(data) == 0) return(c(0))
-      else data$score %>% na.omit()
+      else data$score %>% stats::na.omit()
     })
     
     calculate_diff <- reactive({
