@@ -18,7 +18,9 @@
 # RStudio files
 .Rproj.user/
 
-# produced vignettes
+# temporary vignette files
+vignettes/module.Rmd
+vignettes/demo.Rmd
 vignettes/*.html
 vignettes/*.pdf
 vignettes/*.png
@@ -41,6 +43,7 @@ vignettes/*.tex
 
 # Auxiliary package files
 /tmp/
+/inst/doc
 /peer_evaluation*/
 /module*/
 *.nb.html
