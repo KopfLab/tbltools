@@ -86,6 +86,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
     
     # load access code ====
     load_access <- function(entered_access_code) {
+      pure_access_code <- entered_access_code
       entered_access_code <- str_c(access_code_prefix, entered_access_code)
       message("Checking access code: ", entered_access_code)
       hide("access-panel")
@@ -93,7 +94,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
       student <- filter(students, tolower(access_code) == tolower(entered_access_code))
       load_access_code <- FALSE
       if (nrow(student) == 0) {
-        showModal(modalDialog(h2(str_c("Unknown access code: ", entered_access_code)), easyClose = TRUE, fade = FALSE))
+        showModal(modalDialog(h2(str_c("Unknown access code: ", pure_access_code)), easyClose = TRUE, fade = FALSE))
       } else if (is.null(values$access_code) || values$access_code != entered_access_code) {
         
         # save student info

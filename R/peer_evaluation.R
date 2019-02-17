@@ -130,37 +130,37 @@ tbl_setup_peer_evaluation <- function(
 #' 
 #' This functions makes it easy to duplicate an existing peer evaluation by copying all relevant files into a new folder. You can optionally change the google spreadsheet the new peer evaluation is linked to by specifying the \code{data_gs_title} parameter. To create a new peer evaluation from scratch, use \link{tbl_setup_peer_evaluation} instead. 
 #' 
-#' @param old_folder folder where the existing peer evaluation that is to be duplicated is located (path must be either relative to the current working directory or an absolute file path on the operating system).
-#' @param new_folder target folder where to setup the duplicated peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
+#' @param template folder where the existing peer evaluation that is to be duplicated is located (path must be either relative to the current working directory or an absolute file path on the operating system).
+#' @param folder target folder where to setup the duplicated peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
 #' @inheritParams peer_evaluation_server
 #' @inheritParams tbl_setup_peer_evaluation
-#' @return returns the \code{new_folder} invisibly for ease of use in pipelines
+#' @return returns the \code{folder} invisibly for ease of use in pipelines
 #' @family peer evaluation functions
 #' @export
-tbl_duplicate_peer_evaluation <- function(old_folder = "peer_evaluation", new_folder = "peer_evaluation2", data_gs_title = NULL, overwrite = FALSE, check_gs_access = TRUE) {
+tbl_duplicate_peer_evaluation <- function(template = "peer_evaluation", folder = "peer_evaluation2", data_gs_title = NULL, overwrite = FALSE, check_gs_access = TRUE) {
   
   # check old folder
-  check_peer_evaluation_folder(old_folder)
+  check_peer_evaluation_folder(template)
   
   # check new folder
-  if(!dir.exists(new_folder)) {
-    glue("Info: creating app directory '{new_folder}'") %>% message()
-    dir.create(new_folder, recursive = TRUE)
-  } else if (file.exists(file.path(new_folder, "app.R"))) {
-    glue("Info: an app already exists in folder '{new_folder}' ",
+  if(!dir.exists(folder)) {
+    glue("Info: creating app directory '{folder}'") %>% message()
+    dir.create(folder, recursive = TRUE)
+  } else if (file.exists(file.path(folder, "app.R"))) {
+    glue("Info: an app already exists in folder '{folder}' ",
          "{if(overwrite) 'but will be overwritten' else '(use \"overwrite = TRUE\" to overwrite)'}") %>% 
       message()
-    if (!overwrite) return(invisible(new_folder))
+    if (!overwrite) return(invisible(folder))
   }
   
   # copy files
-  files <- list.files(old_folder, all.files = TRUE, recursive = TRUE, full.names = TRUE)
-  glue("Info: copying {length(files)} files into '{new_folder}'...") %>% 
+  files <- list.files(template, all.files = TRUE, recursive = TRUE, full.names = TRUE)
+  glue("Info: copying {length(files)} files from template '{template}' into '{folder}'...") %>% 
     message()
-  purrr::map(files, file.copy, to = new_folder, overwrite = TRUE)
+  purrr::map(files, file.copy, to = folder, overwrite = TRUE)
   
   # find data gs title
-  app_lines <- readr::read_lines(file = file.path(new_folder, "app.R"))
+  app_lines <- readr::read_lines(file = file.path(folder, "app.R"))
   old_data_gs_title_line <- stringr::str_detect(app_lines, "data_gs_title")
   if (sum(old_data_gs_title_line) != 1) {
     stop("could not identify where in the app.R file the 'data_gs_title' parameter is located", call. = FALSE)
@@ -170,7 +170,17 @@ tbl_duplicate_peer_evaluation <- function(old_folder = "peer_evaluation", new_fo
     # switching to new title
     glue("Info: changing spreadsheet title to '{data_gs_title}'.") %>% message()
     app_lines[old_data_gs_title_line] <- sprintf("\tdata_gs_title = \"%s\",", data_gs_title)
-    cat(app_lines, file = file.path(new_folder, "app.R"), sep = "\n")
+    cat(app_lines, file = file.path(folder, "app.R"), sep = "\n")
+    
+    # update evaluation.Rmd
+    if (file.exists(file.path(folder, "evaluation.Rmd"))) {
+      readr::read_lines(file = file.path(folder, "evaluation.Rmd")) %>% 
+        stringr::str_replace_all(
+          "(data_gs_title ?= ?)\\\"([^\"]*)\\\"",
+          sprintf("data_gs_title = \"%s\"", data_gs_title)) %>% 
+      cat(file = file.path(folder, "evaluation.Rmd"), sep = "\n")
+    }
+    
   } else {
     # keeping old title
     data_gs_title <-
@@ -181,15 +191,15 @@ tbl_duplicate_peer_evaluation <- function(old_folder = "peer_evaluation", new_fo
   
   # check gs_access
   if (check_gs_access) {
-    tbl_check_gs_access(folder = new_folder, data_gs_title = data_gs_title)
+    tbl_check_gs_access(folder = folder, data_gs_title = data_gs_title)
   }
   
   # finalize
-  glue("Info: peer evaluation app from '{old_folder}' is now fully duplicated in directory '{new_folder}'.\n",
-       "Please modify the files in '{new_folder}' as appropriate before uploading to shiny server.") %>% 
+  glue("Info: peer evaluation app from '{template}' is now fully duplicated in directory '{folder}'.\n",
+       "Please modify the files in '{folder}' as appropriate before uploading to shiny server.") %>% 
     message()
   
-  return(invisible(new_folder))
+  return(invisible(folder))
 }
 
 #' Run a peer evaluation app
@@ -294,7 +304,7 @@ check_peer_evaluation_folder <- function(folder) {
 
 #' Deploy peer evaluation app
 #' 
-#' Upload the peer evaluation app to a shiny server via \link[rsconnect]{rsconnect}. This uses the rsconnect function link[rsconnect]{deployApp} to upload or update a peer evaluation and thus requires rsconnect credentials to be already set. See \link[rsconnect]{setAccountInfo} or https://shiny.rstudio.com/articles/shinyapps.html#configure-rsconnect for details on how to set your credentials for the https://www.shinyapps.io platform.
+#' Upload the peer evaluation app to a shiny server via \link[rsconnect]{rsconnect}. This uses the rsconnect function \link[rsconnect]{deployApp} to upload or update a peer evaluation and thus requires rsconnect credentials to be already set. See \link[rsconnect]{setAccountInfo} or the \href{https://shiny.rstudio.com/articles/shinyapps.html#configure-rsconnect}{configuration help} for details on how to set your credentials for the \href{https://www.shinyapps.io}{shiny app platform}.
 #' @param folder folder where the peer evaluation app is located (see \link{tbl_setup_peer_evaluation} for details)
 #' @param ... optional parameters passed on to \link[rsconnect]{deployApp}
 #' @family peer evaluation functionsde 
@@ -351,6 +361,13 @@ tbl_example_peer_evaluation <- function() {
 #' @details \code{tbl_example_empty_peer_evaluation} returns the google spreadsheet key (\link{gs_key}) for an example empty/newly set-up peer evaluation.
 tbl_example_empty_peer_evaluation <- function() {
   get_example_gs_key("1WcxbU3NOIrOzhf-PAyNGlgpxiEPLMFthe-3lldoCc2M")
+}
+
+#' @rdname tbl_example
+#' @export
+#' @details \code{tbl_example_roster} returns the example roster data frame
+tbl_example_roster <- function() {
+  read_excel(system.file(package = "tbltools", "extdata", "roster_template.xlsx"))
 }
 
 #' Fetch the peer evaluation data

@@ -98,7 +98,8 @@ test_that("test that example peer evaluations can be accessed the processed", {
   
   # example roster
   expect_true(file.exists(system.file(package = "tbltools", "extdata", "roster_template.xlsx")))
-  expect_true(is.data.frame(roster <- readxl::read_excel(system.file(package = "tbltools", "extdata", "roster_template.xlsx"))))
+  expect_true(is.data.frame(roster <- tbl_example_roster()))
+  expect_equal(names(roster), c("last", "first", "access_code", "team"))
   
   # example empty data from sheets
   expect_message(
