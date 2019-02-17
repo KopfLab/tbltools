@@ -1,10 +1,13 @@
 ---
 title: "Setting up and evaluating peer evaluations"
-output:
-  html_document: default
-editor_options:
-  chunk_output_type: inline
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Peer Evaluations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
@@ -12,7 +15,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 Peer Evaluations are an important component of the Team-Based Learning (TBL) style flipped classroom. However, they can be difficult to set up and evaluate because of the requirement for each team member to evaluate only their own team members and the amount of data generated in big classes. This package provides tools to set up a custom web-based peer evaluation application that can be hosted for free on RStudio's [shiny apps](http://www.shinyapps.io/) server (or any other shiny server) and allows each student to log in and enter evaluations for their teammates with a unique passcode. All evaluations are stored in a google spreadsheet only the instructor has access to (via their own google drive credentials) and the data can be aggregated easily using the tbltools package.
 
-## Requirements
+# Requirements
 
 To generate and host a peer evaluation, you need the following:
 
@@ -21,7 +24,7 @@ To generate and host a peer evaluation, you need the following:
  - A [google drive](https://drive.google.com) account
  - A [shiny apps](http://www.shinyapps.io/) account or other hosting solution for shiny apps
  
-## Setup
+# Setup
 
 To setup a peer evaluation:
 
@@ -60,7 +63,7 @@ list.files("peer eval 1", full.names = TRUE, recursive = TRUE)
 
 For testing this new peer evaluation, feel free to jump straight to the [testing](#testing) section below.
 
-### Roster
+## Roster
 
 If you like the formatting and default text of the peer evaluation application, the roster is really the only file you need to edit. The template looks as follows:
 
@@ -75,7 +78,7 @@ As you can see, the excel sheet has only four columns, student last name (`last`
 tbl_generate_access_codes(n = 10, length = 6)
 ```
 
-### Template
+## Template
 
 Once you have set up your first peer evaluation and adjusted all the text and formatting, you may want to use it as a template for future peer evaluations rather than starting from scratch each time. This is most easily accomplished by using the `tbl_duplicate_peer_evaluation` function instead of `tbl_setup_peer_evaluation`. Simply point the function to your previous peer evaluation folder (the template), specify the name of the new folder, and provide the name of the new google spreadsheet the application should be linked to (note that the spreadsheet should already exist so the new peer evaluation can make sure it has access to it).
 
@@ -97,7 +100,7 @@ tbl_duplicate_peer_evaluation(
   data_gs_title = "class1234 peer evaluation 2", check_gs_access = FALSE)
 ```
 
-### Troubleshooting
+## Troubleshooting
 
 If you encounter any issues with authentication, run the following command to reset the google drive credentials and check that the google spreadsheet can be accessed:
 
@@ -125,7 +128,7 @@ Finally, if you ever want to start over from scratch, simply delete the created 
 
 For additional information on the `tbl_setup_peer_evaluation` (or any other tbltools function), please consult the package help with `?tbl_setup_peer_evaluation`.
 
-## Testing
+# Testing
 
 To test the peer evaluation appliation, simply use the `tbl_test_peer_evaluation` function, which launches the application on an adhoc local server on your own computer. Keep in mind that although the test application run just on your computer, it already writes data to the google spreadsheet! This is good for testing purposes (see what gets generated in your google spreadsheet) but make sure to delete any test records from the google spreadsheet that may interfere with students' peer evaluations prior to providing the students with the link to the deployed peer evaluation app. For this reason, Many people keep at least one test person in the roster (or a whole test team) to make testing easier.
 
@@ -148,7 +151,7 @@ Listening on http://127.0.0.1:3683
 INFO: Loading GUI instance ...")
 ```
 
-### Login
+## Login
 
 The following is a screenshot of the login screen for the peer evaluation application. Note that you can change, for example, the displayed title with the `app_title` parameter in the `app.R` application file.
 
@@ -156,7 +159,7 @@ The following is a screenshot of the login screen for the peer evaluation applic
 knitr::include_graphics(file.path("images", "pe_login.png"))
 ```
 
-### Welcome
+## Welcome
 
 Upon succesful login - here from the example student *Homer Simpson* who is part of the template `roster.xlsx`, the student sees a welcome message with their team name listed and welcome text that can be modified in the `app_welcome.md` file. Note that the default instructions also describe how students can save their peer evaluations and resume editing them at a later point (logging in with the same access code), only once they submit their answers they become final.
 
@@ -164,7 +167,7 @@ Upon succesful login - here from the example student *Homer Simpson* who is part
 knitr::include_graphics(file.path("images", "pe_welcome.png"))
 ```
 
-### Evaluation
+## Evaluation
 
 After the welcome message, the student is presented with a set of tabs for self evaluation (first tab), one tab for each team member (here *Spider Pig* and *Inigo Montoya* who are also part of *The Dream Team* as listed in the template `roster.xlsx`), and a final tab for quantitative scores. The self evaluation and team member tabs are essay questions for qualitative peer evaluation.
 
@@ -172,7 +175,7 @@ After the welcome message, the student is presented with a set of tabs for self 
 knitr::include_graphics(file.path("images", "pe_evaluation.png"))
 ```
 
-### Quantitative
+## Quantitative
 
 The quantitative evaluations are provided on a separate tab as illustrated below and are subject to the constraints set through the parameters of the `tbl_run_peer_evaluation` function in the `app.R` application file (e.g. number of points per student, required difference in max and minimum assigned points if any, etc.).
 
@@ -180,7 +183,7 @@ The quantitative evaluations are provided on a separate tab as illustrated below
 knitr::include_graphics(file.path("images", "pe_quant.png"))
 ```
 
-## Deployment
+# Deployment
 
 To make your peer evaluation application available to the students, it needs to be deployed on a server the students havde access to (i.e. not just on your own computer). You or your university may run its own shiny server in which case they can simply host your application folder (i.e. the `peer eval 1` folder) on it. However, more commonly, the easiest approach is using RStudio's free [shiny apps](http://www.shinyapps.io/) service. Once you have an account, you need to install the rsconnect package (`install.packages('rsconnect')`) and configure your shinyapps credentials (`rsconnect::setAccountInfo(name="<ACCOUNT>", token="<TOKEN>", secret="<SECRET>")`). For a detailed guide, see [this configuration help](https://shiny.rstudio.com/articles/shinyapps.html#configure-rsconnect). Once your credentials are set, simply call the `tbl_deploy_peer_evaluation` function to upload your peer evaluation app to the shinyapps server. Note that you can also use the `rsconnect::deployApp` function directly, or launch the test application (`tbl_test_peer_evaluation`) and click the **Publish** button in the upper right corner.
 
@@ -189,13 +192,14 @@ tbl_deploy_peer_evaluation(folder = "peer eval 1")
 ```
 
 
-## Data Evaluation
+# Data Evaluation
 
 Once your students have filled out their peer evaluations, you can pull the data directly from the google spreadsheet by hand or with your own script. The tbltools package provides some convenience functions for frequent data evaluation operations, such as summarizing the data by student. The `evaluation.Rmd` template file in your peer evaluation app folder provides a good starting point for this. Here we show with an example google spreadsheet how the data aggregation functions work and what the evaluation summaries look like and how to export them easily to an Excel spreadsheet for further processing.
 
-### Fetch data
+## Fetch data
 
 ```{r, eval=FALSE}
+# download data from google spreadsheet (stored in an .xlsx file)
 pe_data <- tbl_fetch_peer_evaluation_data(data_gs_title = "class1234 peer evaluation 1")
 pe_data %>% rmarkdown::paged_table()
 ```
@@ -209,14 +213,14 @@ pe_data <-
 pe_data %>% rmarkdown::paged_table()
 ```
 
-### Summarize evaluations
+## Summarize evaluations
 
 ```{r}
 pe_data %>% tbl_summarize_peer_evaluation_data(submitted_only = FALSE) %>% 
   rmarkdown::paged_table()
 ```
 
-### Export to Excel
+## Export to Excel
 
 ```{r}
 pe_data %>% tbl_export_peer_evaluation_data(submitted_only = FALSE)
@@ -224,7 +228,10 @@ pe_data %>% tbl_export_peer_evaluation_data(submitted_only = FALSE)
 
 
 ```{r, include=FALSE}
+# cleanup - delete the files and folders that were created
 unlink("peer eval 1", recursive = TRUE)
 unlink("peer eval 2", recursive = TRUE)
+unlink("pe_data_downloaded.xlsx")
+unlink("pe_data_summary.xlsx")
 ```
 

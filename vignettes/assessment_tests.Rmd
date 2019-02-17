@@ -1,14 +1,17 @@
 ---
 title: "Generating a Readiness Assessment Test"
-output:
-  html_document: default
-editor_options:
-  chunk_output_type: inline
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Readiness Assessment Tests}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
 
 Individual and tem-based Readiness Assessment Tests (iRAT/tRAT) are an important component of the Team-Based Learning (TBL) style flipped classroom. However, they can be tedious to generate and modify over time because of the requirement to fit a specific IF-AT answer key. This package provides tools to generate RATs in HTML, PDF or Word format straight from a collection of questions, answer options, and answer keys maintained in Excel. Due to the use of the [RMarkdown](https://rmarkdown.rstudio.com/) document format, it is easy to customize RAT worksheets and all RMarkdown supported text formatting is supported for questions and answers (including complex [Latex equations](https://www.sharelatex.com/learn/Mathematical_expressions) and PNG/JPG images).
 
-## Software requirements
+# Software requirements
 
 To generate an HTML, PDF or Word document for an iRAT/tRAT, you need the following software installed:
 
@@ -17,7 +20,7 @@ To generate an HTML, PDF or Word document for an iRAT/tRAT, you need the followi
  - A [$\LaTeX$ distribution](https://www.latex-project.org/) if generating PDFs for RATs
  - Microscoft Word or OpenOffice if using RAT-generated Word files
  
-## Getting started
+# Getting started
 
 The easiest way to get started is to run the following chunk in your R console (adjust the parameters as appropriate for your RAT):
 
@@ -47,7 +50,7 @@ That's it, you have successfully generated an RAT template! The new RAT starts o
 **See the resulting [HTML](module.html), [PDF](module.pdf), and [Word](module.docx) files**.
 
 
-#### Customizing your iRAT/tRAT
+## Customizing your iRAT/tRAT
 
 You can design your RAT any way you like by modifying:
 
@@ -58,7 +61,7 @@ You can design your RAT any way you like by modifying:
  
 After making any edits, simply re-knit the Rmarkdown file to HTML, PDF or Word. For a few examples on some of the customization options, please see the Demo RAT below.
 
-## Demo RAT
+# Demo RAT
 
 For an example of a full RAT that demonstrates several customization features, please run the following code in your R console. This will create a `demo` subfolder in your working directory with the RAT `demo.Rmd` and `demo.xlsx` files (+ image files used in the RAT). As with the `tbl_setup_RAT_template` above, you can simply knit the Rmd file to generate the RAT yourself or **take a look at the resulting [HTML](demo.html), [PDF](demo.pdf), and [Word](demo.docx) files online**.
 
