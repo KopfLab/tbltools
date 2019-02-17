@@ -15,3 +15,4 @@ demo_RAT
 ^peer_evaluation.*
 \.httr-oauth
 \.yml$
+^CONDUCT\.md$

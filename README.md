@@ -3,8 +3,8 @@
 
 # tbltools
 
-[![Git\_Hub\_Version](https://img.shields.io/badge/GitHub-0.5.0-orange.svg?style=flat-square)](/commits)
-[![Last-Update](https://img.shields.io/badge/updated-2019--02--16-yellowgreen.svg)](/commits)
+[![Git\_Hub\_Version](https://img.shields.io/badge/GitHub-0.5.1-orange.svg?style=flat-square)](/commits)
+[![Last-Update](https://img.shields.io/badge/updated-2019--02--17-yellowgreen.svg)](/commits)
 [![Documentation](https://img.shields.io/badge/docs-online-green.svg)](https://kopflab.github.io/tbltools/reference/)
 [![Build
 Status](https://travis-ci.org/KopfLab/tbltools.svg?branch=master)](https://travis-ci.org/KopfLab/tbltools)
@@ -53,3 +53,13 @@ Evaluations](https://kopflab.github.io/tbltools/articles/peer_evaluations.html).
 Ideas or suggestions for additional tools that would be helpful for
 running a flipped classroom? Let us know by filing a feature request at
 <https://github.com/kopflab/tbltools/issues>.
+
+## Open Source
+
+This package is and will always be fully open-source (i.e. free as in
+‘freedom’ and free as in ‘free beer’) and is provided as is. The
+source code is released under GPL-2. We welcome participation in this
+project in all forms from user feedback and bug reports to feature
+requests and coding contributions. This project is released with a
+[Contributor Code of Conduct](CONDUCT.md). By participating in this
+project you agree to abide by its terms.

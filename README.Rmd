@@ -47,3 +47,7 @@ The [tbltools](https://kopflab.github.io/tbltools/) package also provides functi
 ### Other functionality?
 
 Ideas or suggestions for additional tools that would be helpful for running a flipped classroom? Let us know by filing a feature request at https://github.com/kopflab/tbltools/issues.
+
+## Open Source
+
+This package is and will always be fully open-source (i.e. free as in 'freedom' and free as in 'free beer') and is provided as is. The source code is released under GPL-2. We welcome participation in this project in all forms from user feedback and bug reports to feature requests and coding contributions. This project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
