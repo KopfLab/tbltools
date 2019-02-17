@@ -12,4 +12,6 @@
 ^README\.Rmd$
 ^logo\.png$
 demo_RAT
-/peer_evaluation/
+^peer_evaluation.*
+\.httr-oauth
+\.yml$
