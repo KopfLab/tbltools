@@ -3,11 +3,14 @@
 \name{tbl_example_peer_evaluation}
 \alias{tbl_example_peer_evaluation}
 \alias{tbl_example_empty_peer_evaluation}
+\alias{tbl_example_roster}
 \title{Example files}
 \usage{
 tbl_example_peer_evaluation()
 
 tbl_example_empty_peer_evaluation()
+
+tbl_example_roster()
 }
 \description{
 Example files
@@ -16,4 +19,6 @@ Example files
 \code{tbl_example_peer_evaluation} returns the google spreadsheet key (\link{gs_key}) for an example peer evaluation dataset.
 
 \code{tbl_example_empty_peer_evaluation} returns the google spreadsheet key (\link{gs_key}) for an example empty/newly set-up peer evaluation.
+
+\code{tbl_example_roster} returns the example roster data frame
 }

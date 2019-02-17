@@ -5,8 +5,8 @@
 \title{Run a peer evaluation app}
 \usage{
 tbl_run_peer_evaluation(data_gs_title,
-  roster = read_excel("roster.xlsx"), gs_token = "gs_token.rds",
-  app_title = "Peer Evaluation", welcome_md_file = "app_welcome.md",
+  roster = read_excel("roster.xlsx"), app_title = "Peer Evaluation",
+  welcome_md_file = "app_welcome.md",
   self_eval_plus_md_file = "app_self_evaluation_plus.md",
   self_eval_minus_md_file = "app_self_evaluation_minus.md",
   teammate_eval_plus_md_file = "app_teammate_evaluation_plus.md",
@@ -20,8 +20,6 @@ tbl_run_peer_evaluation(data_gs_title,
 \item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
 
 \item{roster}{data frame with the student roster}
-
-\item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
 
 \item{app_title}{the title of the Peer Evaluation App, e.g. "Class name - Peer Evaluation #1"}
 
@@ -55,7 +53,9 @@ tbl_run_peer_evaluation(data_gs_title,
 This function starts the peer evaluation user interface. Note that this function is typically NOT called directly but indirectly by setting up the peer evalution app using \link{tbl_setup_peer_evaluation}, adjusting the files in the peer evaluation app folder, and test running the app using \link{tbl_test_peer_evaluation}.
 }
 \seealso{
-Other peer evaluation functions: \code{\link{tbl_setup_peer_evaluation}},
+Other peer evaluation functions: \code{\link{tbl_check_gs_access}},
+  \code{\link{tbl_duplicate_peer_evaluation}},
+  \code{\link{tbl_setup_peer_evaluation}},
   \code{\link{tbl_test_peer_evaluation}}
 }
 \concept{peer evaluation functions}

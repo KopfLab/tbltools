@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TBL Tools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -138,8 +138,8 @@
     </div>
 
     <pre class="usage"><span class='fu'>tbl_run_peer_evaluation</span>(<span class='no'>data_gs_title</span>,
-  <span class='kw'>roster</span> <span class='kw'>=</span> <span class='fu'>read_excel</span>(<span class='st'>"roster.xlsx"</span>), <span class='kw'>gs_token</span> <span class='kw'>=</span> <span class='st'>"gs_token.rds"</span>,
-  <span class='kw'>app_title</span> <span class='kw'>=</span> <span class='st'>"Peer Evaluation"</span>, <span class='kw'>welcome_md_file</span> <span class='kw'>=</span> <span class='st'>"app_welcome.md"</span>,
+  <span class='kw'>roster</span> <span class='kw'>=</span> <span class='fu'>read_excel</span>(<span class='st'>"roster.xlsx"</span>), <span class='kw'>app_title</span> <span class='kw'>=</span> <span class='st'>"Peer Evaluation"</span>,
+  <span class='kw'>welcome_md_file</span> <span class='kw'>=</span> <span class='st'>"app_welcome.md"</span>,
   <span class='kw'>self_eval_plus_md_file</span> <span class='kw'>=</span> <span class='st'>"app_self_evaluation_plus.md"</span>,
   <span class='kw'>self_eval_minus_md_file</span> <span class='kw'>=</span> <span class='st'>"app_self_evaluation_minus.md"</span>,
   <span class='kw'>teammate_eval_plus_md_file</span> <span class='kw'>=</span> <span class='st'>"app_teammate_evaluation_plus.md"</span>,
@@ -159,10 +159,6 @@
     <tr>
       <th>roster</th>
       <td><p>data frame with the student roster</p></td>
-    </tr>
-    <tr>
-      <th>gs_token</th>
-      <td><p>path to a google spreadsheet oauth 2.0 authentication token file (see <a href='https://www.rdocumentation.org/packages/httr/topics/Token-class'>Token-class</a>). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.</p></td>
     </tr>
     <tr>
       <th>app_title</th>
@@ -224,7 +220,9 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other peer evaluation functions: <code><a href='tbl_setup_peer_evaluation.html'>tbl_setup_peer_evaluation</a></code>,
+    <div class='dont-index'><p>Other peer evaluation functions: <code><a href='tbl_check_gs_access.html'>tbl_check_gs_access</a></code>,
+  <code><a href='tbl_duplicate_peer_evaluation.html'>tbl_duplicate_peer_evaluation</a></code>,
+  <code><a href='tbl_setup_peer_evaluation.html'>tbl_setup_peer_evaluation</a></code>,
   <code><a href='tbl_test_peer_evaluation.html'>tbl_test_peer_evaluation</a></code></p></div>
     
 

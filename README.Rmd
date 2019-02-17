@@ -15,7 +15,6 @@ version <- as.character(packageVersion("tbltools"))
 
 # tbltools
 
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tbltools)](https://cran.r-project.org/package=tbltools)
 [![Git_Hub_Version](https://img.shields.io/badge/GitHub-`r version`-orange.svg?style=flat-square)](/commits)
 [![Last-Update](https://img.shields.io/badge/updated-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits)
 [![Documentation](https://img.shields.io/badge/docs-online-green.svg)](https://kopflab.github.io/tbltools/reference/)

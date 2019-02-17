@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • TBL Tools</title>
+<title>Check google spreadsheet access — tbl_check_gs_access • TBL Tools</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,10 @@
 
 
 
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="Check google spreadsheet access — tbl_check_gs_access" />
+
+<meta property="og:description" content="This function checks whether google spreadsheet credentials are established and there is access to the data_gs_title google sheet. If the gs_token file does not exist yet or new_credentials = TRUE, it will establish new google drive credentials using gs_auth." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-article-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -123,20 +126,65 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Articles</h1>
+    <h1>Check google spreadsheet access</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kopflab/tbltools/blob/master/R/peer_evaluation.R'><code>R/peer_evaluation.R</code></a></small>
+    <div class="hidden name"><code>tbl_check_gs_access.Rd</code></div>
     </div>
 
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <ul>
-        <li><a href="assessment_tests.html">Generating a Readiness Assessment Test</a></li>
-        <li><a href="demo.html">Readiness Assessment Test (RAT)</a></li>
-        <li><a href="module.html">Readiness Assessment Test (RAT)</a></li>
-        <li><a href="peer_evaluations.html">Setting up and evaluating peer evaluations</a></li>
-      </ul>
+    <div class="ref-description">
+    
+    <p>This function checks whether google spreadsheet credentials are established and there is access to the <code>data_gs_title</code> google sheet. If the <code>gs_token</code> file does not exist yet or <code>new_credentials = TRUE</code>, it will establish new google drive credentials using <a href='https://www.rdocumentation.org/packages/googlesheets/topics/gs_auth'>gs_auth</a>.</p>
+    
     </div>
+
+    <pre class="usage"><span class='fu'>tbl_check_gs_access</span>(<span class='kw'>folder</span> <span class='kw'>=</span> <span class='st'>"peer_evaluation"</span>,
+  <span class='kw'>data_gs_title</span> <span class='kw'>=</span> <span class='st'>"Peer Evaluation"</span>, <span class='kw'>gs_token</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path</a></span>(<span class='no'>folder</span>,
+  <span class='st'>"gs_token.rds"</span>), <span class='kw'>new_credentials</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>folder</th>
+      <td><p>target folder where to setup the peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.</p></td>
+    </tr>
+    <tr>
+      <th>data_gs_title</th>
+      <td><p>name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.</p></td>
+    </tr>
+    <tr>
+      <th>gs_token</th>
+      <td><p>path to a google spreadsheet oauth 2.0 authentication token file (see <a href='https://www.rdocumentation.org/packages/httr/topics/Token-class'>Token-class</a>). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.</p></td>
+    </tr>
+    <tr>
+      <th>new_credentials</th>
+      <td><p>if set to TRUE, will always prompt the user to establish new google drive credentials. If FALSE (the default), will only do so if the <code>gs_token</code> file does not exist yet.</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>returns the retrieved google spreadsheet key invisibly</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other peer evaluation functions: <code><a href='tbl_duplicate_peer_evaluation.html'>tbl_duplicate_peer_evaluation</a></code>,
+  <code><a href='tbl_run_peer_evaluation.html'>tbl_run_peer_evaluation</a></code>,
+  <code><a href='tbl_setup_peer_evaluation.html'>tbl_setup_peer_evaluation</a></code>,
+  <code><a href='tbl_test_peer_evaluation.html'>tbl_test_peer_evaluation</a></code></p></div>
+    
+
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
+          </ul>
+
   </div>
 </div>
 

@@ -16,6 +16,9 @@
     <loc>http://tbltools.kopflab.org/reference/tbl_arrange_RAT_questions.html</loc>
   </url>
   <url>
+    <loc>http://tbltools.kopflab.org/reference/tbl_check_gs_access.html</loc>
+  </url>
+  <url>
     <loc>http://tbltools.kopflab.org/reference/tbl_create_RAT_from_data_frame.html</loc>
   </url>
   <url>
@@ -26,6 +29,9 @@
   </url>
   <url>
     <loc>http://tbltools.kopflab.org/reference/tbl_deploy_peer_evaluation.html</loc>
+  </url>
+  <url>
+    <loc>http://tbltools.kopflab.org/reference/tbl_duplicate_peer_evaluation.html</loc>
   </url>
   <url>
     <loc>http://tbltools.kopflab.org/reference/tbl_example.html</loc>

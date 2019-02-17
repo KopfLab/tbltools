@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="Set up a peer evaluation app — tbl_setup_peer_evaluation" />
 
-<meta property="og:description" content="This functions makes it easy to setup a peer evaluation app folder. It creates the app script app.R and copies the roster_file (an Excel spreadsheet) as well as the necessary google drive credentials for the data_gsheet to the same directory. It will ask for google drive credentials using gs_auth and the entered credentials must have access to the data_gsheet. Both app.R and the roster_file can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the roster_file will be read only and all actual data will be stored in the google drive data file." />
+<meta property="og:description" content="This functions makes it easy to setup a peer evaluation app folder. It creates the app script app.R and copies the roster_file (an Excel spreadsheet) as well as the necessary google drive credentials for the data_gs_title to the same directory. Unless check_gs_access = FALSE, it will call the tbl_check_gs_access function and ask for google drive credentials using gs_auth. The entered credentials (or provided gs_token) must have access to the google spreadsheet (data_gs_title). Both app.R and the roster_file can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the roster_file will be read-only and all actual data will be stored in the google drive data file." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TBL Tools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -133,7 +133,7 @@
 
     <div class="ref-description">
     
-    <p>This functions makes it easy to setup a peer evaluation app folder. It creates the app script <code>app.R</code> and copies the <code>roster_file</code> (an Excel spreadsheet) as well as the necessary google drive credentials for the <code>data_gsheet</code> to the same directory. It will ask for google drive credentials using <a href='https://www.rdocumentation.org/packages/googlesheets/topics/gs_auth'>gs_auth</a> and the entered credentials must have access to the <code>data_gsheet</code>. Both <code>app.R</code> and the <code>roster_file</code> can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the <code>roster_file</code> will be read only and all actual data will be stored in the google drive data file.</p>
+    <p>This functions makes it easy to setup a peer evaluation app folder. It creates the app script <code>app.R</code> and copies the <code>roster_file</code> (an Excel spreadsheet) as well as the necessary google drive credentials for the <code>data_gs_title</code> to the same directory. Unless <code>check_gs_access = FALSE</code>, it will call the <code><a href='tbl_check_gs_access.html'>tbl_check_gs_access</a></code> function and ask for google drive credentials using <a href='https://www.rdocumentation.org/packages/googlesheets/topics/gs_auth'>gs_auth</a>. The entered credentials (or provided <code>gs_token</code>) must have access to the google spreadsheet (<code>data_gs_title</code>). Both <code>app.R</code> and the <code>roster_file</code> can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the <code>roster_file</code> will be read-only and all actual data will be stored in the google drive data file.</p>
     
     </div>
 
@@ -168,7 +168,7 @@
     </tr>
     <tr>
       <th>check_gs_access</th>
-      <td><p>whether to confirm google spreadsheet access. Note that if this is set to <code>FALSE</code> (e.g. for avoiding a re-check when overwriting an existing peer evaluation folder), this function will NOT ask for google spreadsheet credenticals and NOT check that the provided <code>data_gs_title</code> is a valid spreadsheet the user has access to. Make sure to provide the necessary access credentials manually (e.g. a <code>gs_token.rds</code> file in the application folder), otherwise the peer evaluation application will not be able to run (locally or on the shiny apps server).</p></td>
+      <td><p>whether to confirm google spreadsheet access (using the <code><a href='tbl_check_gs_access.html'>tbl_check_gs_access</a></code> function). Note that if this is set to <code>FALSE</code> (e.g. for avoiding a re-check when overwriting an existing peer evaluation folder), this function will NOT ask for google spreadsheet credenticals and NOT check that the provided <code>data_gs_title</code> is a valid spreadsheet the user has access to. Make sure to provide the necessary access credentials manually (e.g. a <code>gs_token.rds</code> file in the application folder), otherwise the peer evaluation application will not be able to run (locally or on the shiny apps server).</p></td>
     </tr>
     </table>
     
@@ -179,10 +179,13 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Use <a href='tbl_test_peer_evaluation.html'>tbl_test_peer_evaluation</a> with the same <code>folder</code> as parameter to test run the peer evaluation application locally on your computer. It is recommended to always test the peer evaluation application locally before uploading it to the shiny application server.</p>
+<p>Use <a href='tbl_duplicate_peer_evaluation.html'>tbl_duplicate_peer_evaluation</a> to create a copy of an existing peer evaluation rather than setting one up from scratch.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other peer evaluation functions: <code><a href='tbl_run_peer_evaluation.html'>tbl_run_peer_evaluation</a></code>,
+    <div class='dont-index'><p>Other peer evaluation functions: <code><a href='tbl_check_gs_access.html'>tbl_check_gs_access</a></code>,
+  <code><a href='tbl_duplicate_peer_evaluation.html'>tbl_duplicate_peer_evaluation</a></code>,
+  <code><a href='tbl_run_peer_evaluation.html'>tbl_run_peer_evaluation</a></code>,
   <code><a href='tbl_test_peer_evaluation.html'>tbl_test_peer_evaluation</a></code></p></div>
     
 

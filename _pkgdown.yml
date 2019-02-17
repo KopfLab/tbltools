@@ -72,6 +72,7 @@ reference:
   - tbl_read_peer_evaluation_data
   - tbl_summarize_peer_evaluation_data
   - tbl_export_peer_evaluation_data
+  - tbl_example_roster
   - tbl_example_peer_evaluation
   - tbl_example_empty_peer_evaluation
 
