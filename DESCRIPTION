@@ -1,7 +1,7 @@
 Package: tbltools
 Title: Tools for Team-Based-Learning
 Description: Tools for using Team-Based-Learning (TBL) approaches in the classroom.
-Version: 0.5.1
+Version: 0.5.2
 Authors@R: person("Sebastian", "Kopf", email = "sebastian.kopf@colorado.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-2044-0201"))
 URL: https://github.com/kopflab/tbltools
 BugReports: https://github.com/kopflab/tbltools/issues
@@ -36,4 +36,4 @@ License: GPL (>= 2) | file LICENSE
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1

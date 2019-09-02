@@ -464,20 +464,20 @@ tbl_generate_RAT_choices <- function(rat, answer_layout = "vertical",
     # sort by question # and options (A-X)
     arrange(tRAT_n, answer_option) 
 
-  # assemble question in markdown
-  group_by(rat_options, tRAT_n, question) %>% 
-    do({
-      with(., {
-        data_frame(
-          label = sprintf(
-            "### %s: %s\n%s", 
-            get_question_number(iRAT_n[1], tRAT_n[1]), question[1], answer_layout_funs[[.layout[1]]](answer_option, answer))
-        )
-      })
-    }) %>% 
-    # print to document
-    { cat(str_c(.$label, collapse = "\n\n")) }
+  # assemble question into markdown
+  rat_options %>% 
+    ungroup() %>% 
+    nest(-question, -tRAT_n, -iRAT_n, -.layout, .key = ".answers") %>% 
+    mutate(
+      answer = purrr::map2_chr(.layout, .answers, ~tbl_default_RAT_layouts()[[.x]](.y$answer_option, .y$answer)),
+      question_number = get_question_number(iRAT_n, tRAT_n),
+      question_text = sprintf("### %s: %s\n%s", question_number, question, answer)
+    ) %>% 
+    dplyr::pull(question_text) %>% 
+    paste(collapse = "\n\n") %>% 
+    cat()
   
+  # return RAT invisibly
   invisible(rat)
 }
 
