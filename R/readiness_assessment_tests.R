@@ -408,7 +408,8 @@ tbl_generate_RAT_choices <- function(rat, answer_layout = "vertical",
     stop("can only use Readiness Assessment Test objects, found: ", class(rat)[1], call. = FALSE)
   
   # global vars
-  question <- .layout <- tRAT_n <- correct <- option <- n_options <- answer_option <- NULL
+  question <- .layout <- iRAT_n <- tRAT_n <- correct <- option <- n_options <- NULL
+  answer_option <- .answers <- question_number <- answer <- question_text <- NULL
   
   # safety checks
   layout_options <- names(answer_layout_funs)
