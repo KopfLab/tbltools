@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TBL Tools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@
     <div class="page-header toc-ignore">
       <h1>Generating a Readiness Assessment Test</h1>
             
-            <h4 class="date">2019-02-17</h4>
+            <h4 class="date">2019-09-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/kopflab/tbltools/blob/master/vignettes/assessment_tests.Rmd"><code>vignettes/assessment_tests.Rmd</code></a></small>
       <div class="hidden name"><code>assessment_tests.Rmd</code></div>
@@ -120,16 +120,17 @@
 <h1 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting started</h1>
 <p>The easiest way to get started is to run the following chunk in your R console (adjust the parameters as appropriate for your RAT):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tbltools)
-<span class="kw"><a href="../reference/tbl_setup_RAT_template.html">tbl_setup_RAT_template</a></span>(
-  <span class="dt">module =</span> <span class="st">"module"</span>,
-  <span class="dt">n_questions =</span> <span class="dv">10</span>,
-  <span class="dt">n_options_per_q =</span> <span class="dv">5</span>
-)
-<span class="co">#&gt; Info: creating RAT directory 'module' in working directory</span>
-<span class="co">#&gt; Info: creating 'module/module.xlsx' RAT questions template... complete</span>
-<span class="co">#&gt; Info: creating 'module/module.Rmd' RAT generation template... complete</span>
-<span class="co">#&gt; Finished: Please modify 'module/module.xlsx' to write questions and answer options on the 'questions' tab, and fill in the correct IF-AT answer key on the 'key' tab. Please knit 'module/module.Rmd' to HTML/PDF/Word to generate the RAT. Adjust function call parameters as needed.</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tbltools)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="../reference/tbl_setup_RAT_template.html">tbl_setup_RAT_template</a></span>(</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="dt">module =</span> <span class="st">"module"</span>,</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">  <span class="dt">n_questions =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  <span class="dt">n_options_per_q =</span> <span class="dv">5</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#&gt; Info: creating RAT directory 'module' in working directory</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="co">#&gt; Info: creating 'module/module.xlsx' RAT questions template... Note: zip::zip() is deprecated, please use zip::zipr() instead</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">#&gt; complete</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co">#&gt; Info: creating 'module/module.Rmd' RAT generation template... complete</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co">#&gt; Finished: Please modify 'module/module.xlsx' to write questions and answer options on the 'questions' tab, and fill in the correct IF-AT answer key on the 'key' tab. Please knit 'module/module.Rmd' to HTML/PDF/Word to generate the RAT. Adjust function call parameters as needed.</span></a></code></pre></div>
 <p>That’s it, you have successfully generated an RAT template! The new RAT starts out with place holder questions and answers in the generated <code>module.xlsx</code> file (note that if you changed the <code>module</code> parameter above, the file named accordingly). You can see what the resulting RAT would look like simply by opening and <a href="https://rmarkdown.rstudio.com/index.html">knitting</a> the <code>module.Rmd</code> (again, file name corresponds to your <code>module</code> parameter) to the desired document format. If you do this for the first time, RStudio may ask you to install some additional packages and software including <a href="https://pandoc.org/">pandoc</a>. If you are not working in RStudio, you will have to manually knit the document and call pandoc to generate the PDF.</p>
 <p><strong>See the resulting <a href="module.html">HTML</a>, <a href="module.pdf">PDF</a>, and <a href="module.docx">Word</a> files</strong>.</p>
 <div id="customizing-your-irattrat" class="section level2">
@@ -149,10 +150,10 @@
 <h1 class="hasAnchor">
 <a href="#demo-rat" class="anchor"></a>Demo RAT</h1>
 <p>For an example of a full RAT that demonstrates several customization features, please run the following code in your R console. This will create a <code>demo</code> subfolder in your working directory with the RAT <code>demo.Rmd</code> and <code>demo.xlsx</code> files (+ image files used in the RAT). As with the <code>tbl_setup_RAT_template</code> above, you can simply knit the Rmd file to generate the RAT yourself or <strong>take a look at the resulting <a href="demo.html">HTML</a>, <a href="demo.pdf">PDF</a>, and <a href="demo.docx">Word</a> files online</strong>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tbltools)
-<span class="kw"><a href="../reference/tbl_setup_RAT_demo.html">tbl_setup_RAT_demo</a></span>()
-<span class="co">#&gt; Info: creating 'demo' directory</span>
-<span class="co">#&gt; Info: copying demo RAT files... finished. Please knit 'demo.Rmd' to HTML/PDF/Word.</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tbltools)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="../reference/tbl_setup_RAT_demo.html">tbl_setup_RAT_demo</a></span>()</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">#&gt; Info: creating 'demo' directory</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co">#&gt; Info: copying demo RAT files... finished. Please knit 'demo.Rmd' to HTML/PDF/Word.</span></a></code></pre></div>
 </div>
   </div>
 

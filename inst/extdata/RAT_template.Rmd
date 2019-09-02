@@ -53,8 +53,8 @@ RAT
 # Generate questions + answers
 # Note: results = 'asis' is important to render the generated markdown
 RAT %>% tbl_generate_RAT_choices(
-  answer_layout = "vertical",
-  answer_layout_column = "layout"
+  answer_layout = "vertical", # default layout
+  answer_layout_column = "layout" # custom question layout
 )
 ```
 
