@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TBL Tools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
     <div class="page-header toc-ignore">
       <h1>Setting up and evaluating peer evaluations</h1>
             
-            <h4 class="date">2019-02-17</h4>
+            <h4 class="date">2019-09-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/kopflab/tbltools/blob/master/vignettes/peer_evaluations.Rmd"><code>vignettes/peer_evaluations.Rmd</code></a></small>
       <div class="hidden name"><code>peer_evaluations.Rmd</code></div>
@@ -125,8 +125,8 @@
 <li>log into your google drive account and create a new empty google spreadsheet with a descriptive name (for example something like this: <em>class1234 peer evaluation 1</em>). This spreadsheet is where your peer evaluation data will be stored.</li>
 <li>load the <code>tbltools</code> library and run the <code><a href="../reference/tbl_setup_peer_evaluation.html">tbl_setup_peer_evaluation()</a></code> function with an (optional) name for the folder where you want the applicaton to be created (e.g. <code>folder = "peer eval 1"</code>), and the name of your google spreadsheet (e.g. <code>data_gs_title = "class1234 peer evaluation 1"</code>). The function uses the excellent <a href="https://github.com/jennybc/googlesheets">googlesheets</a> package to step you through authenticating your google drive account interactively and will confirm that the google spreadsheet you linked can be accessed.</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tbltools)
-<span class="kw"><a href="../reference/tbl_setup_peer_evaluation.html">tbl_setup_peer_evaluation</a></span>(<span class="dt">folder =</span> <span class="st">"peer eval 1"</span>, <span class="dt">data_gs_title =</span> <span class="st">"class1234 peer evaluation 1"</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tbltools)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="../reference/tbl_setup_peer_evaluation.html">tbl_setup_peer_evaluation</a></span>(<span class="dt">folder =</span> <span class="st">"peer eval 1"</span>, <span class="dt">data_gs_title =</span> <span class="st">"class1234 peer evaluation 1"</span>)</a></code></pre></div>
 <pre><code>#&gt; Info: creating app directory 'peer eval 1'
 #&gt; Info: copying 'roster_template.xlsx' to peer eval 1/roster.xlsx
 #&gt; Info: creating peer eval 1/app.R application file and application content
@@ -134,18 +134,18 @@
 #&gt; Info: set up of tbltools' Peer Evaluation app in directory 'peer eval 1' is complete.
 #&gt; Please modify the files in 'peer eval 1' as appropriate before uploading to shiny server.</code></pre>
 <p>What just happened? tbltools created the <code>peer eval 1</code> folder and populated it with all the necessary files to launch a peer evaluation shiny application, which we will test locally in a moment. Let’s take a look at what files were created first:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list.files">list.files</a></span>(<span class="st">"peer eval 1"</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>)
-<span class="co">#&gt;  [1] "peer eval 1/app_quantitative_scores.md"      </span>
-<span class="co">#&gt;  [2] "peer eval 1/app_self_evaluation_minus.md"    </span>
-<span class="co">#&gt;  [3] "peer eval 1/app_self_evaluation_plus.md"     </span>
-<span class="co">#&gt;  [4] "peer eval 1/app_teammate_evaluation_minus.md"</span>
-<span class="co">#&gt;  [5] "peer eval 1/app_teammate_evaluation_plus.md" </span>
-<span class="co">#&gt;  [6] "peer eval 1/app_welcome.md"                  </span>
-<span class="co">#&gt;  [7] "peer eval 1/app.R"                           </span>
-<span class="co">#&gt;  [8] "peer eval 1/evaluation.Rmd"                  </span>
-<span class="co">#&gt;  [9] "peer eval 1/gs_token.rds"                    </span>
-<span class="co">#&gt; [10] "peer eval 1/roster.xlsx"                     </span>
-<span class="co">#&gt; [11] "peer eval 1/www/app.css"</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list.files">list.files</a></span>(<span class="st">"peer eval 1"</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">#&gt;  [1] "peer eval 1/app_quantitative_scores.md"      </span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt;  [2] "peer eval 1/app_self_evaluation_minus.md"    </span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt;  [3] "peer eval 1/app_self_evaluation_plus.md"     </span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt;  [4] "peer eval 1/app_teammate_evaluation_minus.md"</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt;  [5] "peer eval 1/app_teammate_evaluation_plus.md" </span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt;  [6] "peer eval 1/app_welcome.md"                  </span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt;  [7] "peer eval 1/app.R"                           </span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">#&gt;  [8] "peer eval 1/evaluation.Rmd"                  </span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co">#&gt;  [9] "peer eval 1/gs_token.rds"                    </span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="co">#&gt; [10] "peer eval 1/roster.xlsx"                     </span></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="co">#&gt; [11] "peer eval 1/www/app.css"</span></a></code></pre></div>
 <ul>
 <li>
 <code>app_...md</code>: these markdown files contain place-holder text for the peer evaluation application that you may want to customize to better reflect what you want the text in the peer evaluation to say. The format is of these files <a href="https://en.wikipedia.org/wiki/Markdown">Markdown</a>, which is a simple text formatting language.</li>
@@ -165,33 +165,33 @@
 <h2 class="hasAnchor">
 <a href="#roster" class="anchor"></a>Roster</h2>
 <p>If you like the formatting and default text of the peer evaluation application, the roster is really the only file you need to edit. The template looks as follows:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">readxl<span class="op">::</span><span class="kw"><a href="https://readxl.tidyverse.org/reference/read_excel.html">read_excel</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/file.path">file.path</a></span>(<span class="st">"peer eval 1"</span>, <span class="st">"roster.xlsx"</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">readxl<span class="op">::</span><span class="kw"><a href="https://readxl.tidyverse.org/reference/read_excel.html">read_excel</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/file.path">file.path</a></span>(<span class="st">"peer eval 1"</span>, <span class="st">"roster.xlsx"</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="st">  </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</a></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["last"],"name":[1],"type":["chr"],"align":["left"]},{"label":["first"],"name":[2],"type":["chr"],"align":["left"]},{"label":["access_code"],"name":[3],"type":["chr"],"align":["left"]},{"label":["team"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"Pig","2":"Spider","3":"1234","4":"The Dream Team"},{"1":"Montoya","2":"Inigo","3":"7331","4":"The Dream Team"},{"1":"Simpson","2":"Homer","3":"0007","4":"The Dream Team"},{"1":"Thought","2":"Deep","3":"4242","4":"Don't Panic"},{"1":"NA","2":"Marvin","3":"1111","4":"Don't Panic"},{"1":"Prefect","2":"Ford","3":"7777","4":"Don't Panic"},{"1":"Dent","2":"Arthur","3":"1979","4":"Don't Panic"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>As you can see, the excel sheet has only four columns, student last name (<code>last</code>), first name (<code>first</code>), individual unique access code (<code>access_code</code>) and team name (<code>team</code>). You may add additional columns to this spreadsheet if you would like to keep the information organized together (such as e.g. email addresses) but cannot omit these four. The first and last names are simply for the application to provide information to the students whose evaluation they are filling out (the last name is optional as seen in the example of <em>Marvin</em>). The team name must be identical between all team member so that the peer evaluation can identify each team correctly. The <code>access_code</code> can be any combination of letters, numbers and special characters that is unique across the whole roster as it allows each student to log into the peer evaluation (i.e. these access codes need to be conveyed to the students). To generate a random set of access codes, this package provides a convenience function to do so:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/tbl_generate_access_codes.html">tbl_generate_access_codes</a></span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">length =</span> <span class="dv">6</span>)
-<span class="co">#&gt; 7I83QZ</span>
-<span class="co">#&gt; WQOLDN</span>
-<span class="co">#&gt; YT0Z96</span>
-<span class="co">#&gt; OAQFLY</span>
-<span class="co">#&gt; LVHVIN</span>
-<span class="co">#&gt; 976YMC</span>
-<span class="co">#&gt; BG7SEK</span>
-<span class="co">#&gt; WAB7RX</span>
-<span class="co">#&gt; EJSEZE</span>
-<span class="co">#&gt; XGB90I</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="../reference/tbl_generate_access_codes.html">tbl_generate_access_codes</a></span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">length =</span> <span class="dv">6</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co">#&gt; JG2V5U</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co">#&gt; PKO2V2</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co">#&gt; 52F8NE</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; AV5DF4</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co">#&gt; AJMMKN</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="co">#&gt; OGAY6R</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="co">#&gt; T31E1H</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="co">#&gt; GB8WFP</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="co">#&gt; C4FP42</span></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="co">#&gt; 2IRGYD</span></a></code></pre></div>
 </div>
 <div id="template" class="section level2">
 <h2 class="hasAnchor">
 <a href="#template" class="anchor"></a>Template</h2>
 <p>Once you have set up your first peer evaluation and adjusted all the text and formatting, you may want to use it as a template for future peer evaluations rather than starting from scratch each time. This is most easily accomplished by using the <code>tbl_duplicate_peer_evaluation</code> function instead of <code>tbl_setup_peer_evaluation</code>. Simply point the function to your previous peer evaluation folder (the template), specify the name of the new folder, and provide the name of the new google spreadsheet the application should be linked to (note that the spreadsheet should already exist so the new peer evaluation can make sure it has access to it).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/tbl_duplicate_peer_evaluation.html">tbl_duplicate_peer_evaluation</a></span>(
-  <span class="dt">old_folder =</span> <span class="st">"peer eval 1"</span>, <span class="dt">new_folder =</span> <span class="st">"peer eval 2"</span>, 
-  <span class="dt">data_gs_title =</span> <span class="st">"class1234 peer evaluation 2"</span>)</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="../reference/tbl_duplicate_peer_evaluation.html">tbl_duplicate_peer_evaluation</a></span>(</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">  <span class="dt">old_folder =</span> <span class="st">"peer eval 1"</span>, <span class="dt">new_folder =</span> <span class="st">"peer eval 2"</span>, </a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="dt">data_gs_title =</span> <span class="st">"class1234 peer evaluation 2"</span>)</a></code></pre></div>
 <pre><code>#&gt; Info: creating app directory 'peer eval 2'
 #&gt; Info: copying 11 files from template 'peer eval 1' into 'peer eval 2'...
 #&gt; Info: changing spreadsheet title to 'class1234 peer evaluation 2'.
@@ -202,15 +202,15 @@
 <h2 class="hasAnchor">
 <a href="#troubleshooting" class="anchor"></a>Troubleshooting</h2>
 <p>If you encounter any issues with authentication, run the following command to reset the google drive credentials and check that the google spreadsheet can be accessed:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/tbl_check_gs_access.html">tbl_check_gs_access</a></span>(
-  <span class="dt">folder =</span> <span class="st">"peer eval 1"</span>, 
-  <span class="dt">data_gs_title =</span> <span class="st">"class1234 peer evaluation 1"</span>,
-  <span class="dt">new_credentials =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="../reference/tbl_check_gs_access.html">tbl_check_gs_access</a></span>(</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">  <span class="dt">folder =</span> <span class="st">"peer eval 1"</span>, </a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">  <span class="dt">data_gs_title =</span> <span class="st">"class1234 peer evaluation 1"</span>,</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">  <span class="dt">new_credentials =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>For example, you may get the following error trying to test your peer evaluation application because of a problem with your authentication token (expired or for the wrong account):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/tbl_test_peer_evaluation.html">tbl_test_peer_evaluation</a></span>(<span class="st">"peer eval 1"</span>)</code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="../reference/tbl_test_peer_evaluation.html">tbl_test_peer_evaluation</a></span>(<span class="st">"peer eval 1"</span>)</a></code></pre></div>
 <pre><code>#&gt; Loading required package: shiny
 #&gt; ***************************************************************
-#&gt; Info: launching Peer Evaluation GUI (version 0.5.1)...
+#&gt; Info: launching Peer Evaluation GUI (version 0.5.2)...
 #&gt; Info: app title: 'Peer Evaluation'
 #&gt; Info: roster: 7 students in 2 teams
 #&gt; Info: points per teammate: 10 (min: 0, max: 15, min diff: 2)
@@ -228,9 +228,9 @@
 <h1 class="hasAnchor">
 <a href="#testing" class="anchor"></a>Testing</h1>
 <p>To test the peer evaluation appliation, simply use the <code>tbl_test_peer_evaluation</code> function, which launches the application on an adhoc local server on your own computer. Keep in mind that although the test application run just on your computer, it already writes data to the google spreadsheet! This is good for testing purposes (see what gets generated in your google spreadsheet) but make sure to delete any test records from the google spreadsheet that may interfere with students’ peer evaluations prior to providing the students with the link to the deployed peer evaluation app. For this reason, Many people keep at least one test person in the roster (or a whole test team) to make testing easier.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/tbl_test_peer_evaluation.html">tbl_test_peer_evaluation</a></span>(<span class="st">"peer eval 1"</span>)</code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="../reference/tbl_test_peer_evaluation.html">tbl_test_peer_evaluation</a></span>(<span class="st">"peer eval 1"</span>)</a></code></pre></div>
 <pre><code>#&gt; ***************************************************************
-#&gt; Info: launching Peer Evaluation GUI (version 0.5.1)...
+#&gt; Info: launching Peer Evaluation GUI (version 0.5.2)...
 #&gt; Info: app title: 'Peer Evaluation'
 #&gt; Info: roster: 7 students in 2 teams
 #&gt; Info: points per teammate: 10 (min: 0, max: 15, min diff: 2)
@@ -270,7 +270,7 @@
 <h1 class="hasAnchor">
 <a href="#deployment" class="anchor"></a>Deployment</h1>
 <p>To make your peer evaluation application available to the students, it needs to be deployed on a server the students havde access to (i.e. not just on your own computer). You or your university may run its own shiny server in which case they can simply host your application folder (i.e. the <code>peer eval 1</code> folder) on it. However, more commonly, the easiest approach is using RStudio’s free <a href="http://www.shinyapps.io/">shiny apps</a> service. Once you have an account, you need to install the rsconnect package (<code><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages('rsconnect')</a></code>) and configure your shinyapps credentials (<code><a href="https://www.rdocumentation.org/packages/rsconnect/topics/setAccountInfo">rsconnect::setAccountInfo(name="&lt;ACCOUNT&gt;", token="&lt;TOKEN&gt;", secret="&lt;SECRET&gt;")</a></code>). For a detailed guide, see <a href="https://shiny.rstudio.com/articles/shinyapps.html#configure-rsconnect">this configuration help</a>. Once your credentials are set, simply call the <code>tbl_deploy_peer_evaluation</code> function to upload your peer evaluation app to the shinyapps server. Note that you can also use the <code><a href="https://www.rdocumentation.org/packages/rsconnect/topics/deployApp">rsconnect::deployApp</a></code> function directly, or launch the test application (<code>tbl_test_peer_evaluation</code>) and click the <strong>Publish</strong> button in the upper right corner.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/tbl_deploy_peer_evaluation.html">tbl_deploy_peer_evaluation</a></span>(<span class="dt">folder =</span> <span class="st">"peer eval 1"</span>)</code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="../reference/tbl_deploy_peer_evaluation.html">tbl_deploy_peer_evaluation</a></span>(<span class="dt">folder =</span> <span class="st">"peer eval 1"</span>)</a></code></pre></div>
 </div>
 <div id="data-evaluation" class="section level1">
 <h1 class="hasAnchor">
@@ -279,9 +279,9 @@
 <div id="fetch-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fetch-data" class="anchor"></a>Fetch data</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download data from google spreadsheet (stored in an .xlsx file)</span>
-pe_data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/tbl_fetch_peer_evaluation_data.html">tbl_fetch_peer_evaluation_data</a></span>(<span class="dt">data_gs_title =</span> <span class="st">"class1234 peer evaluation 1"</span>)
-pe_data <span class="op">%&gt;%</span><span class="st"> </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># download data from google spreadsheet (stored in an .xlsx file)</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">pe_data &lt;-<span class="st"> </span><span class="kw"><a href="../reference/tbl_fetch_peer_evaluation_data.html">tbl_fetch_peer_evaluation_data</a></span>(<span class="dt">data_gs_title =</span> <span class="st">"class1234 peer evaluation 1"</span>)</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">pe_data <span class="op">%&gt;%</span><span class="st"> </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</a></code></pre></div>
 <pre><code>#&gt; Info: downloading data... Sheet successfully downloaded: /pe_data_downloaded.xlsx</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
@@ -292,19 +292,20 @@ pe_data <span class="op">%&gt;%</span><span class="st"> </span>rmarkdown<span cl
 <div id="summarize-evaluations" class="section level2">
 <h2 class="hasAnchor">
 <a href="#summarize-evaluations" class="anchor"></a>Summarize evaluations</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pe_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/tbl_summarize_peer_evaluation_data.html">tbl_summarize_peer_evaluation_data</a></span>(<span class="dt">submitted_only =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">pe_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/tbl_summarize_peer_evaluation_data.html">tbl_summarize_peer_evaluation_data</a></span>(<span class="dt">submitted_only =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">  </span>rmarkdown<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rmarkdown/topics/paged_table">paged_table</a></span>()</a></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["evaluatee_access_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["last"],"name":[2],"type":["chr"],"align":["left"]},{"label":["first"],"name":[3],"type":["chr"],"align":["left"]},{"label":["team"],"name":[4],"type":["chr"],"align":["left"]},{"label":["n_team_mates"],"name":[5],"type":["int"],"align":["right"]},{"label":["n_evaluations"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["score_avg"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["self_plus"],"name":[8],"type":["chr"],"align":["left"]},{"label":["self_minus"],"name":[9],"type":["chr"],"align":["left"]},{"label":["team_plus"],"name":[10],"type":["chr"],"align":["left"]},{"label":["team_minus"],"name":[11],"type":["chr"],"align":["left"]}],"data":[{"1":"id_1234","2":"Pig","3":"Spider","4":"The Dream Team","5":"2","6":"2","7":"8.5","8":"Oink!","9":"Oink?","10":"Always enthusiastic.\\n\\nWalk on the ceiling.","11":"Sing more.\\n\\nStay on the ground."},{"1":"id_7331","2":"Montoya","3":"Inigo","4":"The Dream Team","5":"2","6":"2","7":"5.0","8":"Pirate stuff.","9":"More pirate stuff.","10":"Great teamwork.","11":"Focus a little more on the donuts instead of avenging his father."},{"1":"id_0007","2":"Simpson","3":"Homer","4":"The Dream Team","5":"2","6":"2","7":"16.5","8":"Bring donuts for everyone.","9":"Not eat all the donuts myself.","10":"Bring donuts.","11":"He could share a little more."},{"1":"id_4242","2":"Thought","3":"Deep","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_1111","2":"NA","3":"Marvin","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_7777","2":"Prefect","3":"Ford","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_1979","2":"Dent","3":"Arthur","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["evaluatee_access_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["last"],"name":[2],"type":["chr"],"align":["left"]},{"label":["first"],"name":[3],"type":["chr"],"align":["left"]},{"label":["team"],"name":[4],"type":["chr"],"align":["left"]},{"label":["n_team_mates"],"name":[5],"type":["int"],"align":["right"]},{"label":["n_evaluations"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["score_avg"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["self_plus"],"name":[8],"type":["chr"],"align":["left"]},{"label":["self_minus"],"name":[9],"type":["chr"],"align":["left"]},{"label":["team_plus"],"name":[10],"type":["chr"],"align":["left"]},{"label":["team_minus"],"name":[11],"type":["chr"],"align":["left"]}],"data":[{"1":"id_1234","2":"Pig","3":"Spider","4":"The Dream Team","5":"2","6":"2","7":"8.5","8":"Oink!","9":"Oink?","10":"Always enthusiastic.\\n\\nWalk on the ceiling.","11":"Stay on the ground.\\n\\nSing more."},{"1":"id_7331","2":"Montoya","3":"Inigo","4":"The Dream Team","5":"2","6":"2","7":"5.0","8":"Pirate stuff.","9":"More pirate stuff.","10":"Great teamwork.","11":"Focus a little more on the donuts instead of avenging his father."},{"1":"id_0007","2":"Simpson","3":"Homer","4":"The Dream Team","5":"2","6":"2","7":"16.5","8":"Bring donuts for everyone.","9":"Not eat all the donuts myself.","10":"Bring donuts.","11":"He could share a little more."},{"1":"id_4242","2":"Thought","3":"Deep","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_1111","2":"NA","3":"Marvin","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_7777","2":"Prefect","3":"Ford","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_1979","2":"Dent","3":"Arthur","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
 <div id="export-to-excel" class="section level2">
 <h2 class="hasAnchor">
 <a href="#export-to-excel" class="anchor"></a>Export to Excel</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pe_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/tbl_export_peer_evaluation_data.html">tbl_export_peer_evaluation_data</a></span>(<span class="dt">submitted_only =</span> <span class="ot">FALSE</span>)
-<span class="co">#&gt; Info: exporting peer evaluation data and data summary to 'pe_data_summary.xlsx'... completed.</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">pe_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/tbl_export_peer_evaluation_data.html">tbl_export_peer_evaluation_data</a></span>(<span class="dt">submitted_only =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="co">#&gt; Info: exporting peer evaluation data and data summary to 'pe_data_summary.xlsx'... Note: zip::zip() is deprecated, please use zip::zipr() instead</span></a>
+<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="co">#&gt; completed.</span></a></code></pre></div>
 </div>
 </div>
   </div>
