@@ -114,7 +114,7 @@ test_that("test that example peer evaluations can be accessed the processed", {
                roster %>% group_by(team) %>% 
                  mutate(
                    access_code = str_c("id_", access_code),
-                   n_team_mates = n() - 1L, 
+                   n_team_mates = dplyr::n() - 1L, 
                    started = FALSE, submitted = FALSE) %>% 
                  ungroup())
   
