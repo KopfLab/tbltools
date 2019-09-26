@@ -94,7 +94,8 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
       message("Checking access code: ", entered_access_code)
       hide("access-panel")
       show("loading-panel")
-      student <- filter(students, tolower(access_code) == tolower(entered_access_code))
+      # enforce case sensitive access code
+      student <- filter(students, access_code == entered_access_code)
       load_access_code <- FALSE
       if (nrow(student) == 0) {
         showModal(modalDialog(h2(str_c("Unknown access code: ", pure_access_code)), easyClose = TRUE, fade = FALSE))
