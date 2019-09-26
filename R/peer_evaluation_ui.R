@@ -30,7 +30,7 @@ peer_evaluation_ui <- function(app_title) {
       
       div(id = "access-panel",
           column(width = 12,
-                 textInput("access_code", NULL, placeholder = "Enter your access code"),
+                 textInput("access_code", NULL, placeholder = "Enter your access code (case sensitive)"),
                  selectInput("auto_login_trigger", NULL, choices = "1", selected = "1") %>% hidden(),
                  actionButton("access", "Start")
           )),
