@@ -448,14 +448,24 @@ tbl_read_peer_evaluation_data <- function(
   access_code_prefix <- "id_"
   students <- students %>% mutate(access_code = str_c(access_code_prefix, access_code)) 
   pe_data <- students %>% 
-    group_by(access_code) %>% 
-    do({
-      read_peer_eval(download_file, .$access_code) %>% 
-        rename(evaluatee_access_code = access_code)
-    })
+    mutate(
+      peer_eval = purrr::map(access_code, ~read_peer_eval(download_file, .x) %>% 
+                               rename(evaluatee_access_code = access_code)),
+      # safety check on timestamp column
+      time_stamp_col = purrr::map_chr(peer_eval, ~class(.x$timestamp)[1])
+    )
+  
+  if (any(problem <- pe_data$time_stamp_col != "POSIXct")) {
+    glue::glue(
+      "encountered problems with the timestamp column. Please check the ",
+      "spreadsheet and make sure the 'timestamp' column on the following tabs ",
+      "always has the same date & time format in each row. Problematic tabs:\n",
+      "{paste(pe_data$access_code[problem], collapse = ', ')}"
+    ) %>% stop(call. = FALSE)
+  }
   
   # merge students in
-  pe_data <- students %>% left_join(pe_data, by = "access_code")
+  pe_data <- pe_data %>% select(-time_stamp_col) %>% tidyr::unnest(peer_eval)
   
   # structure information and nest evaluations
   pe_data <- 
