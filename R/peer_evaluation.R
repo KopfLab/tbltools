@@ -464,9 +464,14 @@ tbl_read_peer_evaluation_data <- function(
     ) %>% stop(call. = FALSE)
   }
   
-  # merge students in
-  pe_data <- pe_data %>% select(-time_stamp_col) %>% tidyr::unnest(peer_eval)
-  
+  # unnest the data (make sure those without records remain listed, hence the left join)
+  pe_data <- 
+    students %>% 
+    dplyr::left_join(
+      pe_data %>% select(access_code, peer_eval) %>% tidyr::unnest(peer_eval),
+      by = "access_code"
+    )
+    
   # structure information and nest evaluations
   pe_data <- 
     pe_data %>% 
