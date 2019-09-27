@@ -23,6 +23,15 @@ pe_data <- tbl_fetch_peer_evaluation_data(data_gs_title = "${data_gs_title}")
 pe_data
 ```
 
+# Check for missing evaluations
+
+```{r}
+# check which ones are not yet started or submitted
+pe_data %>% 
+  dplyr::filter(!started | !submitted) %>% 
+  dplyr::select(started, submitted, dplyr::everything())
+```
+
 # Summarize evaluations
 
 ```{r}
@@ -32,6 +41,7 @@ pe_data %>% tbl_summarize_peer_evaluation_data(submitted_only = FALSE)
 # Export to Excel
 
 ```{r}
+# exports both summary and raw data
 pe_data %>% tbl_export_peer_evaluation_data(submitted_only = FALSE)
 ```
 
