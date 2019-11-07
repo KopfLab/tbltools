@@ -4,12 +4,15 @@
 \alias{tbl_deploy_peer_evaluation}
 \title{Deploy peer evaluation app}
 \usage{
-tbl_deploy_peer_evaluation(folder = "peer_evaluation", ...)
+tbl_deploy_peer_evaluation(folder = "peer_evaluation",
+  appName = guess_from(folder), ...)
 }
 \arguments{
 \item{folder}{folder where the peer evaluation app is located (see \link{tbl_setup_peer_evaluation} for details)}
 
-\item{...}{optional parameters passed on to \link[rsconnect]{deployApp}}
+\item{appName}{name of the application for the web address on shiny.io. Can be provided manually but must be unique within an account. By default is guessed from the folder simply by removing special characters, making everything lower case, and replacing spaces with \code{_}.}
+
+\item{...}{additional optional parameters passed on to \link[rsconnect]{deployApp}}
 }
 \description{
 Upload the peer evaluation app to a shiny server via \link[rsconnect]{rsconnect}. This uses the rsconnect function \link[rsconnect]{deployApp} to upload or update a peer evaluation and thus requires rsconnect credentials to be already set. See \link[rsconnect]{setAccountInfo} or the \href{https://shiny.rstudio.com/articles/shinyapps.html#configure-rsconnect}{configuration help} for details on how to set your credentials for the \href{https://www.shinyapps.io}{shiny app platform}.

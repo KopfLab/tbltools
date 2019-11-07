@@ -176,11 +176,11 @@ test_that("test that RAT generation works properly", {
   expect_true(is(random_rat <- tbl_arrange_RAT_questions(rat, by = "random"), "RAT"))
   expect_true(is(rat_options <- get_RAT_options(random_rat), "data.frame"))
   expect_equal(
-    nest(rat_options, -question, -option, -n_options, -n_correct)$option, 
-    left_join(random_rat$questions %>% nest(-question, -tRAT_n), answer_key, by = c("tRAT_n" = "number"))$option)
+    nest(rat_options, data = c(-question, -option, -n_options, -n_correct))$option, 
+    left_join(random_rat$questions %>% nest(data = c(-question, -tRAT_n)), answer_key, by = c("tRAT_n" = "number"))$option)
   expect_equal(
-    nest(rat_options, -question, -option, -n_options, -n_correct)$n_correct, 
-    match(left_join(random_rat$questions %>% nest(-question, -tRAT_n), answer_key, by = c("tRAT_n" = "number"))$option, LETTERS))
+    nest(rat_options, data = c(-question, -option, -n_options, -n_correct))$n_correct, 
+    match(left_join(random_rat$questions %>% nest(data = c(-question, -tRAT_n)), answer_key, by = c("tRAT_n" = "number"))$option, LETTERS))
   
   ## layout
   expect_error(tbl_generate_RAT_choices(rat, answer_layout = "DNE"), "Unsupported answer layout")

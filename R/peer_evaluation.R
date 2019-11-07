@@ -306,10 +306,11 @@ check_peer_evaluation_folder <- function(folder) {
 #' 
 #' Upload the peer evaluation app to a shiny server via \link[rsconnect]{rsconnect}. This uses the rsconnect function \link[rsconnect]{deployApp} to upload or update a peer evaluation and thus requires rsconnect credentials to be already set. See \link[rsconnect]{setAccountInfo} or the \href{https://shiny.rstudio.com/articles/shinyapps.html#configure-rsconnect}{configuration help} for details on how to set your credentials for the \href{https://www.shinyapps.io}{shiny app platform}.
 #' @param folder folder where the peer evaluation app is located (see \link{tbl_setup_peer_evaluation} for details)
-#' @param ... optional parameters passed on to \link[rsconnect]{deployApp}
+#' @param appName name of the application for the web address on shiny.io. Can be provided manually but must be unique within an account. By default is guessed from the folder simply by removing special characters, making everything lower case, and replacing spaces with \code{_}.
+#' @param ... additional optional parameters passed on to \link[rsconnect]{deployApp}
 #' @family peer evaluation functionsde 
 #' @export
-tbl_deploy_peer_evaluation <- function(folder = "peer_evaluation", ...) {
+tbl_deploy_peer_evaluation <- function(folder = "peer_evaluation", appName = guess_from(folder), ...) {
   
   if(!dir.exists(folder)) {
     glue("peer evaluation app folder '{folder}' does not exist") %>% 
@@ -321,8 +322,16 @@ tbl_deploy_peer_evaluation <- function(folder = "peer_evaluation", ...) {
       stop(call. = FALSE)
   }
   
+  # simplify app name
+  guess_from <- function(x) {
+    x %>% 
+      stringr::str_to_lower() %>% 
+      stringr::str_replace_all(fixed(" "), "_") %>% 
+      stringr::str_remove_all("[$@#%!'\"&*(){}\\[\\]]")
+  }
+  
   tryCatch(
-    deployApp(folder, ...),
+    deployApp(folder, appName = appName, ...),
     error = function(e) {
       glue("something went wrong trying to upload your peer evaluation app. ",
            "Please see the function help (?tbl_deploy_peer_evaluation) ", 
@@ -484,7 +493,7 @@ tbl_read_peer_evaluation_data <- function(
     # simplify column sorting
     select(-submitted, -timestamp) %>% rename(submitted = submitted2) %>% 
     # next data
-    nest(evaluatee_access_code, self_evaluation, plus, minus, score, .key = "evaluations")
+    nest(evaluations = c(evaluatee_access_code, self_evaluation, plus, minus, score))
   
   # update timestamp (can't do inside mutate, problems with the NA)
   pe_data <- within(pe_data, submitted_timestamp[!submitted] <- NA)
@@ -773,7 +782,11 @@ read_peer_eval <- function(ss, access_code) {
       mutate(timestamp = ymd_hms(timestamp))
   } else {
     # does exist and is a local file
-    data <- read_excel(ss, sheet = access_code)
+    data <- read_excel(ss, sheet = access_code) %>% 
+      mutate(
+        plus = as.character(plus),
+        minus = as.character(minus)
+      )
   }
   
   # return
