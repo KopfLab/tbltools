@@ -224,7 +224,7 @@ tbl_create_RAT_from_data_frame <- function(questions, answer_key) {
   }
   
   # numbering (in order encountered)
-  questions <- questions %>% nest(-question) %>% mutate(tRAT_n = dplyr::row_number(), iRAT_n = tRAT_n) %>% unnest()
+  questions <- questions %>% nest(data = c(-question)) %>% mutate(tRAT_n = dplyr::row_number(), iRAT_n = tRAT_n) %>% unnest(data)
   
   # return
   structure(
@@ -303,10 +303,10 @@ tbl_arrange_RAT_questions <- function(rat, by = "original",
   if (by == "original") {
     # us original order (i.e. as encountered) ====
     rat$questions <- rat$questions %>% 
-      nest(-question) %>% 
+      nest(data = c(-question)) %>% 
       mutate(tRAT_n = dplyr::row_number() + tRAT_n_start - 1L, 
              iRAT_n = iRAT_sel_per_q * (dplyr::row_number() - 1L) + iRAT_n_start) %>% 
-      unnest()
+      unnest(data)
   } else if (by == "fixed") {
     # use fixed order =====
     rat$questions <- rat$questions %>% 
@@ -468,7 +468,7 @@ tbl_generate_RAT_choices <- function(rat, answer_layout = "vertical",
   # assemble question into markdown
   rat_options %>% 
     ungroup() %>% 
-    nest(-question, -tRAT_n, -iRAT_n, -.layout, .key = ".answers") %>% 
+    nest(.answers = c(-question, -tRAT_n, -iRAT_n, -.layout)) %>% 
     mutate(
       answer = purrr::map2_chr(.layout, .answers, ~tbl_default_RAT_layouts()[[.x]](.y$answer_option, .y$answer)),
       question_number = get_question_number(iRAT_n, tRAT_n),

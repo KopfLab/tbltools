@@ -493,7 +493,7 @@ tbl_read_peer_evaluation_data <- function(
     # simplify column sorting
     select(-submitted, -timestamp) %>% rename(submitted = submitted2) %>% 
     # next data
-    nest(evaluatee_access_code, self_evaluation, plus, minus, score, .key = "evaluations")
+    nest(evaluations = c(evaluatee_access_code, self_evaluation, plus, minus, score))
   
   # update timestamp (can't do inside mutate, problems with the NA)
   pe_data <- within(pe_data, submitted_timestamp[!submitted] <- NA)
@@ -782,7 +782,11 @@ read_peer_eval <- function(ss, access_code) {
       mutate(timestamp = ymd_hms(timestamp))
   } else {
     # does exist and is a local file
-    data <- read_excel(ss, sheet = access_code)
+    data <- read_excel(ss, sheet = access_code) %>% 
+      mutate(
+        plus = as.character(plus),
+        minus = as.character(minus)
+      )
   }
   
   # return
