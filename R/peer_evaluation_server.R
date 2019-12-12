@@ -15,11 +15,15 @@
 #' @param max_points the maximum number of points allowed per team member
 #' @param min_points the smallest number of points allowed per team member
 #' @param min_point_difference the minimum point difference required for the scores (set to 0 to allow all scores to be identical)
+#' @param require_self_eval whether the qualitative self evaluation is required
+#' @param require_peer_evals whether the qualitative self evaluation is required
 #' @param auto_login_access_code set an automatic login access code for testing and debugging purposes
 peer_evaluation_server <- function(roster, data_gs_title, gs_token, 
                                    welcome_md_file, self_eval_plus_md_file, self_eval_minus_md_file, 
                                    teammate_eval_plus_md_file, teammate_eval_minus_md_file, quant_scores_md_file,
                                    points_per_teammate = 10, max_points = 15, min_points = 0, min_point_difference = 2,
+                                   require_self_eval = TRUE,
+                                   require_peer_evals = TRUE,
                                    auto_login_access_code = NULL) {
   
   # gloval vars
@@ -203,7 +207,9 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
         tagList(
           column(12, actionButton("save", "Save"), actionButton("submitted", "Submit"), actionButton("logout", "Logout"), align = "right"),
           column(12, 
-                 do.call(tabsetPanel, args = c(tabs, list(selected = "Self evaluation")))
+                 do.call(tabsetPanel, args = c(tabs, list(
+                   selected = if (require_self_eval) "Self evaluation" else "Quantitative Scores"
+                 )))
           )
         )
       })
@@ -320,10 +326,10 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
         filter(is.na(plus) | is.na(minus) | plus == "" | minus == "") %>% 
         left_join(students, by = "access_code")
       if (nrow(missing_data) > 0) {
-        if (values$student$access_code %in% missing_data$access_code)
+        if (require_self_eval && values$student$access_code %in% missing_data$access_code)
           errors <- c(errors, str_c("self evaluation is incomplete"))
         missing_team <- missing_data %>% filter(access_code != values$student$access_code)
-        if (nrow(missing_team) > 0)
+        if (require_peer_evals && nrow(missing_team) > 0)
           errors <- c(errors, str_c("evaluation for ", missing_team$full_name, " is incomplete"))
       }
       if (sum(calculate_scores()) != values$total_score)
