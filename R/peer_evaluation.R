@@ -223,6 +223,8 @@ tbl_run_peer_evaluation <- function(
   teammate_eval_minus_md_file = "app_teammate_evaluation_minus.md", 
   quant_scores_md_file = "app_quantitative_scores.md",
   points_per_teammate = 10, max_points = 15, min_points = 0, min_point_difference = 2,
+  require_self_eval = TRUE,
+  require_peer_evals = TRUE,
   auto_login_access_code = NULL, ..., 
   launch = FALSE) {
   
@@ -264,6 +266,8 @@ tbl_run_peer_evaluation <- function(
       max_points = max_points,
       min_points = min_points,
       min_point_difference = min_point_difference,
+      require_self_eval = require_self_eval,
+      require_peer_evals = require_peer_evals,
       auto_login_access_code = auto_login_access_code
     )
   )
