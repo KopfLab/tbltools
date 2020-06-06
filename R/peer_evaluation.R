@@ -19,8 +19,8 @@
 #' @family peer evaluation functions
 #' @export
 tbl_setup_peer_evaluation <- function(
-  folder = "peer_evaluation", data_gs_title = "Peer Evaluation", 
-  template_roster_file = system.file(package = "tbltools", "extdata", "roster_template.xlsx"), 
+  folder = "peer_evaluation", data_gs_title = "Peer Evaluation",
+  template_roster_file = system.file(package = "tbltools", "extdata", "roster_template.xlsx"),
   gs_token = file.path(folder, "gs_token.rds"), overwrite = FALSE, check_gs_access = TRUE) {
   
   # check for roster file
@@ -116,7 +116,7 @@ tbl_setup_peer_evaluation <- function(
   
   # check gs_access
   if (check_gs_access) {
-    tbl_check_gs_access(folder = folder, data_gs_title = data_gs_title, gs_token = gs_token_save_path)
+    tbl_check_gs_access(folder = folder, data_gs_title = data_gs_title, gs_token = gs_token_save_path, new_credentials=TRUE)
   }
   
   glue("Info: set up of tbltools' Peer Evaluation app in directory '{folder}' is complete.\n",
@@ -667,7 +667,7 @@ check_student_roster <- function(roster) {
 #' @return returns the retrieved google spreadsheet key invisibly
 #' @family peer evaluation functions
 #' @export
-tbl_check_gs_access <- function(folder = "peer_evaluation", data_gs_title = "Peer Evaluation", 
+tbl_check_gs_access <- function(folder = "peer_evaluation", data_gs_title = "Peer Evaluation", data_gs_url='',
                                 gs_token = file.path(folder, "gs_token.rds"), new_credentials = FALSE) {
   
   # error msg 
@@ -688,6 +688,7 @@ tbl_check_gs_access <- function(folder = "peer_evaluation", data_gs_title = "Pee
   }
   
   # check google sheet presence
+  # gs <- try_to_fetch_google_spreadsheet(data_gs_title, err_msg=err_msg)
   gs <- try_to_fetch_google_spreadsheet(data_gs_title, err_msg = err_msg)
   
   return(invisible(gs))
@@ -701,12 +702,13 @@ try_to_authenticate <- function(gs_token = NULL, err_msg = "") {
     if (!is.null(gs_token)) {
       # authenticate quietly if token is provided
       message("Info: authenticating with google server via token... ", appendLF = FALSE)
-      token <- quietly(gs_auth)(token = gs_token, new_user = TRUE, cache=FALSE)
+      token <- quietly(gs4_auth)(token = gs_token, cache=FALSE)
     } else {
       # allow authentication info messages if token not provided
       glue("Info: authenticating with google server {if(automatic) 'automatically' else 'manually'}... ") %>% 
         message(appendLF = FALSE)
-      token <- gs_auth(token = NULL, new_user = TRUE, cache=FALSE)
+      token = gs4_token()
+      # token <- gs_auth(token = NULL, new_user = TRUE, cache=FALSE)
     }
     message("complete.")
   },
@@ -723,9 +725,11 @@ try_to_authenticate <- function(gs_token = NULL, err_msg = "") {
 }
 
 # find google spreadsheet
-try_to_fetch_google_spreadsheet <- function(gs_title, err_msg = "") {
+try_to_fetch_google_spreadsheet <- function(gs_title, err_msg= ""){
   message("Info: looking for spreadsheet... ", appendLF = FALSE)
-  tryCatch(gs <- gs_title(gs_title), error = function(e) {
+  sheets = gs4_find()
+  id = sheets[which(grepl(paste0('^', gs_title,'$'), sheets$name)),][['id']]
+  tryCatch(gs <- gs4_get(id), error = function(e) {
     glue("google spreadsheet with title '{gs_title}' could not be retrieved: {e$message}{err_msg}") %>% 
       stop(call. = FALSE)
   })
@@ -741,11 +745,11 @@ read_peer_eval <- function(ss, access_code) {
   # global vars
   timestamp <- score <- NULL
   
-  is_gs <- is(ss, "googlesheet")
+  is_gs <- is(ss, "googlesheets4_spreadsheet")
   
   if (is_gs) {
     # refresh sheet
-    gs <- gs_gs(ss)
+    gs <- gs4_get(ss)
     worksheets <- gs_ws_ls(gs)
   } else {
     # make sure file exists
