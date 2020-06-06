@@ -116,7 +116,7 @@ tbl_setup_peer_evaluation <- function(
   
   # check gs_access
   if (check_gs_access) {
-    tbl_check_gs_access(folder = folder, data_gs_title = data_gs_title, gs_token = gs_token_save_path, new_credentials=TRUE)
+    tbl_check_gs_access(folder = folder, data_gs_title = data_gs_title, gs_token = gs_token_save_path)
   }
   
   glue("Info: set up of tbltools' Peer Evaluation app in directory '{folder}' is complete.\n",
@@ -668,7 +668,7 @@ check_student_roster <- function(roster) {
 #' @return returns the retrieved google spreadsheet key invisibly
 #' @family peer evaluation functions
 #' @export
-tbl_check_gs_access <- function(folder = "peer_evaluation", data_gs_title = "Peer Evaluation", data_gs_url='',
+tbl_check_gs_access <- function(folder = "peer_evaluation", data_gs_title = "Peer Evaluation",
                                 gs_token = file.path(folder, "gs_token.rds"), new_credentials = FALSE) {
   
   # error msg 
