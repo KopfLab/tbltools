@@ -26,6 +26,7 @@ Imports:
     shiny,
     shinyjs,
     shinycssloaders,
+    tibble,
     rsconnect
 Suggests:
     testthat,

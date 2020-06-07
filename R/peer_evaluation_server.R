@@ -314,7 +314,6 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
       show("main-panel")
     })
     
-    
     # submitted =====
     observeEvent(input$submitted, {
       # safety checks

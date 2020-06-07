@@ -726,12 +726,12 @@ try_to_authenticate <- function(gs_token = NULL, err_msg = "") {
 }
 
 # find google spreadsheet
-try_to_fetch_google_spreadsheet <- function(gs_title, err_msg= ""){
+try_to_fetch_google_spreadsheet <- function(data_gs_title, err_msg= ""){
   message("Info: looking for spreadsheet... ", appendLF = FALSE)
   sheets = gs4_find()
-  id = sheets[which(grepl(paste0('^', gs_title,'$'), sheets$name)),][['id']]
+  id = sheets[which(grepl(paste0('^', data_gs_title,'$'), sheets$name)),][['id']]
   tryCatch(gs <- gs4_get(id), error = function(e) {
-    glue("google spreadsheet with title '{gs_title}' could not be retrieved: {e$message}{err_msg}") %>% 
+    glue("google spreadsheet with title '{data_gs_title}' could not be retrieved: {e$message}{err_msg}") %>% 
       stop(call. = FALSE)
   })
   return(gs)
@@ -751,7 +751,9 @@ read_peer_eval <- function(ss, access_code) {
   if (is_gs) {
     # refresh sheet
     gs <- gs4_get(ss)
-    worksheets <- gs_ws_ls(gs)
+    # worksheets <- gs_ws_ls(gs)
+    worksheets = gs$sheets[['name']]
+    
   } else {
     # make sure file exists
     if (!file.exists(ss)) 
@@ -774,21 +776,41 @@ read_peer_eval <- function(ss, access_code) {
       )
     )
   } else if (is_gs) {
-    # does exist and is a google spreadsheet
-    data <- gs %>% 
-      # retrieve data
-      gs_read_csv(
-        ws = access_code, 
-        col_types = cols(
-          timestamp = col_character(),
-          submitted = col_logical(),
-          access_code = col_character(),
-          plus = col_character(),
-          minus = col_character(),
-          score = col_integer()
-        )) %>% 
-      # convert timestamp
+    # # does exist and is a google spreadsheet
+    # data <- gs %>% 
+    #   # retrieve data
+    #   gs_read_csv(
+    #     ws = access_code, 
+    #     col_types = cols(
+    #       timestamp = col_character(),
+    #       submitted = col_logical(),
+    #       access_code = col_character(),
+    #       plus = col_character(),
+    #       minus = col_character(),
+    #       score = col_integer()
+    #     )) %>% 
+    #   # convert timestamp
+    #   mutate(timestamp = ymd_hms(timestamp))
+    data = gs %>%
+      range_read(sheet = access_code, 
+                 col_names = c('timestamp',
+                               'submitted',
+                               'access_code',
+                               'plus',
+                               'minus',
+                               'score'),
+                 col_types = 'clccci',
+                 .name_repair='minimal') %>%
       mutate(timestamp = ymd_hms(timestamp))
+    if (nrow(data) == 0) {
+      data = tibble(timestamp=as.character(),
+                    submitted=as.logical(),
+                    access_code=as.character(),
+                    plus=as.character(),
+                    minus=as.character(),
+                    score=as.integer()) %>%
+        mutate(timestamp=ymd_hms(timestamp))
+    } 
   } else {
     # does exist and is a local file
     data <- read_excel(ss, sheet = access_code) %>% 
@@ -798,6 +820,8 @@ read_peer_eval <- function(ss, access_code) {
       )
   }
   
+  print(data)
+
   # return
   data %>% 
     # make sure score is numeric
@@ -814,7 +838,8 @@ save_peer_eval <- function(gs, access_code, data, submitted = FALSE) {
   timestamp <- NULL
   
   # refresh sheet
-  gs <- gs_gs(gs)
+  # gs <- gs_gs(gs)
+  gs = gs4_get(gs)
   
   # add timestamp and submitted info
   data <- data %>% 
@@ -826,13 +851,17 @@ save_peer_eval <- function(gs, access_code, data, submitted = FALSE) {
     as.data.frame()
   
   # check for spreadsheet
-  if (!access_code %in% gs_ws_ls(gs)) {
+  worksheets = gs$sheets[['name']]
+  # if (!access_code %in% gs_ws_ls(gs)) {
+  if (!access_code %in% worksheets) {
     glue("Info: creating {nrow(data)} rows in new gs tab '{access_code}'") %>% message()
-    gs_ws_new(gs, ws_title = access_code, input = data, trim = TRUE)
+    # gs_ws_new(gs, ws_title = access_code, input = data, trim = TRUE)
+    write_sheet(data=data, ss=gs, sheet=access_code)
   } else {
     # add new rows
     glue("Info: adding {nrow(data)} rows to tab '{access_code}'") %>% message()
-    gs_add_row(gs, ws = access_code, data)
+    # gs_add_row(gs, ws = access_code, data)
+    sheet_append(ss=gs, data=data, sheet=access_code)
   }
   
 }
