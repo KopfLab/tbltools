@@ -4,10 +4,16 @@
 \alias{tbl_arrange_RAT_questions}
 \title{Arrange RAT questions}
 \usage{
-tbl_arrange_RAT_questions(rat, by = "original", tRAT_n_start = 1,
-  iRAT_n_start = tRAT_n_start, iRAT_sel_per_q = 1,
-  fixed_number_column = NULL, group_by_column = NULL,
-  random_seed = random())
+tbl_arrange_RAT_questions(
+  rat,
+  by = "original",
+  tRAT_n_start = 1,
+  iRAT_n_start = tRAT_n_start,
+  iRAT_sel_per_q = 1,
+  fixed_number_column = NULL,
+  group_by_column = NULL,
+  random_seed = random()
+)
 }
 \arguments{
 \item{rat}{Readiness Assessment Test object}

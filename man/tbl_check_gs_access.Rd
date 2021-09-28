@@ -4,29 +4,33 @@
 \alias{tbl_check_gs_access}
 \title{Check google spreadsheet access}
 \usage{
-tbl_check_gs_access(folder = "peer_evaluation",
-  data_gs_title = "Peer Evaluation", gs_token = file.path(folder,
-  "gs_token.rds"), new_credentials = FALSE)
+tbl_check_gs_access(
+  folder = "peer_evaluation",
+  data_gs_title = "Peer Evaluation",
+  data_gs_id = NULL,
+  gs_key_file = file.path(folder, "gs_key_file.json")
+)
 }
 \arguments{
 \item{folder}{target folder where to setup the peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.}
 
-\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
+\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the \code{gs_key_file} must grant access to it.}
 
-\item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
+\item{data_gs_id}{optional alternative to the \code{data_gs_title}, a google spread sheet ID text or object (see \link[googlesheets4]{sheets_id}). If provided, it takes precedence over the \code{data_gs_title} parameter as the google spreadsheet doesn't need to be searched by name anymore (i.e. can be loaded faster).}
 
-\item{new_credentials}{if set to TRUE, will always prompt the user to establish new google drive credentials. If FALSE (the default), will only do so if the \code{gs_token} file does not exist yet.}
+\item{gs_key_file}{path to your .json access key file for peer evaluation google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. Make sure to share the google spreadshhet for this peer evaluation with the \code{client_email} listed in the key file.}
 }
 \value{
-returns the retrieved google spreadsheet key invisibly
+returns the retrieved authentication token from the key file invisibly
 }
 \description{
-This function checks whether google spreadsheet credentials are established and there is access to the \code{data_gs_title} google sheet. If the \code{gs_token} file does not exist yet or \code{new_credentials = TRUE}, it will establish new google drive credentials using \link[googlesheets]{gs_auth}.
+This function checks whether google spreadsheet credentials are established and there is access to the \code{data_gs_title} google sheet. The  \code{gs_key_file} must grant access to the google spreadsheet (\code{data_gs_title}). See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details on how to set up google credentials and generate a key file.
 }
 \seealso{
-Other peer evaluation functions: \code{\link{tbl_duplicate_peer_evaluation}},
-  \code{\link{tbl_run_peer_evaluation}},
-  \code{\link{tbl_setup_peer_evaluation}},
-  \code{\link{tbl_test_peer_evaluation}}
+Other peer evaluation functions: 
+\code{\link{tbl_duplicate_peer_evaluation}()},
+\code{\link{tbl_run_peer_evaluation}()},
+\code{\link{tbl_setup_peer_evaluation}()},
+\code{\link{tbl_test_peer_evaluation}()}
 }
 \concept{peer evaluation functions}

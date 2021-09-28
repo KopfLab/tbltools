@@ -15,9 +15,10 @@ tbl_test_peer_evaluation(folder = "peer_evaluation", ...)
 This function starts a peer evaluation app previously set up using \link{tbl_setup_peer_evaluation}. This provides a local version of the app before deploying it to a shiny apps server (using \link{tbl_deploy_peer_evaluation}). Keep in mind that the test application writes data to the google spreadsheet and make sure to delete any test records from the google spreadsheet that may interfere with any students' peer evaluations prior to providing the students with the link to the deployed peer evaluation app.
 }
 \seealso{
-Other peer evaluation functions: \code{\link{tbl_check_gs_access}},
-  \code{\link{tbl_duplicate_peer_evaluation}},
-  \code{\link{tbl_run_peer_evaluation}},
-  \code{\link{tbl_setup_peer_evaluation}}
+Other peer evaluation functions: 
+\code{\link{tbl_check_gs_access}()},
+\code{\link{tbl_duplicate_peer_evaluation}()},
+\code{\link{tbl_run_peer_evaluation}()},
+\code{\link{tbl_setup_peer_evaluation}()}
 }
 \concept{peer evaluation functions}

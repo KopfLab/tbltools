@@ -4,9 +4,11 @@
 \alias{tbl_read_peer_evaluation_data}
 \title{Read downloaded peer evaluation data}
 \usage{
-tbl_read_peer_evaluation_data(folder = ".",
+tbl_read_peer_evaluation_data(
+  folder = ".",
   roster = read_excel(file.path(folder, "roster.xlsx")),
-  download_file = file.path(folder, "pe_data_downloaded.xlsx"))
+  download_file = file.path(folder, "pe_data_downloaded.xlsx")
+)
 }
 \arguments{
 \item{folder}{folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter context)}

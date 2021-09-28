@@ -4,20 +4,24 @@
 \alias{tbl_duplicate_peer_evaluation}
 \title{Duplicate a peer evaluation app}
 \usage{
-tbl_duplicate_peer_evaluation(template = "peer_evaluation",
-  folder = "peer_evaluation2", data_gs_title = NULL,
-  overwrite = FALSE, check_gs_access = TRUE)
+tbl_duplicate_peer_evaluation(
+  template = "peer_evaluation",
+  folder = "peer_evaluation2",
+  data_gs_title = NULL,
+  overwrite = FALSE,
+  check_gs_access = TRUE
+)
 }
 \arguments{
 \item{template}{folder where the existing peer evaluation that is to be duplicated is located (path must be either relative to the current working directory or an absolute file path on the operating system).}
 
 \item{folder}{target folder where to setup the duplicated peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.}
 
-\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
+\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the \code{gs_key_file} must grant access to it.}
 
 \item{overwrite}{whether to overwrite the app in the target directory if it already exists}
 
-\item{check_gs_access}{whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE} (e.g. for avoiding a re-check when overwriting an existing peer evaluation folder), this function will NOT ask for google spreadsheet credenticals and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the user has access to. Make sure to provide the necessary access credentials manually (e.g. a \code{gs_token.rds} file in the application folder), otherwise the peer evaluation application will not be able to run (locally or on the shiny apps server).}
+\item{check_gs_access}{whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE}, this function will NOT validate the \code{gs_key_file} and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the key file grants access to.}
 }
 \value{
 returns the \code{folder} invisibly for ease of use in pipelines
@@ -26,9 +30,10 @@ returns the \code{folder} invisibly for ease of use in pipelines
 This functions makes it easy to duplicate an existing peer evaluation by copying all relevant files into a new folder. You can optionally change the google spreadsheet the new peer evaluation is linked to by specifying the \code{data_gs_title} parameter. To create a new peer evaluation from scratch, use \link{tbl_setup_peer_evaluation} instead.
 }
 \seealso{
-Other peer evaluation functions: \code{\link{tbl_check_gs_access}},
-  \code{\link{tbl_run_peer_evaluation}},
-  \code{\link{tbl_setup_peer_evaluation}},
-  \code{\link{tbl_test_peer_evaluation}}
+Other peer evaluation functions: 
+\code{\link{tbl_check_gs_access}()},
+\code{\link{tbl_run_peer_evaluation}()},
+\code{\link{tbl_setup_peer_evaluation}()},
+\code{\link{tbl_test_peer_evaluation}()}
 }
 \concept{peer evaluation functions}

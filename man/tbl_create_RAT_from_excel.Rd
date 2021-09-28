@@ -4,8 +4,13 @@
 \alias{tbl_create_RAT_from_excel}
 \title{Create RAT from Excel}
 \usage{
-tbl_create_RAT_from_excel(filepath, questions_tab = "questions",
-  key_tab = "key", filter_include = TRUE, fill_down_questions = TRUE)
+tbl_create_RAT_from_excel(
+  filepath,
+  questions_tab = "questions",
+  key_tab = "key",
+  filter_include = TRUE,
+  fill_down_questions = TRUE
+)
 }
 \arguments{
 \item{filepath}{the path to the excel file}

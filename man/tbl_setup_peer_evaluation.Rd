@@ -4,40 +4,46 @@
 \alias{tbl_setup_peer_evaluation}
 \title{Set up a peer evaluation app}
 \usage{
-tbl_setup_peer_evaluation(folder = "peer_evaluation",
+tbl_setup_peer_evaluation(
+  folder = "peer_evaluation",
   data_gs_title = "Peer Evaluation",
   template_roster_file = system.file(package = "tbltools", "extdata",
-  "roster_template.xlsx"), gs_token = file.path(folder, "gs_token.rds"),
-  overwrite = FALSE, check_gs_access = TRUE)
+    "roster_template.xlsx"),
+  gs_key_file = NULL,
+  gs_token = deprecated(),
+  overwrite = FALSE,
+  check_gs_access = TRUE
+)
 }
 \arguments{
 \item{folder}{target folder where to setup the peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.}
 
-\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
+\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the \code{gs_key_file} must grant access to it.}
 
 \item{template_roster_file}{path to an excel (.xslx) file that contains the student roster information to use as template for the peer evaluation app (can be edited later)  - will use the package template by default}
 
-\item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
+\item{gs_key_file}{path to your .json access key file for peer evaluation google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. Make sure to share the google spreadshhet for this peer evaluation with the \code{client_email} listed in the key file.}
 
 \item{overwrite}{whether to overwrite the app in the target directory if it already exists}
 
-\item{check_gs_access}{whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE} (e.g. for avoiding a re-check when overwriting an existing peer evaluation folder), this function will NOT ask for google spreadsheet credenticals and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the user has access to. Make sure to provide the necessary access credentials manually (e.g. a \code{gs_token.rds} file in the application folder), otherwise the peer evaluation application will not be able to run (locally or on the shiny apps server).}
+\item{check_gs_access}{whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE}, this function will NOT validate the \code{gs_key_file} and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the key file grants access to.}
 }
 \value{
 returns the \code{folder} invisibly for ease of use in pipelines
 }
 \description{
-This functions makes it easy to setup a peer evaluation app folder. It creates the app script \code{app.R} and copies the \code{roster_file} (an Excel spreadsheet) as well as the necessary google drive credentials for the \code{data_gs_title} to the same directory. Unless \code{check_gs_access = FALSE}, it will call the \code{\link{tbl_check_gs_access}} function and ask for google drive credentials using \link[googlesheets]{gs_auth}. The entered credentials (or provided \code{gs_token}) must have access to the google spreadsheet (\code{data_gs_title}). Both \code{app.R} and the \code{roster_file} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster_file} will be read-only and all actual data will be stored in the google drive data file.
+This functions makes it easy to setup a peer evaluation app folder. It creates the app script \code{app.R} and copies the \code{roster_file} (an Excel spreadsheet) as well as the necessary google access key file for the \code{data_gs_title} google spreadsheet to the same directory. The provided \code{gs_key_file} must grant access to the google spreadsheet (\code{data_gs_title}). See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details on how to set up google credentials and generate a key file. Unless \code{check_gs_access = FALSE}, this function will call the \code{\link{tbl_check_gs_access}} function to confirm that the key file works and provides access to the requested google spreadsheet. Both \code{app.R} and the \code{roster_file} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster_file} will be read-only and all actual data will be stored in the google spreadsheet data file.
 }
 \details{
 Use \link{tbl_test_peer_evaluation} with the same \code{folder} as parameter to test run the peer evaluation application locally on your computer. It is recommended to always test the peer evaluation application locally before uploading it to the shiny application server.
 
-Use \link{tbl_duplicate_peer_evaluation} to create a copy of an existing peer evaluation rather than setting one up from scratch.
+Use \link{tbl_duplicate_peer_evaluation} to create a copy of an existing peer evaluation rather than setting one up from scratch. Note that older peer evaluations that don't have a \code{gs_key_file} yet will require this parameter to be set.
 }
 \seealso{
-Other peer evaluation functions: \code{\link{tbl_check_gs_access}},
-  \code{\link{tbl_duplicate_peer_evaluation}},
-  \code{\link{tbl_run_peer_evaluation}},
-  \code{\link{tbl_test_peer_evaluation}}
+Other peer evaluation functions: 
+\code{\link{tbl_check_gs_access}()},
+\code{\link{tbl_duplicate_peer_evaluation}()},
+\code{\link{tbl_run_peer_evaluation}()},
+\code{\link{tbl_test_peer_evaluation}()}
 }
 \concept{peer evaluation functions}

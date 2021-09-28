@@ -8,21 +8,29 @@
 
 <title>Fetch the peer evaluation data — tbl_fetch_peer_evaluation_data • TBL Tools</title>
 
-<!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<!-- jquery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -30,10 +38,10 @@
 
 
 
-<meta property="og:title" content="Fetch the peer evaluation data — tbl_fetch_peer_evaluation_data" />
 
+<meta property="og:title" content="Fetch the peer evaluation data — tbl_fetch_peer_evaluation_data" />
 <meta property="og:description" content="Fetches the peer evaluation data from the google spreadsheet and reads it (using tbl_read_peer_evaluation_data). For standard installations of the peer evaluation app, all defaults should be sufficient with only parameter data_gs_title requiring a specification." />
-<meta name="twitter:card" content="summary" />
+
 
 
 
@@ -47,9 +55,10 @@
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -63,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TBL Tools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -106,7 +115,6 @@
   <a href="../reference/index.html">Reference</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/kopflab/tbltools">
@@ -121,6 +129,7 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -132,16 +141,19 @@
     </div>
 
     <div class="ref-description">
-    
     <p>Fetches the peer evaluation data from the google spreadsheet and reads it (using <a href='tbl_read_peer_evaluation_data.html'>tbl_read_peer_evaluation_data</a>). For standard installations of the peer evaluation app, all defaults should be sufficient with only parameter <code>data_gs_title</code> requiring a specification.</p>
-    
     </div>
 
-    <pre class="usage"><span class='fu'>tbl_fetch_peer_evaluation_data</span>(<span class='kw'>folder</span> <span class='kw'>=</span> <span class='st'>"."</span>, <span class='kw'>data_gs_title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>data_gs_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>roster</span> <span class='kw'>=</span> <span class='fu'>read_excel</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path</a></span>(<span class='no'>folder</span>,
-  <span class='st'>"roster.xlsx"</span>)), <span class='kw'>gs_token</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path</a></span>(<span class='no'>folder</span>, <span class='st'>"gs_token.rds"</span>),
-  <span class='kw'>download_to</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/file.path'>file.path</a></span>(<span class='no'>folder</span>, <span class='st'>"pe_data_downloaded.xlsx"</span>))</pre>
-    
+    <pre class="usage"><span class='fu'>tbl_fetch_peer_evaluation_data</span><span class='op'>(</span>
+  folder <span class='op'>=</span> <span class='st'>"."</span>,
+  data_gs_title <span class='op'>=</span> <span class='cn'>NULL</span>,
+  data_gs_id <span class='op'>=</span> <span class='cn'>NULL</span>,
+  data_gs_key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Deprecated.html'>deprecated</a></span><span class='op'>(</span><span class='op'>)</span>,
+  roster <span class='op'>=</span> <span class='fu'>read_excel</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>folder</span>, <span class='st'>"roster.xlsx"</span><span class='op'>)</span><span class='op'>)</span>,
+  gs_key_file <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>folder</span>, <span class='st'>"gs_key_file.json"</span><span class='op'>)</span>,
+  download_to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>folder</span>, <span class='st'>"pe_data_downloaded.xlsx"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -151,36 +163,35 @@
     </tr>
     <tr>
       <th>data_gs_title</th>
-      <td><p>name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.</p></td>
+      <td><p>name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the <code>gs_key_file</code> must grant access to it.</p></td>
     </tr>
     <tr>
-      <th>data_gs_key</th>
-      <td><p>alternatively to the <code>data_gs_title</code> and <code>gs_token</code>, a google spread sheet key object generated via <code><a href='https://www.rdocumentation.org/packages/googlesheets/topics/googlesheet'>gs_key</a></code> can be provided. This allows the use of externally registered spreadsheets such as public example sheets. If provided, it takes precedence over the data_gs_title parameter. Note that this is NOT an option for running peer evaluations which need write access to the google spreadsheet.</p></td>
+      <th>data_gs_id</th>
+      <td><p>optional alternative to the <code>data_gs_title</code>, a google spread sheet ID text or object (see <a href='https://googlesheets4.tidyverse.org/reference/sheets_id.html'>sheets_id</a>). If provided, it takes precedence over the <code>data_gs_title</code> parameter as the google spreadsheet doesn't need to be searched by name anymore (i.e. can be loaded faster).</p></td>
     </tr>
     <tr>
       <th>roster</th>
       <td><p>data frame with the student roster</p></td>
     </tr>
     <tr>
-      <th>gs_token</th>
-      <td><p>path to a google spreadsheet oauth 2.0 authentication token file (see <a href='https://www.rdocumentation.org/packages/httr/topics/Token-class'>Token-class</a>). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.</p></td>
+      <th>gs_key_file</th>
+      <td><p>path to your .json access key file for peer evaluation google spreadsheets. See the <a href='https://tbltools.kopflab.org/articles/peer_evaluations.html'>peer evaluations vignette</a> for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. Make sure to share the google spreadshhet for this peer evaluation with the <code>client_email</code> listed in the key file.</p></td>
     </tr>
     <tr>
       <th>download_to</th>
       <td><p>location where the whole peer evaluation data sheet will be downloaded to for more efficient read access</p></td>
     </tr>
     </table>
-    
+
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-                </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -188,13 +199,16 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

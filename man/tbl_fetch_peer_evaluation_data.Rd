@@ -4,21 +4,26 @@
 \alias{tbl_fetch_peer_evaluation_data}
 \title{Fetch the peer evaluation data}
 \usage{
-tbl_fetch_peer_evaluation_data(folder = ".", data_gs_title = NULL,
-  data_gs_key = NULL, roster = read_excel(file.path(folder,
-  "roster.xlsx")), gs_token = file.path(folder, "gs_token.rds"),
-  download_to = file.path(folder, "pe_data_downloaded.xlsx"))
+tbl_fetch_peer_evaluation_data(
+  folder = ".",
+  data_gs_title = NULL,
+  data_gs_id = NULL,
+  data_gs_key = deprecated(),
+  roster = read_excel(file.path(folder, "roster.xlsx")),
+  gs_key_file = file.path(folder, "gs_key_file.json"),
+  download_to = file.path(folder, "pe_data_downloaded.xlsx")
+)
 }
 \arguments{
 \item{folder}{folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter context)}
 
-\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
+\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the \code{gs_key_file} must grant access to it.}
 
-\item{data_gs_key}{alternatively to the \code{data_gs_title} and \code{gs_token}, a google spread sheet key object generated via \code{\link[googlesheets]{gs_key}} can be provided. This allows the use of externally registered spreadsheets such as public example sheets. If provided, it takes precedence over the data_gs_title parameter. Note that this is NOT an option for running peer evaluations which need write access to the google spreadsheet.}
+\item{data_gs_id}{optional alternative to the \code{data_gs_title}, a google spread sheet ID text or object (see \link[googlesheets4]{sheets_id}). If provided, it takes precedence over the \code{data_gs_title} parameter as the google spreadsheet doesn't need to be searched by name anymore (i.e. can be loaded faster).}
 
 \item{roster}{data frame with the student roster}
 
-\item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
+\item{gs_key_file}{path to your .json access key file for peer evaluation google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. Make sure to share the google spreadshhet for this peer evaluation with the \code{client_email} listed in the key file.}
 
 \item{download_to}{location where the whole peer evaluation data sheet will be downloaded to for more efficient read access}
 }
