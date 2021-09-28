@@ -2,18 +2,18 @@
 
 #' Set up a peer evaluation app
 #' 
-#' This functions makes it easy to setup a peer evaluation app folder. It creates the app script \code{app.R} and copies the \code{roster_file} (an Excel spreadsheet) as well as the necessary google drive credentials for the \code{data_gs_title} to the same directory. Unless \code{check_gs_access = FALSE}, it will call the \code{\link{tbl_check_gs_access}} function and ask for google drive credentials using \link[googlesheets]{gs_auth}. The entered credentials (or provided \code{gs_token}) must have access to the google spreadsheet (\code{data_gs_title}). Both \code{app.R} and the \code{roster_file} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster_file} will be read-only and all actual data will be stored in the google drive data file.
+#' This functions makes it easy to setup a peer evaluation app folder. It creates the app script \code{app.R} and copies the \code{roster_file} (an Excel spreadsheet) as well as the necessary google access key file for the \code{data_gs_title} google spreadsheet to the same directory. The provided \code{gs_key_file} must grant access to the google spreadsheet (\code{data_gs_title}). See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details on how to set up google credentials and generate a key file. Unless \code{check_gs_access = FALSE}, this function will call the \code{\link{tbl_check_gs_access}} function to confirm that the key file works and provides access to the requested google spreadsheet. Both \code{app.R} and the \code{roster_file} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster_file} will be read-only and all actual data will be stored in the google spreadsheet data file.
 #' 
 #' Use \link{tbl_test_peer_evaluation} with the same \code{folder} as parameter to test run the peer evaluation application locally on your computer. It is recommended to always test the peer evaluation application locally before uploading it to the shiny application server.
 #' 
-#' Use \link{tbl_duplicate_peer_evaluation} to create a copy of an existing peer evaluation rather than setting one up from scratch.
+#' Use \link{tbl_duplicate_peer_evaluation} to create a copy of an existing peer evaluation rather than setting one up from scratch. Note that older peer evaluations that don't have a \code{gs_key_file} yet will require this parameter to be set.
 #' 
 #' @inheritParams peer_evaluation_server
 #' @param folder target folder where to setup the peer evaluation (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
 #' @param template_roster_file path to an excel (.xslx) file that contains the student roster information to use as template for the peer evaluation app (can be edited later)  - will use the package template by default
-#' @param gs_token path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). If none is provided or the file does not exist yet, will ask for google drive credentials interactively to generate a token for the peer evaluation app. The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.
+#' @param gs_key_file path to your .json access key file for peer evaluation google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets.
 #' @param overwrite whether to overwrite the app in the target directory if it already exists
-#' @param check_gs_access whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE} (e.g. for avoiding a re-check when overwriting an existing peer evaluation folder), this function will NOT ask for google spreadsheet credenticals and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the user has access to. Make sure to provide the necessary access credentials manually (e.g. a \code{gs_token.rds} file in the application folder), otherwise the peer evaluation application will not be able to run (locally or on the shiny apps server).
+#' @param check_gs_access whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE}, this function will NOT validate the \code{gs_key_file} and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the key file grants access to.
 #' @inheritParams tbl_run_peer_evaluation
 #' @return returns the \code{folder} invisibly for ease of use in pipelines
 #' @family peer evaluation functions
@@ -21,7 +21,60 @@
 tbl_setup_peer_evaluation <- function(
   folder = "peer_evaluation", data_gs_title = "Peer Evaluation", 
   template_roster_file = system.file(package = "tbltools", "extdata", "roster_template.xlsx"), 
-  gs_token = file.path(folder, "gs_token.rds"), overwrite = FALSE, check_gs_access = TRUE) {
+  gs_key_file = NULL, gs_token = deprecated(), overwrite = FALSE, check_gs_access = TRUE) {
+  
+  # inform user about gs_token deprecation
+  if (lifecycle::is_present(gs_token)) 
+    lifecycle::deprecate_stop("0.6.0", "tbltools::tbl_setup_peer_evaluation(gs_token = )", "tbltools::tbl_setup_peer_evaluation(gs_key_file = )")
+  
+  # process key file
+  gs_key_file_save_path <- file.path(folder, "gs_key_file.json")
+  no_key_file_msg <- "If you want to copy a key file to your peer evaluation app manually, set 'gs_key_file = NULL' and 'check_gs_access = FALSE'."
+  if (!is.null(gs_key_file)) {
+    # check that the file exists
+    if (!file.exists(gs_key_file))
+      glue("key file does not exist at location '{gs_key_file}', do you have the correct path? ", no_key_file_msg) %>% 
+        stop(call. = FALSE)
+    
+    # check that the file is a valid json file
+    tryCatch(
+      jsonlite::read_json(gs_key_file),
+      error = function(e) {
+        glue("key file is not valid JSON, error: ", e$message) %>% 
+          stop(call. = FALSE)
+      }
+    )
+    
+    # check gs access with key file
+    if (check_gs_access) {
+      tbl_check_gs_access(data_gs_title = data_gs_title, gs_key_file = gs_key_file)
+    }
+    
+    # copy key file
+    glue("Info: copying service account key file to {gs_key_file_save_path}") %>% message()
+    file.copy(gs_key_file, to = gs_key_file_save_path) 
+  } else if (is.null(gs_key_file) && check_gs_access) {
+    glue("cannot check google spreadsheet access without a 'gs_key_file'. ", no_key_file_msg) %>% 
+      stop(call. = FALSE)
+  }
+  
+
+  # copy key file
+  if (!is.null(gs_token) && file.exists(gs_token) && (!file.exists(gs_token_save_path) || overwrite)) {
+    if (check_gs_access)
+      glue("Info: copying authentication token to {folder}/gs_token.rds") %>% message()
+    else
+      glue("Info: copying authentication token (but without checking gs access) to {folder}/gs_token.rds") %>% message()
+    file.copy(gs_token, to = gs_token_save_path) 
+  }
+  
+  # check gs_access
+  if (check_gs_access) {
+    tbl_check_gs_access(folder = folder, data_gs_title = data_gs_title, gs_token = gs_token_save_path)
+  }
+  
+  
+  
   
   # check for roster file
   if(!file.exists(template_roster_file))
@@ -102,25 +155,9 @@ tbl_setup_peer_evaluation <- function(
     str_interp(list(data_gs_title = data_gs_title)) %>% 
     cat(file = file.path(folder, "evaluation.Rmd"))
   
-  # token save path
-  gs_token_save_path <- file.path(folder, "gs_token.rds")
-  
-  # copy token
-  if (!is.null(gs_token) && file.exists(gs_token) && (!file.exists(gs_token_save_path) || overwrite)) {
-    if (check_gs_access)
-      glue("Info: copying authentication token to {folder}/gs_token.rds") %>% message()
-    else
-      glue("Info: copying authentication token (but without checking gs access) to {folder}/gs_token.rds") %>% message()
-    file.copy(gs_token, to = gs_token_save_path) 
-  }
-  
-  # check gs_access
-  if (check_gs_access) {
-    tbl_check_gs_access(folder = folder, data_gs_title = data_gs_title, gs_token = gs_token_save_path)
-  }
-  
   glue("Info: set up of tbltools' Peer Evaluation app in directory '{folder}' is complete.\n",
-       "Please modify the files in '{folder}' as appropriate before uploading to shiny server.") %>% 
+       "Please modify the files in '{folder}' as appropriate and ",
+       "run tbl_test_peer_evaluation('{folder}') before before uploading to shiny server.") %>% 
     message()
   
   return(invisible(folder))
@@ -352,7 +389,7 @@ tbl_deploy_peer_evaluation <- function(folder = "peer_evaluation", appName = gue
 get_example_gs_key <- function(id) {
   # public example spreadsheet (consider creating permanent ID via https://w3id.org/)
   tryCatch(
-    key <- gs_key(id, lookup = FALSE, verbose = FALSE),
+    key <- googlesheets4::as_sheets_id(googledrive::drive_get(id = id)),
     error = function(e) {
       glue("could not retrieve example google spreadsheet with id {id} - ",
            "encountered the following error: {e$message}") %>% 
@@ -390,7 +427,7 @@ tbl_example_roster <- function() {
 #' @inheritParams tbl_setup_peer_evaluation
 #' @inheritParams tbl_run_peer_evaluation
 #' @param folder folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter context)
-#' @param data_gs_key alternatively to the \code{data_gs_title} and \code{gs_token}, a google spread sheet key object generated via \code{\link[googlesheets]{gs_key}} can be provided. This allows the use of externally registered spreadsheets such as public example sheets. If provided, it takes precedence over the data_gs_title parameter. Note that this is NOT an option for running peer evaluations which need write access to the google spreadsheet.
+#' @param data_gs_key alternatively to the \code{data_gs_title} and \code{gs_token}, a google spread sheet key object generated via \code{\link[googlesheets4]{as_sheets_id}} can be provided. This allows the use of externally registered spreadsheets such as public example sheets. If provided, it takes precedence over the data_gs_title parameter. Note that this is NOT an option for running peer evaluations which need write access to the google spreadsheet.
 #' @param download_to location where the whole peer evaluation data sheet will be downloaded to for more efficient read access
 #' @export
 tbl_fetch_peer_evaluation_data <- function(
@@ -406,6 +443,7 @@ tbl_fetch_peer_evaluation_data <- function(
   if (is.null(data_gs_title) && is.null(data_gs_key))
     stop("a google spreadsheet must be identified either via data_gs_title or data_gs_key parameter, neither is provided", call. = FALSE)
   
+  # SK FIXME: continue here
   if (!is.null(data_gs_key)) {
     # get data via gs key, make sure it's a valid key
     gs <- gs_gs(data_gs_key, verbose = FALSE)
@@ -660,15 +698,13 @@ check_student_roster <- function(roster) {
 
 #' Check google spreadsheet access
 #' 
-#' This function checks whether google spreadsheet credentials are established and there is access to the \code{data_gs_title} google sheet. If the \code{gs_token} file does not exist yet or \code{new_credentials = TRUE}, it will establish new google drive credentials using \link[googlesheets]{gs_auth}.
+#' This function checks whether google spreadsheet credentials are established and there is access to the \code{data_gs_title} google sheet. The  \code{gs_key_file} must grant access to the google spreadsheet (\code{data_gs_title}). See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details on how to set up google credentials and generate a key file.
 #' 
 #' @inheritParams tbl_setup_peer_evaluation
-#' @param new_credentials if set to TRUE, will always prompt the user to establish new google drive credentials. If FALSE (the default), will only do so if the \code{gs_token} file does not exist yet.
-#' @return returns the retrieved google spreadsheet key invisibly
+#' @return returns the retrieved authentication token from the key file invisibly
 #' @family peer evaluation functions
 #' @export
-tbl_check_gs_access <- function(folder = "peer_evaluation", data_gs_title = "Peer Evaluation", 
-                                gs_token = file.path(folder, "gs_token.rds"), new_credentials = FALSE) {
+tbl_check_gs_access <- function(folder = "peer_evaluation", data_gs_title = "Peer Evaluation", gs_key_file = file.path(folder, "gs_key_file.json")) {
   
   # error msg 
   err_msg <- glue(
@@ -688,48 +724,85 @@ tbl_check_gs_access <- function(folder = "peer_evaluation", data_gs_title = "Pee
   }
   
   # check google sheet presence
-  gs <- try_to_fetch_google_spreadsheet(data_gs_title, err_msg = err_msg)
+  #gs <- try_to_fetch_google_spreadsheet(data_gs_title, err_msg = err_msg)
   
   return(invisible(gs))
 }
 
-# authenticate with google server
-try_to_authenticate <- function(gs_token = NULL, err_msg = "") {
+# authenticate with google server using the key file
+try_to_authenticate <- function(gs_key_file, err_msg = "") {
+  
   # google sheets authentication
-  automatic <- is.null(getOption('httr_oob_default')) || !getOption('httr_oob_default')
-  tryCatch({
-    if (!is.null(gs_token)) {
-      # authenticate quietly if token is provided
-      message("Info: authenticating with google server via token... ", appendLF = FALSE)
-      token <- quietly(gs_auth)(token = gs_token, new_user = TRUE, cache=FALSE)
-    } else {
-      # allow authentication info messages if token not provided
-      glue("Info: authenticating with google server {if(automatic) 'automatically' else 'manually'}... ") %>% 
-        message(appendLF = FALSE)
-      token <- gs_auth(token = NULL, new_user = TRUE, cache=FALSE)
-    }
-    message("complete.")
-  },
-  error = function(e) {
-    if (automatic && str_detect(e$message, fixed("Failed to create server"))) {
-      glue("could not authenticate automatically, please run 'options(httr_oob_default = TRUE)' and try again to authenticate manually: {e$message}") %>% 
-        stop(call. = FALSE)
-    } else {
-      glue("google spreadsheet authentication failed: {e$message}{err_msg}") %>% 
-        stop(call. = FALSE)
-    }
-  })
-  return(token)
+  googlesheets4::gs4_deauth()
+  
+  # check that the file exists
+  if (!file.exists(gs_key_file))
+    glue("key file does not exist, make sure there is a valid key file at '{gs_key_file}'.") %>% 
+    stop(call. = FALSE)
+  
+  if (!is.null(gs_token) && file.exists(gs_token)) {
+    # try to authenticate with token
+    token_obj <- readr::read_rds(gs_token)
+    message("Info: trying to authenticate with google server via token... ")
+  } else if (interactive()) {
+    token_obj <- NULL
+    message("Info: require new google authentication... ")
+  } else {
+    stop("Info: can only look for new google authentication in interactive mode", call. = FALSE)
+  }
+  
+  # 
+  gargle::credentials_service_account(path = "peer-evaluations-327405-8830388d9fd6.json")
+  
+  # run authentication
+  googlesheets4::gs4_auth(
+    token = token_obj,
+    scopes = c(
+      "https://www.googleapis.com/auth/drive",  # to be able to search google sheets
+      "https://www.googleapis.com/auth/spreadsheets" # to be able to interact with sheets
+    ),
+  )
+
+  # check result
+  if (!googlesheets4::gs4_has_token()) {
+    if (!is.null(gs_token) && file.exists(gs_token)) {
+      # token no longer valid
+      file.remove(gs_token)
+      message("Info: provided token may be oudated and was deleted.")
+    } 
+    stop("authentication failed, please try again.", call. = FALSE)
+  }
+  
+  # google drive authentication
+  token_obj <- googlesheets4::gs4_token()
+  googledrive::drive_auth(token = token_obj)
+  
+  # return token
+  message("Info: authentication successful.")
+  return(token_obj)
 }
 
 # find google spreadsheet
 try_to_fetch_google_spreadsheet <- function(gs_title, err_msg = "") {
-  message("Info: looking for spreadsheet... ", appendLF = FALSE)
-  tryCatch(gs <- gs_title(gs_title), error = function(e) {
-    glue("google spreadsheet with title '{gs_title}' could not be retrieved: {e$message}{err_msg}") %>% 
-      stop(call. = FALSE)
-  })
-  return(gs)
+  sprintf("Info: looking for spreadsheet '%s'... ", gs_title) %>%
+    message()
+  
+  tryCatch(
+    gs <- googledrive::drive_get(gs_title),
+    error = function(e) {
+      sprintf("google spreadsheet could not be retrieved: %s%s", e$message, err_msg) %>% 
+        stop(call. = FALSE)
+    }
+  )
+  
+  # check results
+  if (nrow(gs) == 1L) {
+    return(gs)
+  } else if (nrow(gs) == 0L) {
+    stop("don't have access to a single sheet with this exact name!", call. = FALSE) 
+  } else {
+    stop("multiple sheets with this name exist, not sure what to do", call. = FALSE)
+  }
 }
 
 # data loading/saving functions ==========
