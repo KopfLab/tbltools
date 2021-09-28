@@ -3,8 +3,10 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   assessment_tests: assessment_tests.html
+  demo: demo.html
+  module: module.html
   peer_evaluations: peer_evaluations.html
-last_built: 2021-09-28T20:09Z
+last_built: 2021-09-28T20:47Z
 urls:
   reference: http://tbltools.kopflab.org/reference
   article: http://tbltools.kopflab.org/articles
