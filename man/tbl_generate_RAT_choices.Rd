@@ -4,10 +4,13 @@
 \alias{tbl_generate_RAT_choices}
 \title{Generate RAT choices}
 \usage{
-tbl_generate_RAT_choices(rat, answer_layout = "vertical",
+tbl_generate_RAT_choices(
+  rat,
+  answer_layout = "vertical",
   answer_layout_column = NULL,
   answer_layout_funs = tbl_default_RAT_layouts(),
-  random_seed = random())
+  random_seed = random()
+)
 }
 \arguments{
 \item{rat}{Readiness Assessment Test object}

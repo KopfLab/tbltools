@@ -4,19 +4,31 @@
 \alias{peer_evaluation_server}
 \title{Peer Evaluation App Server}
 \usage{
-peer_evaluation_server(roster, data_gs_title, gs_token, welcome_md_file,
-  self_eval_plus_md_file, self_eval_minus_md_file,
-  teammate_eval_plus_md_file, teammate_eval_minus_md_file,
-  quant_scores_md_file, points_per_teammate = 10, max_points = 15,
-  min_points = 0, min_point_difference = 2,
-  auto_login_access_code = NULL)
+peer_evaluation_server(
+  roster,
+  data_gs_title,
+  gs_key_file,
+  welcome_md_file,
+  self_eval_plus_md_file,
+  self_eval_minus_md_file,
+  teammate_eval_plus_md_file,
+  teammate_eval_minus_md_file,
+  quant_scores_md_file,
+  points_per_teammate = 10,
+  max_points = 15,
+  min_points = 0,
+  min_point_difference = 2,
+  require_self_eval = TRUE,
+  require_peer_evals = TRUE,
+  auto_login_access_code = NULL
+)
 }
 \arguments{
 \item{roster}{data frame with the student roster}
 
-\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
+\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the \code{gs_key_file} must grant access to it.}
 
-\item{gs_token}{path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive.}
+\item{gs_key_file}{path to your .json access key file for peer evaluation google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. Make sure to share the google spreadshhet for this peer evaluation with the \code{client_email} listed in the key file.}
 
 \item{welcome_md_file}{path to a markdown (.md) file for the login welcome message}
 
@@ -37,6 +49,10 @@ peer_evaluation_server(roster, data_gs_title, gs_token, welcome_md_file,
 \item{min_points}{the smallest number of points allowed per team member}
 
 \item{min_point_difference}{the minimum point difference required for the scores (set to 0 to allow all scores to be identical)}
+
+\item{require_self_eval}{whether the qualitative self evaluation is required}
+
+\item{require_peer_evals}{whether the qualitative self evaluation is required}
 
 \item{auto_login_access_code}{set an automatic login access code for testing and debugging purposes}
 }

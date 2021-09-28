@@ -4,20 +4,29 @@
 \alias{tbl_run_peer_evaluation}
 \title{Run a peer evaluation app}
 \usage{
-tbl_run_peer_evaluation(data_gs_title,
-  roster = read_excel("roster.xlsx"), app_title = "Peer Evaluation",
+tbl_run_peer_evaluation(
+  data_gs_title,
+  roster = read_excel("roster.xlsx"),
+  app_title = "Peer Evaluation",
   welcome_md_file = "app_welcome.md",
   self_eval_plus_md_file = "app_self_evaluation_plus.md",
   self_eval_minus_md_file = "app_self_evaluation_minus.md",
   teammate_eval_plus_md_file = "app_teammate_evaluation_plus.md",
   teammate_eval_minus_md_file = "app_teammate_evaluation_minus.md",
   quant_scores_md_file = "app_quantitative_scores.md",
-  points_per_teammate = 10, max_points = 15, min_points = 0,
-  min_point_difference = 2, auto_login_access_code = NULL, ...,
-  launch = FALSE)
+  points_per_teammate = 10,
+  max_points = 15,
+  min_points = 0,
+  min_point_difference = 2,
+  require_self_eval = TRUE,
+  require_peer_evals = TRUE,
+  auto_login_access_code = NULL,
+  ...,
+  launch = FALSE
+)
 }
 \arguments{
-\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.}
+\item{data_gs_title}{name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the \code{gs_key_file} must grant access to it.}
 
 \item{roster}{data frame with the student roster}
 
@@ -43,6 +52,10 @@ tbl_run_peer_evaluation(data_gs_title,
 
 \item{min_point_difference}{the minimum point difference required for the scores (set to 0 to allow all scores to be identical)}
 
+\item{require_self_eval}{whether the qualitative self evaluation is required}
+
+\item{require_peer_evals}{whether the qualitative self evaluation is required}
+
 \item{auto_login_access_code}{set an automatic login access code for testing and debugging purposes}
 
 \item{...}{passed on to the \code{\link[shiny]{runApp}} call (only if \code{launch = TRUE}), can include server-specific parameters such as host or port}
@@ -53,9 +66,10 @@ tbl_run_peer_evaluation(data_gs_title,
 This function starts the peer evaluation user interface. Note that this function is typically NOT called directly but indirectly by setting up the peer evalution app using \link{tbl_setup_peer_evaluation}, adjusting the files in the peer evaluation app folder, and test running the app using \link{tbl_test_peer_evaluation}.
 }
 \seealso{
-Other peer evaluation functions: \code{\link{tbl_check_gs_access}},
-  \code{\link{tbl_duplicate_peer_evaluation}},
-  \code{\link{tbl_setup_peer_evaluation}},
-  \code{\link{tbl_test_peer_evaluation}}
+Other peer evaluation functions: 
+\code{\link{tbl_check_gs_access}()},
+\code{\link{tbl_duplicate_peer_evaluation}()},
+\code{\link{tbl_setup_peer_evaluation}()},
+\code{\link{tbl_test_peer_evaluation}()}
 }
 \concept{peer evaluation functions}

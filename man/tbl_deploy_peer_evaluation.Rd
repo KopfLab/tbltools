@@ -4,8 +4,11 @@
 \alias{tbl_deploy_peer_evaluation}
 \title{Deploy peer evaluation app}
 \usage{
-tbl_deploy_peer_evaluation(folder = "peer_evaluation",
-  appName = guess_from(folder), ...)
+tbl_deploy_peer_evaluation(
+  folder = "peer_evaluation",
+  appName = guess_from(folder),
+  ...
+)
 }
 \arguments{
 \item{folder}{folder where the peer evaluation app is located (see \link{tbl_setup_peer_evaluation} for details)}

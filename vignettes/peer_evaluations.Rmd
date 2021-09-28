@@ -26,10 +26,31 @@ To generate and host a peer evaluation, you need the following:
  
 # Setup
 
-To setup a peer evaluation:
+## Peer evaluation spreadsheet
 
- 1. log into your google drive account and create a new empty google spreadsheet with a descriptive name (for example something like this: *class1234 peer evaluation 1*). This spreadsheet is where your peer evaluation data will be stored.
- 1. load the `tbltools` library and run the `tbl_setup_peer_evaluation()` function with an (optional) name for the folder where you want the applicaton to be created (e.g. `folder = "peer eval 1"`), and the name of your google spreadsheet (e.g. `data_gs_title = "class1234 peer evaluation 1"`). The function uses the excellent [googlesheets](https://github.com/jennybc/googlesheets) package to step you through authenticating your google drive account interactively and will confirm that the google spreadsheet you linked can be accessed.
+Peer evaluations conveniently store the student responses in a google spreadsheet. Log into your google drive account and create a new empty google spreadsheet with a descriptive name (for example something like this: *class1234 peer evaluation 1*). This spreadsheet is where your peer evaluation data from all students will be stored. You should create a new spreadsheet for each peer evaluation.
+
+## Google credentials (setup once)
+
+It is important to secure access to the peer evaluation spreadsheet(s) so only you and the peer evaluation app have access. As of the google API version 4 this is best accomplished by creating a dedicated google project from your google account as outlined below. This creates a so-called **service account** with a unique client email address that you can share your peer evaluation spreadsheets with (just like sharing it with any other email address) as well as an access key file that your peer evaluation app can use for secure access. You can use this service account for all your peer evaluations and thus only need to set it up once (it does not expire). Note that previously peer evaluations worked by accessing your entire google drive account which is no longer the recommended (or supported) approach for security reasons. For additional information on service account authentication, see the \href{https://gargle.r-lib.org/articles/get-api-credentials.html#service-account-token}{gargle documentation}.
+
+ 1. go to [console.cloud.google.com/projectcreate](https://console.cloud.google.com/projectcreate) to start creating a new project and make sure to switch to the correct google account in the upper right corner (if you have multiple)
+ 1. give the project an informative **Project name**, e.g. `peer evaluations`
+ 1. go to the API libraries at [console.cloud.google.com/apis/library](https://console.cloud.google.com/apis/library) (again, switch to the right google account if you have multiple)
+ 1. select the newly created project from the dropdown at the top if it is not already selected
+ 1. search for **google sheets api** and click `ENABLE` 
+ 1. go back to the [API libraries](https://console.cloud.google.com/apis/library), select right google account and project, search for **google drive api**, click `ENABLE` as well
+ 1. go to the API service account credentials at [console.cloud.google.com/iam-admin/serviceaccounts](https://console.cloud.google.com/iam-admin/serviceaccounts) (again, switch to the right google account if you have multiple) and select the correct project
+ 1. click on `CREATE SERVICE ACCOUNT`
+ 1. provide a descriptive **Service account name**, e.g. `google sheets editor` (this will lead to a service account ID along the lines of `google-sheets-editor@peer-evaluations-xxxx.iam...`) and **Service account description**, e.g. `Editing google sheets for peer evaluations`, then click `CREATE AND CONTINUE`
+ 1. select the **Role** `Basic` --> `Editor` and click `CONTINUE`
+ 1. don't grant any specific users access, click `DONE` instead
+ 1. in the table you will see the new service account listed. Under **Actions** in the table, click on the vertical dots and choose **Manage keys**
+ 1. select **ADD KEY** --> **Create new key**, make sure `JSON` is selected, then click **CREATE**
+ 1. this will automatically download an access token in JSON format, save the file with an informative name, e.g. as `peer_evaluations_access_key.json` and keep it in a safe location on your hard drive. Yyou can reuse this key file for all peer evaluations, and it is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. You will have to provide the path to this key file when setting up the peer evaluation folder below.
+ 1. open the `peer_evaluations_access_key.json` file in a text editor and share the peer evaluation spreadsheet(s) you want to access through the `tbltools` package with the `client_email` address listed there (something along the lines of `google-sheets-editor@peer-evaluations-xxxx.iam.gserviceaccount.com`)
+
+## Create Peer Evaluation App
 
 ```{r, include=FALSE}
 # make sure to start from scratch (i.e. delete peer eval 1 folder if it exists)
@@ -38,14 +59,19 @@ if (dir.exists("peer eval 1")) unlink("peer eval 1", recursive = TRUE)
 
 ```{r, eval=FALSE}
 library(tbltools)
-tbl_setup_peer_evaluation(folder = "peer eval 1", data_gs_title = "class1234 peer evaluation 1")
+key_file <- "path/to/peer_evaluations_access_key.json"
+tbl_setup_peer_evaluation(
+  folder = "peer eval 1",
+  data_gs_title = "class1234 peer evaluation 1",
+  gs_key_file = key_file
+)
 ```
 
 ```{r, echo=FALSE}
 library(tbltools)
 # create actual peer evaluation folder without credentials checks
 tbl_setup_peer_evaluation(folder = "peer eval 1", data_gs_title = "class1234 peer evaluation 1", check_gs_access = FALSE)
-cat(file = file.path("peer eval 1", "gs_token.rds"))
+copy <- file.copy(system.file("extdata", "gs_key_file_example.json", package = "tbltools"), file.path("peer eval 1", "gs_key_file.json"))
 ```
 
 What just happened? tbltools created the `peer eval 1` folder and populated it with all the necessary files to launch a peer evaluation shiny application, which we will test locally in a moment. Let's take a look at what files were created first:
@@ -57,7 +83,7 @@ list.files("peer eval 1", full.names = TRUE, recursive = TRUE)
  - `app_...md`: these markdown files contain place-holder text for the peer evaluation application that you may want to customize to better reflect what you want the text in the peer evaluation to say. The format is of these files [Markdown](https://en.wikipedia.org/wiki/Markdown), which is a simple text formatting language. 
  - `app.R`: this is the actual R script that launches the peer evaluation application. Take a look inside this file and modify the function call to fit your preferences (e.g. the title of the application, how many points per teammate, etc.) - see the help on the `?tbl_run_peer_evaluation` function for details on all available parameters.
  - `evaluation.Rmd`: this is a template [RMarkdown](https://rmarkdown.rstudio.com/) file to evaluate the data collected during the peer evaluation. For examples of what the functions in this file do, see the [evaluation](#evaluation) section at the end of this document. Feel free to modify this evaluation file (or not use at all) as you see fit. 
- - `gs_token.rds`: this is an authentication token created with the [googlesheets](https://github.com/jennybc/googlesheets) package based on your google drive credentials that allows the peer evaluation application to write the students' responses to the google spreadsheet linked to the application. Without this file, the application would not be able to record any of the data. The token is safe to use on a secure shiny app server but be careful to never post the file anywhere publicly as it could be used to gain access to your google drive.
+ - `gs_key.json`: this is a copy of your google authentication key file for the peer evaluation spreadsheets. This allows the peer evaluation application to write the students' responses to the google spreadsheet linked to the application. Without this file, the application would not be able to record any of the data. The key file is safe to use on a secure shiny app server but be careful to never post the file anywhere publicly as it could be used to gain access to the peer evaluation spreadsheets.
  - `roster.xlsx`: this excel file contains a template list of students and their team affiliations (more details below). Please modify this file by hand to fit your class so that the peer evaluation application knows which access codes are valid and can provide each student automatically with a prompt to evaluate each of their team mates. The application _never_ modifies this file (only you can modify it), it is used purely as a read-only data table.
  - `www/app.css`: this is a CSS stylesheet file that describes the stylistic formatting of the peer evaluation application. Modify this file to change colors, font sizes, etc (the basic style is the [Bootstrap](https://getbootstrap.com/) style). You may also include any other static files in the `www` folder that should be included in the application (e.g. image files).
 
@@ -102,13 +128,13 @@ tbl_duplicate_peer_evaluation(
 
 ## Troubleshooting
 
-If you encounter any issues with authentication, run the following command to reset the google drive credentials and check that the google spreadsheet can be accessed:
+If you encounter any issues with authentication, run the following function to test google drive credentials and check that the google spreadsheet can be accessed:
 
 ```{r eval=FALSE}
 tbl_check_gs_access(
   folder = "peer eval 1", 
-  data_gs_title = "class1234 peer evaluation 1",
-  new_credentials = TRUE)
+  data_gs_title = "class1234 peer evaluation 1"
+)
 ```
 
 For example, you may get the following error trying to test your peer evaluation application because of a problem with your authentication token (expired or for the wrong account):
@@ -143,7 +169,8 @@ tryCatch(
 )
 # not actually launching so the vignette doesn't get stuck, but good
 # to show what it looks like
-cat("Info: looking for spreadsheet... Sheet successfully identified: \"class1234 peer evaluation 1\"
+cat("Info: looking for spreadsheet \"class1234 peer evaluation 1\"...
+Info: spreadsheet retrieved successfully.
 
 Listening on http://127.0.0.1:3683
 

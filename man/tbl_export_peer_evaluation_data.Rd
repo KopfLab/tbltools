@@ -4,8 +4,7 @@
 \alias{tbl_export_peer_evaluation_data}
 \title{Export peer evaluation data}
 \usage{
-tbl_export_peer_evaluation_data(data, filepath = "pe_data_summary.xlsx",
-  ...)
+tbl_export_peer_evaluation_data(data, filepath = "pe_data_summary.xlsx", ...)
 }
 \arguments{
 \item{data}{the peer evaluation data frame retrieved by \link{tbl_fetch_peer_evaluation_data}}

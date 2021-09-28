@@ -36,7 +36,7 @@ tbl_setup_RAT_template <- function(module = "module 1", n_questions = 10, n_opti
   
   ## data
   questions <- 
-    data_frame(
+    tibble(
       include = c("x", rep(NA, n_options_per_q - 1)),
       layout = NA_character_,
       question = c("Question ", rep(NA, n_options_per_q - 1)),
@@ -44,12 +44,12 @@ tbl_setup_RAT_template <- function(module = "module 1", n_questions = 10, n_opti
       correct = c(NA, "x", rep(NA, n_options_per_q - 2)),
       notes = NA_character_
     ) %>% 
-    merge(data_frame(q = 1:n_questions)) %>% tbl_df() %>% 
+    merge(tibble(q = 1:n_questions)) %>% tbl_df() %>% 
     mutate(question = ifelse(!is.na(question), str_c(question, q), NA)) %>% 
     select(-q)
   
   answer_key <- 
-    data_frame(
+    tibble(
       number = 1:n_questions,
       option = sample(LETTERS[1:n_options_per_q], n_questions, replace = TRUE)
     )

@@ -4,8 +4,12 @@
 \alias{tbl_setup_RAT_template}
 \title{Setup a new RAT template}
 \usage{
-tbl_setup_RAT_template(module = "module 1", n_questions = 10,
-  n_options_per_q = 5, overwrite = FALSE)
+tbl_setup_RAT_template(
+  module = "module 1",
+  n_questions = 10,
+  n_options_per_q = 5,
+  overwrite = FALSE
+)
 }
 \arguments{
 \item{module}{name of the module, this will be used as the default folder and file name for the RAT. Can be a folder path in which case only the sub-directory name will be used for file names.}
