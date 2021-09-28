@@ -4,7 +4,7 @@
 #' @importFrom rlang is_quosure quo !! quo_text sym enquo eval_tidy quo_text
 #' @importFrom methods is
 #' @importFrom glue glue collapse
-#' @importFrom tibble deframe
+#' @importFrom tibble deframe tibble
 #' @importFrom dplyr select rename mutate filter group_by ungroup arrange tally bind_rows everything starts_with ends_with left_join do data_frame summarize tbl_df
 #' @importFrom tidyr nest unnest
 #' @importFrom lubridate now ymd_hms
@@ -13,7 +13,7 @@
 #' @importFrom readr write_rds read_rds cols col_character col_logical col_integer read_lines
 #' @importFrom readxl read_excel excel_sheets
 #' @importFrom openxlsx createStyle createWorkbook addWorksheet writeData freezePane setColWidths addStyle saveWorkbook
-#' @importFrom googlesheets gs_auth gs_title gs_gs gs_ws_ls gs_ws_new gs_add_row gs_read_csv gs_download gs_key
+#' @importFrom lifecycle deprecated
 #' @import shiny 
 #' @importFrom shinyjs useShinyjs hidden show hide inlineCSS 
 #' @importFrom shinycssloaders withSpinner

@@ -3,8 +3,7 @@
 #'
 #' Generates the server part of the peer evaluation app
 #' @param roster data frame with the student roster
-#' @param data_gs_title name of the google spreadsheet that should be used for storing the peer evaluation data. This spreadsheet must already exist and the credentials used when asked by this function must have write access to the spreadsheet.
-#' @param gs_token path to a google spreadsheet oauth 2.0 authentication token file (see \link[httr]{Token-class}). The token is safe to use on a secure shiny app server but be careful to never post this token file anywhere publicly as it could be used to gain access to your google drive. 
+#' @inheritParams tbl_setup_peer_evaluation
 #' @param welcome_md_file path to a markdown (.md) file for the login welcome message
 #' @param self_eval_plus_md_file markdown file for the "plus" self evaluation message
 #' @param self_eval_minus_md_file markdown file for the "minus" self evaluation message
@@ -18,7 +17,7 @@
 #' @param require_self_eval whether the qualitative self evaluation is required
 #' @param require_peer_evals whether the qualitative self evaluation is required
 #' @param auto_login_access_code set an automatic login access code for testing and debugging purposes
-peer_evaluation_server <- function(roster, data_gs_title, gs_token, 
+peer_evaluation_server <- function(roster, data_gs_title, gs_key_file, 
                                    welcome_md_file, self_eval_plus_md_file, self_eval_minus_md_file, 
                                    teammate_eval_plus_md_file, teammate_eval_minus_md_file, quant_scores_md_file,
                                    points_per_teammate = 10, max_points = 15, min_points = 0, min_point_difference = 2,
@@ -42,7 +41,7 @@ peer_evaluation_server <- function(roster, data_gs_title, gs_token,
     )
 
   # spreadsheet
-  gs <- tbl_check_gs_access(gs_token = gs_token, data_gs_title = data_gs_title)
+  gs <- tbl_check_gs_access(gs_key_file = gs_key_file, data_gs_title = data_gs_title)
   
   shinyServer(function(input, output, session) {
     
