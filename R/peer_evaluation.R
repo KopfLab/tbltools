@@ -58,7 +58,7 @@ tbl_setup_peer_evaluation <- function(
     
     # check gs access with key file
     if (check_gs_access) {
-      tbl_check_gs_access(data_gs_title = data_gs_title, data_gs_id = data_gs_id, gs_key_file = gs_key_file)
+      tbl_check_gs_access(data_gs_title = data_gs_title, gs_key_file = gs_key_file)
     }
     
     # copy key file
