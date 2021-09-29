@@ -1,0 +1,11 @@
+{
+  "type": "service_account",
+  "project_id": "peer-evaluations-327405",
+  "private_key_id": "8830388d9fd617d2944ed71752c831ed15b6eabd",
+  "private_key": "",
+  "client_id": "114084185795709469837",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-editor%40peer-evaluations-327405.iam.gserviceaccount.com"
+}

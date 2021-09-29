@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TBL Tools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.1</span>
       </span>
     </div>
 
@@ -217,16 +217,16 @@
 <p>As you can see, the excel sheet has only four columns, student last name (<code>last</code>), first name (<code>first</code>), individual unique access code (<code>access_code</code>) and team name (<code>team</code>). You may add additional columns to this spreadsheet if you would like to keep the information organized together (such as e.g. email addresses) but cannot omit these four. The first and last names are simply for the application to provide information to the students whose evaluation they are filling out (the last name is optional as seen in the example of <em>Marvin</em>). The team name must be identical between all team member so that the peer evaluation can identify each team correctly. The <code>access_code</code> can be any combination of letters, numbers and special characters that is unique across the whole roster as it allows each student to log into the peer evaluation (i.e. these access codes need to be conveyed to the students). To generate a random set of access codes, this package provides a convenience function to do so:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/tbl_generate_access_codes.html">tbl_generate_access_codes</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span>, length <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>
-<span class="co">#&gt; KSE3GW</span>
-<span class="co">#&gt; 5X80EU</span>
-<span class="co">#&gt; UXIS06</span>
-<span class="co">#&gt; C5DZ4U</span>
-<span class="co">#&gt; HYE50A</span>
-<span class="co">#&gt; T3ABUR</span>
-<span class="co">#&gt; 9Z7GQQ</span>
-<span class="co">#&gt; NY2TFX</span>
-<span class="co">#&gt; 9SWLYG</span>
-<span class="co">#&gt; FG1GXW</span></code></pre></div>
+<span class="co">#&gt; PHM2JE</span>
+<span class="co">#&gt; 1YE0YF</span>
+<span class="co">#&gt; MFJEYK</span>
+<span class="co">#&gt; 3CENU1</span>
+<span class="co">#&gt; 0KABB7</span>
+<span class="co">#&gt; T0ECF3</span>
+<span class="co">#&gt; UBOHPX</span>
+<span class="co">#&gt; TL2OW7</span>
+<span class="co">#&gt; 597FI5</span>
+<span class="co">#&gt; U6EWEQ</span></code></pre></div>
 </div>
 <div id="template" class="section level2">
 <h2 class="hasAnchor">
@@ -255,12 +255,12 @@
 <code class="sourceCode R"><span class="fu"><a href="../reference/tbl_test_peer_evaluation.html">tbl_test_peer_evaluation</a></span><span class="op">(</span><span class="st">"peer eval 1"</span><span class="op">)</span></code></pre></div>
 <pre><code>#&gt; Loading required package: shiny
 #&gt; ***************************************************************
-#&gt; Info: launching Peer Evaluation GUI (version 0.6.0)...
+#&gt; Info: launching Peer Evaluation GUI (version 0.6.1)...
 #&gt; Info: app title: 'Peer Evaluation'
 #&gt; Info: roster: 7 students in 2 teams
 #&gt; Info: points per teammate: 10 (min: 0, max: 15, min diff: 2)
 #&gt; Info: testing authentication with key file 'gs_key_file.json'...
-#&gt; google authentication failed: Bad Request (HTTP 400).. Please try again.</code></pre>
+#&gt; google authentication failed: path[1]="": No such file or directory. Please try again.</code></pre>
 <p>Finally, if you ever want to start over from scratch, simply delete the created folder (or rename it) and run <code><a href="../reference/tbl_setup_peer_evaluation.html">tbl_setup_peer_evaluation()</a></code> again.</p>
 <p>For additional information on the <code>tbl_setup_peer_evaluation</code> (or any other tbltools function), please consult the package help with <code><a href="../reference/tbl_setup_peer_evaluation.html">?tbl_setup_peer_evaluation</a></code>.</p>
 </div>
@@ -272,7 +272,7 @@
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/tbl_test_peer_evaluation.html">tbl_test_peer_evaluation</a></span><span class="op">(</span><span class="st">"peer eval 1"</span><span class="op">)</span></code></pre></div>
 <pre><code>#&gt; ***************************************************************
-#&gt; Info: launching Peer Evaluation GUI (version 0.6.0)...
+#&gt; Info: launching Peer Evaluation GUI (version 0.6.1)...
 #&gt; Info: app title: 'Peer Evaluation'
 #&gt; Info: roster: 7 students in 2 teams
 #&gt; Info: points per teammate: 10 (min: 0, max: 15, min diff: 2)
@@ -345,7 +345,7 @@
   <span class="fu">rmarkdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/rmarkdown/reference/paged_table.html">paged_table</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["evaluatee_access_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["last"],"name":[2],"type":["chr"],"align":["left"]},{"label":["first"],"name":[3],"type":["chr"],"align":["left"]},{"label":["team"],"name":[4],"type":["chr"],"align":["left"]},{"label":["n_team_mates"],"name":[5],"type":["int"],"align":["right"]},{"label":["n_evaluations"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["score_avg"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["self_plus"],"name":[8],"type":["chr"],"align":["left"]},{"label":["self_minus"],"name":[9],"type":["chr"],"align":["left"]},{"label":["team_plus"],"name":[10],"type":["chr"],"align":["left"]},{"label":["team_minus"],"name":[11],"type":["chr"],"align":["left"]}],"data":[{"1":"id_1234","2":"Pig","3":"Spider","4":"The Dream Team","5":"2","6":"2","7":"8.5","8":"Oink!","9":"Oink?","10":"Walk on the ceiling.\\n\\nAlways enthusiastic.","11":"Stay on the ground.\\n\\nSing more."},{"1":"id_7331","2":"Montoya","3":"Inigo","4":"The Dream Team","5":"2","6":"2","7":"5.0","8":"Pirate stuff.","9":"More pirate stuff.","10":"Great teamwork.","11":"Focus a little more on the donuts instead of avenging his father."},{"1":"id_0007","2":"Simpson","3":"Homer","4":"The Dream Team","5":"2","6":"2","7":"16.5","8":"Bring donuts for everyone.","9":"Not eat all the donuts myself.","10":"Bring donuts.","11":"He could share a little more."},{"1":"id_4242","2":"Thought","3":"Deep","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_1111","2":"NA","3":"Marvin","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_7777","2":"Prefect","3":"Ford","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_1979","2":"Dent","3":"Arthur","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["evaluatee_access_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["last"],"name":[2],"type":["chr"],"align":["left"]},{"label":["first"],"name":[3],"type":["chr"],"align":["left"]},{"label":["team"],"name":[4],"type":["chr"],"align":["left"]},{"label":["n_team_mates"],"name":[5],"type":["int"],"align":["right"]},{"label":["n_evaluations"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["score_avg"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["self_plus"],"name":[8],"type":["chr"],"align":["left"]},{"label":["self_minus"],"name":[9],"type":["chr"],"align":["left"]},{"label":["team_plus"],"name":[10],"type":["chr"],"align":["left"]},{"label":["team_minus"],"name":[11],"type":["chr"],"align":["left"]}],"data":[{"1":"id_1234","2":"Pig","3":"Spider","4":"The Dream Team","5":"2","6":"2","7":"8.5","8":"Oink!","9":"Oink?","10":"Always enthusiastic.\\n\\nWalk on the ceiling.","11":"Sing more.\\n\\nStay on the ground."},{"1":"id_7331","2":"Montoya","3":"Inigo","4":"The Dream Team","5":"2","6":"2","7":"5.0","8":"Pirate stuff.","9":"More pirate stuff.","10":"Great teamwork.","11":"Focus a little more on the donuts instead of avenging his father."},{"1":"id_0007","2":"Simpson","3":"Homer","4":"The Dream Team","5":"2","6":"2","7":"16.5","8":"Bring donuts for everyone.","9":"Not eat all the donuts myself.","10":"Bring donuts.","11":"He could share a little more."},{"1":"id_4242","2":"Thought","3":"Deep","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_1111","2":"NA","3":"Marvin","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_7777","2":"Prefect","3":"Ford","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"},{"1":"id_1979","2":"Dent","3":"Arthur","4":"Don't Panic","5":"3","6":"0","7":"NA","8":"NA","9":"NA","10":"NA","11":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>

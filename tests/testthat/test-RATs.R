@@ -3,7 +3,7 @@ context("Readiness Assessment Tests")
 # test data frame
 questions <-
   bind_rows(
-    data_frame(
+    tibble(
       question = "1+1",
       number = 5,
       group = "A",
@@ -11,7 +11,7 @@ questions <-
       answer = as.character(1:5),
       correct = c(F,T,F,F,F)
     ),
-    data_frame(
+    tibble(
       question = "what says the cow", 
       number = 3,
       group = "B",
@@ -19,7 +19,7 @@ questions <-
       answer = c("baah", "miau", "wuff", "mooo"),
       correct = c(F,F,F,T)
     ),
-    data_frame(
+    tibble(
       question = "is 42 the answer to everything?", 
       number = 4,
       group = "B",
@@ -30,7 +30,7 @@ questions <-
   )
 
 answer_key <-
-  data_frame(
+  tibble(
     number = 1:50,
     option = sample(c("A", "B", "C"), length(number), replace = TRUE)
   )
