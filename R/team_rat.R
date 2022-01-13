@@ -709,7 +709,7 @@ tbl_generate_team_rat <- function(team_rat_data, correct = "#4DAF4A", incorrect 
         guessed, sprintf("%s (#%d)", option, guess_nr), option
       ),
       question = forcats::fct_rev(question),
-      panel = sprintf("%s\nAnswered: %.0f / %.0f\nPoints: %.0f / %.0f",
+      panel = sprintf("%s\nAnswered: %.0f / %.0f\nPoints: %.2f / %.0f",
                       team, n_answered, n_questions, n_points, n_max_points)
     ) %>%
     ggplot2::ggplot() + 
