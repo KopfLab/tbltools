@@ -23,6 +23,7 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
   
   # safety check for questions
   plot_height <- nrow(questions) * 80
+  plot_height_inches <- nrow(questions) * 0.8
   questions <-prepare_team_rat_questions(questions)
   
   
@@ -76,23 +77,6 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
       message("Info: new state")
       print(filter(values$state, guessed))
     })
-    
-    # 
-    # get_student_data <- function(student_access_code, field, default = "") {
-    #   value <- values$data[[student_access_code]][[field]]
-    #   if (is.null(value) || is.na(value)) value <- default
-    #   return(value)
-    # }
-    # 
-    # calculate_scores <- reactive({
-    #   data <- get_data_as_df()
-    #   if (nrow(data) == 0) return(c(0))
-    #   else data$score %>% stats::na.omit()
-    # })
-    # 
-    # calculate_diff <- reactive({
-    #   diff(range(calculate_scores()))
-    # })
     
     # load access code ====
     load_access <- function(entered_access_code) {
@@ -150,7 +134,8 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
           column(12, align="left",
              plotOutput("tRAT", height = plot_height, click = clickOpts(id="tRAT_click")) %>%
                withSpinner(type = 5, proxy.height = paste0(plot_height - 50, "px"))
-          )
+          ),
+          column(12, align="center", downloadButton('downloadPlot', 'Download'))
         )
       })
     })
@@ -243,38 +228,6 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
       show("main-panel")
     })
     
-    # save ===== FIXME
-    # observeEvent(input$save, {
-    #   req(values$access_code)
-    #   message("Saving for student ", values$student$full_name, "...")
-    #   hide("main-panel")
-    #   show("saving-panel")
-    #   save_peer_eval(gs, values$access_code, get_data_as_df())
-    #   showModal(modalDialog(
-    #     h2("Saved"),
-    #     p("Your draft evaluation has been saved. You can continue working on it now or resume at a later point. Make sure to return to submitted it before the deadline."),
-    #     easyClose = TRUE, fade = FALSE
-    #   ))
-    #   hide("saving-panel", anim = TRUE, animType = "fade")   
-    #   show("main-panel")
-    # })
-    
-    # FIXME: consider using confirm prompts for tRAT choices
-    # observeEvent(input$confirm, {
-    #   message("Submission for student ", values$student$full_name)
-    #   hide("main-panel")
-    #   removeModal()
-    #   show("submit-panel")
-    #   save_peer_eval(gs, values$access_code, get_data_as_df(), submitted = TRUE)
-    #   
-    #   showModal(modalDialog(
-    #     h2("submitted"),
-    #     p("Thank you, your evaluation has been submitted."),
-    #     easyClose = TRUE, fade = FALSE
-    #   ))
-    #   logout_user()
-    # })
-    
     # log out ==== FIXME: do we even need this? probably not
     
     logout_user <- function() {
@@ -297,6 +250,17 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
         load_access(auto_login_access_code)
       }
     })
+    
+    # download plot =====
+    output$downloadPlot <- downloadHandler(
+      filename = function() { isolate("team_RAT.pdf") },
+      content = function(filename) {
+        req(values$state)
+        req(nrow(values$state) > 0)
+        message("Info: dowloading tRAT")
+        plot <- tbl_generate_team_rat(values$state, width = answer_width, height = answer_height)
+        ggplot2::ggsave(file = filename, plot = plot, width = 5, height = plot_height_inches, device = "pdf")
+      })
     
   })
   

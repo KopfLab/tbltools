@@ -659,9 +659,9 @@ tbl_read_team_rat_data <- function(
 #' Summarizes the tRAT data.
 #' 
 #' @param data the tRAT data frame retrieved by \link{tbl_fetch_team_rat_data}
-#' @param guess_points points for each successive guess. The default is 4 points for getting the right answer on the first guess, 2 points on the second guess, 1 point on the third and 0 points thereafter.
+#' @param guess_points points for each successive guess. The default is 1 point for getting the right answer on the first guess, 0.5 points on the second guess, 0.25 point on the third and 0 points thereafter.
 #' @export
-tbl_summarize_team_rat_data <- function(data, guess_points = c(4, 2, 1)) {
+tbl_summarize_team_rat_data <- function(data, guess_points = c(1, 0.5, 0.25)) {
   data %>%
     left_join(
       tibble(guess_nr = seq_along(guess_points), points = guess_points),
