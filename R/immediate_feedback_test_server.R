@@ -5,7 +5,7 @@
 #' @param teams data frame with the teams and access codes
 #' @param questions data frame with the questions
 #' @param auto_login_access_code set an automatic login access code for testing and debugging purposes
-team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_login_access_code = NULL) {
+immediate_feedback_test_server <- function(teams, questions, data_gs_title, gs_key_file, auto_login_access_code = NULL) {
   
   # plotting constants (could become parameters if that would be useful)
   answer_width <- 0.9
@@ -24,7 +24,7 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
   # safety check for questions
   plot_height <- nrow(questions) * 80
   plot_height_inches <- nrow(questions) * 0.8
-  questions <-prepare_team_rat_questions(questions)
+  questions <-prepare_immediate_feedback_test_questions(questions)
   
   
   # spreadsheet
@@ -56,7 +56,7 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
     # data ====
     get_answers <- function(access_code) {
       tryCatch(
-        read_team_rat(gs, access_code),
+        read_immediate_feedback_test(gs, access_code),
         error = function(e) {
           message("Error: encountered a data read error.")
           message(e$message)
@@ -70,7 +70,7 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
     observeEvent(values$answers, {
       req(values$answers)
       req(values$team)
-      values$state <- combine_team_rat_questions_and_answers(
+      values$state <- combine_immediate_feedback_test_questions_and_answers(
         mutate(questions, team = values$team$team), 
         mutate(values$answers, team = values$team$team)
       )
@@ -132,7 +132,7 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
         # full_name tag list
         tagList(
           column(12, align="left",
-             plotOutput("tRAT", height = plot_height, click = clickOpts(id="tRAT_click")) %>%
+             plotOutput("immediate_feedback_test", height = plot_height, click = clickOpts(id="tRAT_click")) %>%
                withSpinner(type = 5, proxy.height = paste0(plot_height - 50, "px"))
           ),
           column(12, align="center", downloadButton('downloadPlot', 'Download'))
@@ -161,7 +161,7 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
       req(values$state)
       req(nrow(values$state) > 0)
       message("Info: (re-)generating tRAT")
-      tbl_generate_team_rat(values$state, width = answer_width, height = answer_height)
+      tbl_generate_immediate_feedback_test(values$state, width = answer_width, height = answer_height)
     })
     
     # click on tRAT option ====
@@ -211,7 +211,7 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
       
       # try to save
       guess <- tryCatch(
-        save_team_rat(gs, values$access_code, question_id = values$guess$question_id, guess = values$guess$option),
+        save_immediate_feedback_test(gs, values$access_code, question_id = values$guess$question_id, guess = values$guess$option),
         error = function(e) {
           message("Error: encountered a data read error.")
           message(e$message)
@@ -253,12 +253,12 @@ team_rat_server <- function(teams, questions, data_gs_title, gs_key_file, auto_l
     
     # download plot =====
     output$downloadPlot <- downloadHandler(
-      filename = function() { isolate("team_RAT.pdf") },
+      filename = function() { isolate("immediate_feedback_test.pdf") },
       content = function(filename) {
         req(values$state)
         req(nrow(values$state) > 0)
         message("Info: dowloading tRAT")
-        plot <- tbl_generate_team_rat(values$state, width = answer_width, height = answer_height)
+        plot <- tbl_generate_immediate_feedback_test(values$state, width = answer_width, height = answer_height)
         ggplot2::ggsave(file = filename, plot = plot, width = 5, height = plot_height_inches, device = "pdf")
       })
     

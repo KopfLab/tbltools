@@ -1,24 +1,24 @@
-# tRAT app functions =====
+# immediate feedback test app functions =====
 
-#' Set up a team readiness assessment test (tRAT) app
+#' Set up an immediate feedback test app
 #' 
-#' This functions makes it easy to setup a team readiness assessment test (tRAT) app folder. It creates the app script \code{app.R} and copies the \code{teams.xslx} (an Excel spreadsheet), \code{questions.xlsx} (an Excel spreadsheet) as well as the necessary google access key file for the \code{data_gs_title} google spreadsheet to the same directory. The provided \code{gs_key_file} must grant access to the google spreadsheet (\code{data_gs_title}). See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details on how to set up google credentials and generate a key file. Unless \code{check_gs_access = FALSE}, this function will call the \code{\link{tbl_check_gs_access}} function to confirm that the key file works and provides access to the requested google spreadsheet. All \code{app.R}, \code{teams.xlsx}, \code{questions.xlsx} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{teams.xlsx} and \code{questions.xlsx} will be read-only and all actual data will be stored in the google spreadsheet data file.
+#' This functions makes it easy to setup an immediate feedback test app folder. Immediate feedback tests are typically used for team readiness assessment tests (tRATs) in team-based-learning (TBL) but can be used for any type of immediate feedback assessment. It creates the app script \code{app.R} and copies the \code{roster.xslx} (an Excel spreadsheet), \code{questions.xlsx} (an Excel spreadsheet) as well as the necessary google access key file for the \code{data_gs_title} google spreadsheet to the same directory. The provided \code{gs_key_file} must grant access to the google spreadsheet (\code{data_gs_title}). See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details on how to set up google credentials and generate a key file. Unless \code{check_gs_access = FALSE}, this function will call the \code{\link{tbl_check_gs_access}} function to confirm that the key file works and provides access to the requested google spreadsheet. All \code{app.R}, \code{roster.xlsx}, \code{questions.xlsx} can be edited and tested in the app directory before uploading the whole app to a shiny server. On the shiny server, the \code{roster.xlsx} and \code{questions.xlsx} will be read-only and all actual data will be stored in the google spreadsheet data file.
 #' 
-#' Use \link{tbl_test_team_rat} with the same \code{folder} as parameter to test run the tRAT application locally on your computer. It is recommended to always test the tRAT application locally before uploading it to the shiny application server.
+#' Use \link{tbl_test_immediate_feedback_test} with the same \code{folder} as parameter to test run the application locally on your computer. It is recommended to always test the application locally before uploading it to the shiny application server.
 #' 
-#' @param folder target folder where to setup the tRAT (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
-#' @param data_gs_title name of the google spreadsheet that should be used for storing the tRAT data. This spreadsheet must already exist and the \code{gs_key_file} must grant access to it.
-#' @param template_teams_file path to an excel (.xslx) file that contains the team information to use as template for the tRAT app (can be edited later)  - will use the package template by default
-#' @param template_questions_file path to an excel (.xslx) file that contains the questions/answer key information to use as template for the tRAT app (can be edited later)  - will use the package template by default
-#' @param gs_key_file path to your .json access key file for TBL google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your TBL spreadsheets. Make sure to share the google spreadshhet for this tRAT with the \code{client_email} listed in the key file.
+#' @param folder target folder where to setup the immediate feedback test (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
+#' @param data_gs_title name of the google spreadsheet that should be used for storing the data for the immediate feedback test. This spreadsheet must already exist and the \code{gs_key_file} must grant access to it.
+#' @param template_roster_file path to an excel (.xslx) file that contains the roster information to use as template for the  app (can be edited later)  - will use the package template by default
+#' @param template_questions_file path to an excel (.xslx) file that contains the questions/answer key information to use as template for the immediate feedback app (can be edited later)  - will use the package template by default
+#' @param gs_key_file path to your .json access key file for TBL google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your TBL spreadsheets. Make sure to share the google spreadshhet for this immediate feedback test with the \code{client_email} listed in the key file.
 #' @param overwrite whether to overwrite the app in the target directory if it already exists
 #' @param check_gs_access whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE}, this function will NOT validate the \code{gs_key_file} and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the key file grants access to.
 #' @return returns the \code{folder} invisibly for ease of use in pipelines
-#' @family tRAT functions
+#' @family immediate feedback test functions
 #' @export
-tbl_setup_team_rat <- function(
-  folder = "tRAT", data_gs_title = "tRAT", 
-  template_teams_file = system.file(package = "tbltools", "extdata", "teams_template.xlsx"),
+tbl_setup_immediate_feedback_test <- function(
+  folder = "immediate_feedback_test", data_gs_title = "immediate_feedback_test", 
+  template_roster_file = system.file(package = "tbltools", "extdata", "teams_template.xlsx"),
   template_questions_file = system.file(package = "tbltools", "extdata", "questions_template.xlsx"), 
   gs_key_file = NULL, overwrite = FALSE, check_gs_access = TRUE) {
 
@@ -35,7 +35,7 @@ tbl_setup_team_rat <- function(
   
   # process key file
   gs_key_file_save_path <- file.path(folder, "gs_key_file.json")
-  no_key_file_msg <- "If you don't want to check access now and copy a key file to your tRAT app manually later, set 'gs_key_file = NULL' and 'check_gs_access = FALSE'."
+  no_key_file_msg <- "If you don't want to check access now and copy a key file to your app manually later, set 'gs_key_file = NULL' and 'check_gs_access = FALSE'."
   if (!is.null(gs_key_file)) {
     # check that the file exists
     if (!file.exists(gs_key_file))
@@ -64,24 +64,24 @@ tbl_setup_team_rat <- function(
       stop(call. = FALSE)
   }
   
-  # check for teams files
-  if(!file.exists(template_teams_file))
-    glue("teams file '{template_teams_file}' does not exist") %>% stop(call. = FALSE)
+  # check for roster files
+  if(!file.exists(template_roster_file))
+    glue("roster file '{template_roster_file}' does not exist") %>% stop(call. = FALSE)
   
-  # try to read teams file
-  tryCatch(teams <- read_excel(template_teams_file), error = function(e) {
-    glue("could not read teams Excel file '{template_teams_file}': {e$message}") %>% 
+  # try to read roster file
+  tryCatch(roster <- read_excel(template_roster_file), error = function(e) {
+    glue("could not read Excel file '{template_roster_file}': {e$message}") %>% 
       stop(call. = FALSE)
   })
   
-  # copy teams file
-  if (!file.exists(file.path(folder, "teams.xlsx")) || overwrite) {
-    glue("Info: copying '{basename(template_teams_file)}' to {folder}/teams.xlsx") %>% message()
-    file.copy(template_teams_file, to = file.path(folder, "teams.xlsx"), overwrite = TRUE)
+  # copy roster file
+  if (!file.exists(file.path(folder, "roster.xlsx")) || overwrite) {
+    glue("Info: copying '{basename(template_roster_file)}' to {folder}/roster.xlsx") %>% message()
+    file.copy(template_roster_file, to = file.path(folder, "roster.xlsx"), overwrite = TRUE)
   }
   
-  # check teams file
-  check_teams(teams)
+  # check roster file
+  check_roster(roster)
   
   # check for questions file
   if(!file.exists(template_questions_file))
@@ -100,25 +100,25 @@ tbl_setup_team_rat <- function(
   }
   
   # check questions file
-  check_questions(questions)
+  prepare_immediate_feedback_test_questions(questions)
   
   # generate function call
   glue("Info: creating {folder}/app.R application file and application content") %>% message()
   
   # md template files
-  system.file(package = "tbltools", "extdata", "team_rat_template_files") %>% 
+  system.file(package = "tbltools", "extdata", "immediate_feedback_test_template_files") %>% 
     list.files(pattern = "*\\.md$", full.names = TRUE, include.dirs = FALSE, recursive = TRUE) %>% 
     file.copy(to = folder, overwrite = TRUE)
   
   if (!dir.exists(file.path(folder, "www"))) dir.create(file.path(folder, "www"))
-  system.file(package = "tbltools", "extdata", "team_rat_template_files", "www", "app.css") %>% 
+  system.file(package = "tbltools", "extdata", "immediate_feedback_test_template_files", "www", "app.css") %>% 
     file.copy(to = file.path(folder, "www"), overwrite = TRUE)
   
   # generate function call parameters ======
   parameters <- 
     list(
       data_gs_title = data_gs_title,
-      app_title = "tRAT"
+      app_title = "Immediate Feedback Test"
     ) %>% {
       map2_chr(names(.), ., function(var, val) {
         val <- 
@@ -134,7 +134,7 @@ tbl_setup_team_rat <- function(
   
   glue(
     "library(tbltools)",
-    "tbl_run_team_rat(",
+    "tbl_run_immediate_feedback_test(",
     "  {parameters}",
     ")", .sep = "\n") %>% 
     cat(file = file.path(folder, "app.R"))
@@ -142,36 +142,36 @@ tbl_setup_team_rat <- function(
   # copy evaluation template
   glue("Info: creating {folder}/evaluation.Rmd evaluation file") %>% message()
   
-  system.file(package = "tbltools", "extdata", "tRAT_evaluation_template.Rmd") %>% 
+  system.file(package = "tbltools", "extdata", "immediate_feedback_evaluation_template.Rmd") %>% 
     read_lines() %>% 
     collapse(sep = "\n") %>% 
     str_interp(list(data_gs_title = data_gs_title)) %>% 
     cat(file = file.path(folder, "evaluation.Rmd"))
   
   # finishd
-  glue("Info: set up of tbltools' tRAT app in directory '{folder}' is complete.",
+  glue("Info: set up of tbltools' immediate feedback test app in directory '{folder}' is complete.",
        "Please modify the files in '{folder}' as appropriate and ",
-       "run tbl_test_team_rat('{folder}') before before uploading to shiny server.") %>% 
+       "run tbl_test_immediate_feedback_test('{folder}') before before uploading to shiny server.") %>% 
     message()
   
   return(invisible(folder))
 }
 
-#' Duplicate a tRAT app
+#' Duplicate an immmediate feedback test app
 #' 
-#' This functions makes it easy to duplicate an existing tRAT by copying all relevant files into a new folder. You should change the google spreadsheet the new tRAT is linked to by specifying the \code{data_gs_title} parameter (if you don't it will warn you but allow it). To create a new tRAT from scratch, use \link{tbl_setup_team_rat} instead. 
+#' This functions makes it easy to duplicate an existing test by copying all relevant files into a new folder. You should change the google spreadsheet the new test is linked to by specifying the \code{data_gs_title} parameter (if you don't it will warn you but allow it). To create a new immediate feedback test from scratch, use \link{tbl_setup_immediate_feedback_test} instead. 
 #' 
-#' @param template folder where the existing tRAT that is to be duplicated is located (path must be either relative to the current working directory or an absolute file path on the operating system).
-#' @param folder target folder where to setup the duplicated tRAT (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
-#' @inheritParams team_rat_server
-#' @inheritParams tbl_setup_team_rat
+#' @param template folder where the existing app that is to be duplicated is located (path must be either relative to the current working directory or an absolute file path on the operating system).
+#' @param folder target folder where to setup the duplicated app (path must be either relative to the current working directory or an absolute file path on the operating system). If the folder does not exist yet, it will be created automatically.
+#' @inheritParams immediate_feedback_test_server
+#' @inheritParams tbl_setup_immediate_feedback_test
 #' @return returns the \code{folder} invisibly for ease of use in pipelines
-#' @family tRAT functions
+#' @family immediate feedback test functions
 #' @export
-tbl_duplicate_team_rat <- function(template = "tRAT", folder = "tRAT2", data_gs_title = NULL, overwrite = FALSE, check_gs_access = TRUE) {
+tbl_duplicate_immediate_feedback_test <- function(template = "immediate_feedback_test", folder = "immediate_feedback_test2", data_gs_title = NULL, overwrite = FALSE, check_gs_access = TRUE) {
   
   # check old folder
-  check_team_rat_folder(template)
+  check_immediate_feedback_test_folder(template)
   
   # check new folder
   if(!dir.exists(folder)) {
@@ -228,56 +228,56 @@ tbl_duplicate_team_rat <- function(template = "tRAT", folder = "tRAT2", data_gs_
   }
   
   # finalize
-  glue("Info: tRAT app from '{template}' is now fully duplicated in directory '{folder}'.",
+  glue("Info: immediate feedback test app from '{template}' is now fully duplicated in directory '{folder}'.",
        "Please modify the files in '{folder}' as appropriate and ",
-       "run tbl_test_team_rat('{folder}') before before uploading to shiny server.") %>% 
+       "run tbl_test_immediate_feedback_test('{folder}') before before uploading to shiny server.") %>% 
     message()
   
   return(invisible(folder))
 }
 
-#' Test run tRAT app locally
+#' Test run immediate feedback test app locally
 #' 
-#' This function starts a tRAT app previously set up using \link{tbl_setup_team_rat}. This provides a local version of the app before deploying it to a shiny apps server (using \link{tbl_deploy_team_rat}). Keep in mind that the test application writes data to the google spreadsheet and make sure to delete any test records from the google spreadsheet that may interfere with any teams' tRAT prior to providing the students with the link to the deployed tRAT app. 
+#' This function starts an immediate feedback test app previously set up using \link{tbl_setup_immediate_feedback_test}. This provides a local version of the app before deploying it to a shiny apps server (using \link{tbl_deploy_immediate_feedback_test}). Keep in mind that the test application writes data to the google spreadsheet and make sure to delete any test records from the google spreadsheet that may interfere with any users' test taking prior to providing the students with the link to the deployed tRAT app. 
 #' 
-#' @param folder folder where the tRAT app is located (see \link{tbl_setup_team_rat} for details)
+#' @param folder folder where the app is located (see \link{tbl_setup_immediate_feedback_test} for details)
 #' @param ... optional parameters passed to \link[shiny]{runApp}
-#' @family tRAT functions
+#' @family immediate feedback test functions
 #' @export
-tbl_test_team_rat <- function(folder = "tRAT", ...) {
-  check_team_rat_folder(folder)
+tbl_test_immediate_feedback_test <- function(folder = "immediate_feedback_test", ...) {
+  check_immediate_feedback_test_folder(folder)
   runApp(folder, ...)
 }
 
 # convenience function for app existence check
-check_team_rat_folder <- function(folder) {
+check_immediate_feedback_test_folder <- function(folder) {
   if(!dir.exists(folder)) {
-    glue("tRAT app folder '{folder}' does not exist") %>% 
+    glue("app folder '{folder}' does not exist") %>% 
       stop(call. = FALSE)
   }
   
   if (!file.exists(file.path(folder, "app.R"))) {
-    glue("the folder '{folder}' does not seem to contain a tRAT app ('app.R' is missing)") %>% 
+    glue("the folder '{folder}' does not seem to contain an immediate feedback test app ('app.R' is missing)") %>% 
       stop(call. = FALSE)
   }
 }
 
-#' Run a tRAT app
+#' Run an immediate feedback test app
 #'
-#' This function starts the tRAT user interface. Note that this function is typically NOT called directly but indirectly by setting up the tRAT app using \link{tbl_setup_team_rat}, adjusting the files in the tRAT app folder, and test running the app using \link{tbl_test_team_rat}.
+#' This function starts the user interface. Note that this function is typically NOT called directly but indirectly by setting up the app using \link{tbl_setup_immediate_feedback_test}, adjusting the files in the app folder, and test running the app using \link{tbl_test_immediate_feedback_test}.
 #'
-#' @inheritParams tbl_setup_team_rat
-#' @inheritParams team_rat_server
-#' @inheritParams team_rat_ui
+#' @inheritParams tbl_setup_immediate_feedback_test
+#' @inheritParams immediate_feedback_test_server
+#' @inheritParams immediate_feedback_test_ui
 #' @param ... passed on to the \code{\link[shiny]{runApp}} call (only if \code{launch = TRUE}), can include server-specific parameters such as host or port
 #' @param launch whether to launch the app (TRUE) or return a shiny app object (FALSE) that then can be launched via \code{\link[shiny]{runApp}}
-#' @family tRAT functions
+#' @family immediate feedback test functions
 #' @export
-tbl_run_team_rat <- function(
+tbl_run_immediate_feedback_test <- function(
   data_gs_title, 
-  teams = read_excel("teams.xlsx"), 
+  roster = read_excel("roster.xlsx"), 
   questions = suppressMessages(read_excel("questions.xlsx")),
-  app_title = "tRAT", 
+  app_title = "immediate_feedback_test", 
   auto_login_access_code = NULL, ..., 
   launch = FALSE) {
   
@@ -285,24 +285,24 @@ tbl_run_team_rat <- function(
   gs_key_file <- "gs_key_file.json"
   
   # safety checks
-  if (!is.data.frame(teams)) stop("teams data frame required", call. = FALSE)
+  if (!is.data.frame(roster)) stop("roster data frame required", call. = FALSE)
   if (!is.data.frame(questions)) stop("questions frame required", call. = FALSE)
   if (!file.exists(gs_key_file)) glue("no key file found ('{gs_key_file}' is missing)") %>% stop(call. = FALSE)
   
   # start-up message
   glue(
     "\n***************************************************************",
-    "\nInfo: launching Team Readiness Assessment Test GUI (version {packageVersion('tbltools')})...",
+    "\nInfo: launching immediate feedback test GUI (version {packageVersion('tbltools')})...",
     "\nInfo: app title: '{app_title}'",
-    "\nInfo: teams: {nrow(teams)} teams",
+    "\nInfo: roster: {nrow(roster)} roster",
     "\nInfo: questions: {nrow(questions)} "
   ) %>% message()
   
   # generate app
   app <- shinyApp(
-    ui = team_rat_ui(app_title = app_title),
-    server = team_rat_server(
-      teams = teams,
+    ui = immediate_feedback_test_ui(app_title = app_title),
+    server = immediate_feedback_test_server(
+      roster = roster,
       questions = questions,
       data_gs_title = data_gs_title,
       gs_key_file = gs_key_file,
@@ -317,18 +317,18 @@ tbl_run_team_rat <- function(
     return(app)
 }
 
-#' Deploy tRAT app
+#' Deploy immediate feedback test app
 #' 
-#' Upload the tRAT app to a shiny server via \link[rsconnect]{rsconnect}. This uses the rsconnect function \link[rsconnect]{deployApp} to upload or update a peer evaluation and thus requires rsconnect credentials to be already set. See \link[rsconnect]{setAccountInfo} or the \href{https://shiny.rstudio.com/articles/shinyapps.html#configure-rsconnect}{configuration help} for details on how to set your credentials for the \href{https://www.shinyapps.io}{shiny app platform}.
-#' @param folder folder where the tRAT app is located (see \link{tbl_setup_team_rat} for details)
+#' Upload the app to a shiny server via \link[rsconnect]{rsconnect}. This uses the rsconnect function \link[rsconnect]{deployApp} to upload or update a peer evaluation and thus requires rsconnect credentials to be already set. See \link[rsconnect]{setAccountInfo} or the \href{https://shiny.rstudio.com/articles/shinyapps.html#configure-rsconnect}{configuration help} for details on how to set your credentials for the \href{https://www.shinyapps.io}{shiny app platform}.
+#' @param folder folder where the app is located (see \link{tbl_setup_immediate_feedback_test} for details)
 #' @param appName name of the application for the web address on shiny.io. Can be provided manually but must be unique within an account. By default is guessed from the folder simply by removing special characters, making everything lower case, and replacing spaces with \code{_}.
 #' @param ... additional optional parameters passed on to \link[rsconnect]{deployApp}
-#' @family tRAT functions
+#' @family immediate feedback test functions
 #' @export
-tbl_deploy_team_rat <- function(folder = "tRAT", appName = guess_from(folder), ...) {
+tbl_deploy_immediate_feedback_test <- function(folder = "immediate_feedback_test", appName = guess_from(folder), ...) {
   
   if(!dir.exists(folder)) {
-    glue("tRAT app folder '{folder}' does not exist") %>% 
+    glue("app folder '{folder}' does not exist") %>% 
       stop(call. = FALSE)
   }
   
@@ -348,8 +348,8 @@ tbl_deploy_team_rat <- function(folder = "tRAT", appName = guess_from(folder), .
   tryCatch(
     deployApp(folder, appName = appName, ...),
     error = function(e) {
-      glue("something went wrong trying to upload your tRAT app. ",
-           "Please see the function help (?tbl_deploy_team_rat) ", 
+      glue("something went wrong trying to upload your immediate feedback test app. ",
+           "Please see the function help (?tbl_deploy_immediate_feedback_test) ", 
            "and make sure that your shiny server credentials are set properly. ",
            "The shiny apps server returned the following error: ", e$message) %>% 
         stop(call. = FALSE)
@@ -360,7 +360,7 @@ tbl_deploy_team_rat <- function(folder = "tRAT", appName = guess_from(folder), .
 
 # utility functions ====
 
-# get data gs title from an app folder (works for both tRAT and peer evals)
+# get data gs title from an app folder (works for both immediate feedback tests and peer evals)
 get_app_data_gs_title <- function(folder) {
   # find data gs title
   app_lines <- readr::read_lines(file = file.path(folder, "app.R"))
@@ -377,35 +377,35 @@ get_app_data_gs_title <- function(folder) {
 
 # data check & prep functions =====
 
-# safety checks for teams data frame
-check_teams <- function(teams) {
+# safety checks for roster data frame
+check_roster <- function(roster) {
   
   # global vars:
   access_code <- n <- NULL
   
   # check for data frame
-  if(!is.data.frame(teams))
-    stop("teams must be a data frame", call. = FALSE)
+  if(!is.data.frame(roster))
+    stop("roster must be a data frame", call. = FALSE)
   
   # check for required columns
   req_columns <- c("team", "access_code")
-  if (length(missing <- setdiff(req_columns, names(teams))) > 0)
-    glue("missing column(s) in teams: {collapse(missing, sep=', ')}") %>% 
+  if (length(missing <- setdiff(req_columns, names(roster))) > 0)
+    glue("missing column(s) in roster: {collapse(missing, sep=', ')}") %>% 
     stop(call. = FALSE)
   
   # check for unique access codes
-  not_unique <- teams %>% group_by(.data$access_code) %>% tally() %>% filter(.data$n > 1)
+  not_unique <- roster %>% group_by(.data$access_code) %>% tally() %>% filter(.data$n > 1)
   if (nrow(not_unique) > 0) {
     glue("all team access codes must be unique, found not unique access code(s): ",
          "{collapse(not_unique$access_code, sep = ', ')}") %>% 
       stop(call. = FALSE)
   }
   
-  return(mutate(teams, access_code = as.character(access_code)))
+  return(mutate(roster, access_code = as.character(access_code)))
 }
 
 # safety checks for questions data frame and pivot longer
-prepare_team_rat_questions <- function(questions) {
+prepare_immediate_feedback_test_questions <- function(questions) {
   if (!all(c("question", "correct") %in% names(questions))) {
     stop("missing required 'question' or 'correct' columns", call. = FALSE)
   }
@@ -454,7 +454,7 @@ prepare_team_rat_questions <- function(questions) {
 }
 
 # combine team questions and answers
-combine_team_rat_questions_and_answers <- function(questions, answers) {
+combine_immediate_feedback_test_questions_and_answers <- function(questions, answers) {
   
   if (!all(c("team", "question_id", "option") %in% names(questions))) {
     stop("missing required 'team', 'question_id' or 'option' columns in questions", call. = FALSE)
@@ -490,7 +490,7 @@ combine_team_rat_questions_and_answers <- function(questions, answers) {
 
 # load rRat answers
 # @param ss - spreadsheet
-read_team_rat <- function(ss, access_code) {
+read_immediate_feedback_test <- function(ss, access_code) {
   
   # global vars
   timestamp <- score <- NULL
@@ -534,8 +534,8 @@ read_team_rat <- function(ss, access_code) {
   return(unique(data))
 }
 
-# save tRAT data
-save_team_rat <- function(gs, access_code, question_id, guess) {
+# save immediate feedback test data
+save_immediate_feedback_test <- function(gs, access_code, question_id, guess) {
   
   # global vars
   timestamp <- NULL
@@ -563,26 +563,26 @@ save_team_rat <- function(gs, access_code, question_id, guess) {
 
 # data retrieval functions =====
 
-#' Fetch the tRAT data
+#' Fetch the immediate feedback test data
 #' 
-#' Fetches the tRAT data from the google spreadsheet and reads it (using \link{tbl_read_team_rat_data}). For standard installations of the tRAT app, all defaults should be sufficient.
-#' @inheritParams tbl_setup_team_rat
-#' @inheritParams tbl_run_team_rat
+#' Fetches the app data from the google spreadsheet and reads it (using \link{tbl_read_immediate_feedback_test_data}). For standard installations of the immediate feedback test app, all defaults should be sufficient.
+#' @inheritParams tbl_setup_immediate_feedback_test
+#' @inheritParams tbl_run_immediate_feedback_test
 #' @param data_gs_id optional alternative to the \code{data_gs_title}, a google spread sheet ID text or object (see \link[googlesheets4]{sheets_id}). If provided, it takes precedence over the \code{data_gs_title} parameter as the google spreadsheet doesn't need to be searched by name anymore (i.e. can be loaded faster).
-#' @param folder folder where the tRAT app is located (relative to the location of the RMarkdown file if used in the latter context)
-#' @param download_to location where the whole tRAT data sheet will be downloaded to for more efficient read access
+#' @param folder folder where the immediate feedback test app is located (relative to the location of the RMarkdown file if used in the latter context)
+#' @param download_to location where the whole immediate feedback test data sheet will be downloaded to for more efficient read access
 #' @export
-tbl_fetch_team_rat_data <- function(
+tbl_fetch_immediate_feedback_test_data <- function(
   folder = ".", data_gs_title = get_app_data_gs_title(folder), data_gs_id = NULL,
-  teams = read_excel(file.path(folder, "teams.xlsx")), 
+  roster = read_excel(file.path(folder, "roster.xlsx")), 
   questions = suppressMessages(read_excel(file.path(folder, "questions.xlsx"))),
   gs_key_file = file.path(folder, "gs_key_file.json"),
-  download_to = file.path(folder, "tRAT_data_downloaded.xlsx")) {
+  download_to = file.path(folder, "immediate_feedback_test_data_downloaded.xlsx")) {
   
   # safety checks
-  if (!is.data.frame(teams)) stop("teams data frame required", call. = FALSE)
+  if (!is.data.frame(roster)) stop("roster data frame required", call. = FALSE)
   if (!is.data.frame(questions)) stop("questions data frame required", call. = FALSE)
-  prepare_team_rat_questions(questions) # safety check before going through the trouble of downloading
+  prepare_immediate_feedback_test_questions(questions) # safety check before going through the trouble of downloading
   
   # google sheet
   if (is.null(data_gs_id) && is.null(data_gs_title))
@@ -605,27 +605,27 @@ tbl_fetch_team_rat_data <- function(
   if(file.exists(download_to)) message("complete.") else message("failed.")
   
   # read data
-  tbl_read_team_rat_data(folder = folder, teams = teams, questions = questions, download_file = download_to)
+  tbl_read_immediate_feedback_test_data(folder = folder, roster = roster, questions = questions, download_file = download_to)
 }
 
 
-#' Read downloaded tRAT data
+#' Read downloaded immediate feedback test data
 #' 
-#' Read tRAT data that's already downloaded. Usually called indirectly via \link{tbl_fetch_team_rat_data} unless there is no reason to fetch the latest data from the google spreadsheet.
-#' @inheritParams tbl_fetch_team_rat_data
-#' @param download_file downloaded tRAT data file, created by \link{tbl_fetch_team_rat_data}
+#' Read immediate feedback test data that's already downloaded. Usually called indirectly via \link{tbl_fetch_immediate_feedback_test_data} unless there is no reason to fetch the latest data from the google spreadsheet.
+#' @inheritParams tbl_fetch_immediate_feedback_test_data
+#' @param download_file downloaded immediate feedback test data file, created by \link{tbl_fetch_immediate_feedback_test_data}
 #' @export
-tbl_read_team_rat_data <- function(
+tbl_read_immediate_feedback_test_data <- function(
   folder = ".", 
-  teams = read_excel(file.path(folder, "teams.xlsx")), 
+  roster = read_excel(file.path(folder, "roster.xlsx")), 
   questions = suppressMessages(read_excel(file.path(folder, "questions.xlsx"))),
-  download_file = file.path(folder, "tRAT_data_downloaded.xlsx")) {
+  download_file = file.path(folder, "immediate_feedback_test_data_downloaded.xlsx")) {
   
   # safety checks
-  if (!is.data.frame(teams)) stop("teams data frame required", call. = FALSE)
+  if (!is.data.frame(roster)) stop("roster data frame required", call. = FALSE)
   if (!is.data.frame(questions)) stop("questions data frame required", call. = FALSE)
   access_code_prefix <- "team_"
-  teams <- check_teams(teams) %>% 
+  roster <- check_roster(roster) %>% 
     mutate(
       # make sure access code is textual
       access_code = paste0(access_code_prefix, access_code)
@@ -633,35 +633,35 @@ tbl_read_team_rat_data <- function(
   
   # path
   if (!file.exists(download_file))
-    glue("tRAT data file '{download_file}' does not exist, ",
-         "make sure to run tbl_fetch_team_rat_data() first ",
+    glue("immediate feedback test app data file '{download_file}' does not exist, ",
+         "make sure to run tbl_fetch_immediate_feedback_test_data() first ",
          "or adjust the 'download_file' parameter to point to a valid ",
-         "tRAT data file") %>% 
+         "immediate feedback test data file") %>% 
     stop(call. = FALSE)
   
   # fetch data
-  answers <- teams %>% 
-    mutate(answers = purrr::map(access_code, ~read_team_rat(download_file, .x))) %>%
+  answers <- roster %>% 
+    mutate(answers = purrr::map(access_code, ~read_immediate_feedback_test(download_file, .x))) %>%
     select(team, answers) %>%
     unnest(answers)
   
   # combine
   questions %>%
-    prepare_team_rat_questions() %>%
-    tidyr::crossing(team = teams$team) %>%
-    combine_team_rat_questions_and_answers(answers) %>%
+    prepare_immediate_feedback_test_questions() %>%
+    tidyr::crossing(team = roster$team) %>%
+    combine_immediate_feedback_test_questions_and_answers(answers) %>%
     arrange(team, question, option_idx) %>%
     return()
 }
 
-#' Summarize tRAT data
+#' Summarize immediate feedback test data
 #' 
-#' Summarizes the tRAT data.
+#' Summarizes the immediate feedback test data.
 #' 
-#' @param data the tRAT data frame retrieved by \link{tbl_fetch_team_rat_data}
+#' @param data the immediate feedback test data frame retrieved by \link{tbl_fetch_immediate_feedback_test_data}
 #' @param guess_points points for each successive guess. The default is 1 point for getting the right answer on the first guess, 0.5 points on the second guess, 0.25 point on the third and 0 points thereafter.
 #' @export
-tbl_summarize_team_rat_data <- function(data, guess_points = c(1, 0.5, 0.25)) {
+tbl_summarize_immediate_feedback_test_data <- function(data, guess_points = c(1, 0.5, 0.25)) {
   data %>%
     left_join(
       tibble(guess_nr = seq_along(guess_points), points = guess_points),
@@ -680,24 +680,24 @@ tbl_summarize_team_rat_data <- function(data, guess_points = c(1, 0.5, 0.25)) {
 
 # visualization functions ====
 
-#' Generate tRATs
+#' Generate immediate feedback tests
 #' 
-#' This function generates visual tRATs based on the data retrieved by \link{tbl_fetch_team_rat_data} (the same function is used internally by the tRAT apps).
+#' This function generates visual immediate feedback tests based on the data retrieved by \link{tbl_fetch_immediate_feedback_test_data} (the same function is used internally by the immediate feedback test apps).
 #' 
-#' @param data the tRAT data frame retrieved by \link{tbl_fetch_team_rat_data}
+#' @param data the immediate feedback test data frame retrieved by \link{tbl_fetch_immediate_feedback_test_data}
 #' @param correct the color for correct answers (green by default)
 #' @param incorrect the color for incorrect answers (red by default)
 #' @param unknown the color for yet unknown answers (gray by default)
 #' @param width the relative width of the option boxes (from 0 to 1)
 #' @param height the relative height of the optin boxes (from 0 to 1)
 #' @export
-tbl_generate_team_rat <- function(team_rat_data, correct = "#4DAF4A", incorrect = "#E41A1C", unknown = "#999999", width = 0.9, height = 0.9) {
+tbl_generate_immediate_feedback_test <- function(immediate_feedback_test_data, correct = "#4DAF4A", incorrect = "#E41A1C", unknown = "#999999", width = 0.9, height = 0.9) {
   
   # summary
-  team_sum <- tbl_summarize_team_rat_data(team_rat_data)
+  team_sum <- tbl_summarize_immediate_feedback_test_data(immediate_feedback_test_data)
   
   # plot
-  team_rat_data %>% 
+  immediate_feedback_test_data %>% 
     left_join(team_sum, by = "team") %>%
     mutate(
       color = dplyr::case_when(

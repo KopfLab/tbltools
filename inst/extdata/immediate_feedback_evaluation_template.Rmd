@@ -19,14 +19,14 @@ library(tbltools)
 # Fetch tRAT results
 
 ```{r}
-tRAT_data <- tbl_fetch_team_rat_data(data_gs_title = "${data_gs_title}")
+tRAT_data <- tbl_fetch_immediate_feedback_test_data(data_gs_title = "${data_gs_title}")
 tRAT_data
 ```
 
 # Summarize results
 
 ```{r}
-tRAT_data %>% tbl_summarize_team_rat_data()
+tRAT_data %>% tbl_summarize_immediate_feedback_test_data()
 ```
 
 # Visualize
@@ -34,7 +34,7 @@ tRAT_data %>% tbl_summarize_team_rat_data()
 The sizing of this tRAT visualization depends on the number of teams and `fig.width` and `fig.height` should be adjusted as needed.
 
 ```{r fig.width=10, fig.height=10}
-tRAT_data %>% tbl_generate_team_rat()
+tRAT_data %>% tbl_generate_immediate_feedback_test()
 ```
 
 

@@ -3,7 +3,7 @@
 #' Generates the user interface part of the team RAT app.
 #' 
 #' @param app_title the title of the team RAT App, e.g. "Class name - tRAT #1"
-team_rat_ui <- function(app_title) {
+immediate_feedback_test_ui <- function(app_title) {
   
   # set spinner color
   options(spinner.color = "black")
