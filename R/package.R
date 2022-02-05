@@ -3,7 +3,6 @@
 
 #' @importFrom rlang is_quosure quo !! quo_text sym enquo eval_tidy quo_text
 #' @importFrom methods is
-#' @importFrom glue glue collapse
 #' @importFrom tibble deframe tibble
 #' @importFrom dplyr select rename mutate filter group_by ungroup arrange tally bind_rows everything starts_with ends_with left_join do data_frame summarize tbl_df
 #' @importFrom tidyr nest unnest
