@@ -76,7 +76,7 @@ tbl_setup_RAT_template <- function(module = "module 1", n_questions = 10, n_opti
   glue("Info: creating '{rmd_file}' RAT generation template... ") %>% message(appendLF = FALSE)
   system.file(package = "tbltools", "extdata", "RAT_template.Rmd") %>% 
     read_lines() %>% 
-    collapse(sep = "\n") %>% 
+    glue::glue_collapse(sep = "\n") %>% 
     str_interp(list(
       module = basename(module),
       excel_file = basename(excel_file))) %>% 
@@ -187,17 +187,17 @@ tbl_create_RAT_from_data_frame <- function(questions, answer_key) {
   
   # check for required columns
   if (length(missing <- setdiff(c("question", "answer", "correct"), names(questions))) > 0) {
-    glue("Missing required column(s): {collapse(missing, sep = ', ')}") %>% 
+    glue("Missing required column(s): {glue::glue_collapse(missing, sep = ', ')}") %>% 
       stop(call. = FALSE)
   }
   if (length(missing <- setdiff(c("number", "option"), names(answer_key))) > 0) {
-    glue("Missing required column(s): {collapse(missing, sep = ', ')}") %>% 
+    glue("Missing required column(s): {glue::glue_collapse(missing, sep = ', ')}") %>% 
       stop(call. = FALSE)
   }
   
   # check for reserved columns
   if (length(reserved <- intersect(c("iRAT_n", "tRAT_n"), names(questions)))) {
-    glue("Encountered reserved column(s), please don't use these names: {collapse(reserved, sep = ', ')}") %>% 
+    glue("Encountered reserved column(s), please don't use these names: {glue::glue_collapse(reserved, sep = ', ')}") %>% 
       stop(call. = FALSE)
   }
   
@@ -507,7 +507,7 @@ get_question_number <- function(iRAT_n, tRAT_n) {
   iRAT_sel_n <- iRAT_n %>% sort() %>% diff()
   if (is_empty(iRAT_sel_n)) iRAT_sel_n <- 1
   if (!all(iRAT_sel_n == iRAT_sel_n[1])) {
-    glue("inconsistent number of selection options for iRAT questions: {collapse(iRAT_sel_n, sep = ', ')}") %>% 
+    glue("inconsistent number of selection options for iRAT questions: {glue::glue_collapse(iRAT_sel_n, sep = ', ')}") %>% 
       stop(call. = FALSE)
   }
   iRAT_sel_n <- iRAT_sel_n[1]
@@ -549,7 +549,7 @@ get_RAT_options <- function(rat) {
     glue("The following question(s) do NOT have enough possible answers to fit the correct option, ",
          "consider using by='fixed' or by='semi-random' question arrangement ",
          "to make sure these are located at an appropriate position in the answer key:\n",
-         "  - {collapse(trouble$label, sep = '\n  - ')}") %>% 
+         "  - {glue::glue_collapse(trouble$label, sep = '\n  - ')}") %>% 
       stop(call. = FALSE)
   }
   

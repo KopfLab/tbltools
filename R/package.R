@@ -24,14 +24,6 @@ NULL
 #' @export
 magrittr::`%>%`
 
-# collapse helper to deal with naming change in the glue package
-collapse <- function(...) {
-  if (exists("glue_collapse", where=asNamespace("glue"), mode="function"))
-    glue::glue_collapse(...)
-  else
-    glue::collapse(...)
-}
-
 # quiets concerns of R CMD check about . that appears in pipelines 
 # and some very commonly used variable names used in NSE commands
 utils::globalVariables(c("."))
