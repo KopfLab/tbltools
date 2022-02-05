@@ -120,7 +120,7 @@ tbl_setup_peer_evaluation <- function(
         str_c(var, " = ", val)
       })
     } %>% 
-    collapse(sep = ",\n\t")
+    glue::glue_collapse(sep = ",\n\t")
     
   glue(
     "library(tbltools)",
@@ -134,7 +134,7 @@ tbl_setup_peer_evaluation <- function(
   
   system.file(package = "tbltools", "extdata", "evaluation_template.Rmd") %>% 
     read_lines() %>% 
-    collapse(sep = "\n") %>% 
+    glue::glue_collapse(sep = "\n") %>% 
     str_interp(list(data_gs_title = data_gs_title)) %>% 
     cat(file = file.path(folder, "evaluation.Rmd"))
   
@@ -257,7 +257,7 @@ tbl_run_peer_evaluation <- function(
   if (!is.data.frame(roster)) stop("roster data frame required", call. = FALSE)
   content_files <- c(welcome_md_file, self_eval_plus_md_file, self_eval_minus_md_file, teammate_eval_plus_md_file, teammate_eval_minus_md_file, quant_scores_md_file)
   if (any(missing <- !file.exists(content_files)))
-    glue("content files do not exist: '{collapse(content_files[missing], sep = \"', '\")}'") %>% 
+    glue("content files do not exist: '{glue::glue_collapse(content_files[missing], sep = \"', '\")}'") %>% 
     stop(call. = FALSE)
   if (!file.exists(gs_key_file)) glue("no key file found ('{gs_key_file}' is missing)") %>% stop(call. = FALSE)
   
@@ -537,10 +537,10 @@ tbl_summarize_peer_evaluation_data <- function(data, submitted_only = FALSE) {
   # check for required columns
   req_columns <- c("access_code", "evaluations")
   if (length(missing <- setdiff(req_columns, names(data))) > 0)
-    glue("missing column(s) in data frame: {collapse(missing, sep=', ')}") %>% 
+    glue("missing column(s) in data frame: {glue::glue_collapse(missing, sep=', ')}") %>% 
     stop(call. = FALSE)
   
-  summarize_evals <- . %>% sample() %>% stats::na.omit() %>% collapse(sep = "\n\n") %>% { ifelse(is.null(.), NA_character_, .) }
+  summarize_evals <- . %>% sample() %>% stats::na.omit() %>% glue::glue_collapse(sep = "\n\n") %>% { ifelse(is.null(.), NA_character_, .) }
   
   # make sure to preserve custom roster info
   roster <- data %>% select(-started, -submitted, -submitted_timestamp, -evaluations) %>% 
@@ -655,14 +655,14 @@ check_student_roster <- function(roster) {
   # check for required columns
   req_columns <- c("last", "first", "access_code", "team")
   if (length(missing <- setdiff(req_columns, names(roster))) > 0)
-    glue("missing column(s) in student roster: {collapse(missing, sep=', ')}") %>% 
+    glue("missing column(s) in student roster: {glue::glue_collapse(missing, sep=', ')}") %>% 
     stop(call. = FALSE)
   
   # check for unique access codes
   not_unique <- roster %>% group_by(access_code) %>% tally() %>% filter(n > 1)
   if (nrow(not_unique) > 0) {
     glue("all access codes must be unique, found not unique access code(s): ",
-         "{collapse(not_unique$access_code, sep = ', ')}") %>% 
+         "{glue::glue_collapse(not_unique$access_code, sep = ', ')}") %>% 
       stop(call. = FALSE)
   }
   

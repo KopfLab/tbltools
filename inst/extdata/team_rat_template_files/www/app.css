@@ -1,0 +1,31 @@
+/*
+ * this shiny app is based on the default boostratp style
+ * overwrite/replace default styles here to customize the application
+ * to customize all styles, use https://getbootstrap.com/docs/3.3/customize/ 
+ */
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+/* custom loading/saving message panel */ 
+.message-panel {
+  position: absolute;
+  text-align: center;
+  margin-top: 100px;
+  height: 100%;
+  left: 0;
+  right: 0;
+  opacity: 0.9;
+  z-index: 100;
+  background: #ffffff;
+  color: #000000;
+}

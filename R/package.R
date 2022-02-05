@@ -3,7 +3,6 @@
 
 #' @importFrom rlang is_quosure quo !! quo_text sym enquo eval_tidy quo_text
 #' @importFrom methods is
-#' @importFrom glue glue collapse
 #' @importFrom tibble deframe tibble
 #' @importFrom dplyr select rename mutate filter group_by ungroup arrange tally bind_rows everything starts_with ends_with left_join do data_frame summarize tbl_df
 #' @importFrom tidyr nest unnest
@@ -23,14 +22,6 @@ NULL
 #' @importFrom magrittr %>%
 #' @export
 magrittr::`%>%`
-
-# collapse helper to deal with naming change in the glue package
-collapse <- function(...) {
-  if (exists("glue_collapse", where=asNamespace("glue"), mode="function"))
-    glue::glue_collapse(...)
-  else
-    glue::collapse(...)
-}
 
 # quiets concerns of R CMD check about . that appears in pipelines 
 # and some very commonly used variable names used in NSE commands
