@@ -194,3 +194,4 @@ test_that("test that RAT generation works properly", {
   expect_output(tbl_generate_RAT_choices(rat, random_seed = 42), "### 2.*what says the cow")
   
 })
+
