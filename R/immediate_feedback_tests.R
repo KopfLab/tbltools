@@ -130,7 +130,7 @@ tbl_setup_immediate_feedback_test <- function(
         str_c(var, " = ", val)
       })
     } %>%
-    collapse(sep = ",\n\t")
+    glue::glue_collapse(sep = ",\n\t")
 
   glue(
     "library(tbltools)",
@@ -144,7 +144,7 @@ tbl_setup_immediate_feedback_test <- function(
 
   system.file(package = "tbltools", "extdata", "immediate_feedback_evaluation_template.Rmd") %>%
     read_lines() %>%
-    collapse(sep = "\n") %>%
+    glue::glue_collapse(sep = "\n") %>%
     str_interp(list(data_gs_title = data_gs_title)) %>%
     cat(file = file.path(folder, "evaluation.Rmd"))
 
@@ -390,14 +390,14 @@ check_immediate_feedback_test_roster <- function(roster) {
   # check for required columns
   req_columns <- c("name", "access_code")
   if (length(missing <- setdiff(req_columns, names(roster))) > 0)
-    glue("missing column(s) in roster: {collapse(missing, sep=', ')}") %>%
+    glue("missing column(s) in roster: {glue::glue_collapse(missing, sep=', ')}") %>%
     stop(call. = FALSE)
 
   # check for unique access codes
   not_unique <- roster %>% group_by(.data$access_code) %>% tally() %>% filter(.data$n > 1)
   if (nrow(not_unique) > 0) {
     glue("all access codes must be unique, found not unique access code(s): ",
-         "{collapse(not_unique$access_code, sep = ', ')}") %>%
+         "{glue::glue_collapse(not_unique$access_code, sep = ', ')}") %>%
       stop(call. = FALSE)
   }
 
