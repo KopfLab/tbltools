@@ -1,8 +1,8 @@
-#' Team Rapid Assessment Test App UI
+#' Immediate Feedback Test App UI
 #'
-#' Generates the user interface part of the team RAT app.
+#' Generates the user interface part of the immediate feedback test app.
 #' 
-#' @param app_title the title of the team RAT App, e.g. "Class name - tRAT #1"
+#' @param app_title the title of the app, e.g. "Class name - tRAT #1"
 immediate_feedback_test_ui <- function(app_title) {
   
   # set spinner color
@@ -33,7 +33,7 @@ immediate_feedback_test_ui <- function(app_title) {
       
       div(id = "access-panel",
           column(width = 12,
-                 textInput("access_code", NULL, placeholder = "Enter your team access code"),
+                 textInput("access_code", NULL, placeholder = "Enter your access code"),
                  selectInput("auto_login_trigger", NULL, choices = "1", selected = "1") %>% hidden(),
                  actionButton("access", "Start")
           )),

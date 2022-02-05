@@ -1,21 +1,21 @@
 
-#' Team Rapid Assessment Test App Server
+#' Immediate Feedback Test App Server
 #'
 #' Generates the server part of the tRAT app
-#' @param teams data frame with the teams and access codes
+#' @param roster data frame with the roster and access codes
 #' @param questions data frame with the questions
 #' @param auto_login_access_code set an automatic login access code for testing and debugging purposes
-immediate_feedback_test_server <- function(teams, questions, data_gs_title, gs_key_file, auto_login_access_code = NULL) {
+immediate_feedback_test_server <- function(roster, questions, data_gs_title, gs_key_file, auto_login_access_code = NULL) {
   
   # plotting constants (could become parameters if that would be useful)
   answer_width <- 0.9
   answer_height <- 0.9
   
   # access code prefix
-  access_code_prefix <- "team_"
+  access_code_prefix <- "id_"
   
-  # safety check for the teams
-  teams <- check_teams(teams) %>% 
+  # safety check for the roster
+  roster <- check_immediate_feedback_test_roster(roster) %>% 
     mutate(
       # make sure access code is textual
       access_code = str_c(access_code_prefix, access_code)
@@ -37,7 +37,7 @@ immediate_feedback_test_server <- function(teams, questions, data_gs_title, gs_k
     values <- reactiveValues(
       auto_login = FALSE,
       access_code = NULL,
-      team = NULL,
+      active = NULL, # active entry from the roster
       answers = NULL,
       state = NULL,
       gui_ready = FALSE,
@@ -69,10 +69,10 @@ immediate_feedback_test_server <- function(teams, questions, data_gs_title, gs_k
     # update state when answers get updated
     observeEvent(values$answers, {
       req(values$answers)
-      req(values$team)
+      req(values$id)
       values$state <- combine_immediate_feedback_test_questions_and_answers(
-        mutate(questions, team = values$team$team), 
-        mutate(values$answers, team = values$team$team)
+        mutate(questions, name = values$active$name), 
+        mutate(values$answers, name = values$active$name)
       )
       message("Info: new state")
       print(filter(values$state, guessed))
@@ -86,18 +86,18 @@ immediate_feedback_test_server <- function(teams, questions, data_gs_title, gs_k
       hide("access-panel")
       show("loading-panel")
       # enforce case sensitive access code
-      team <- filter(teams, stringr::str_to_lower(access_code) == stringr::str_to_lower(entered_access_code))
+      active <- filter(roster, stringr::str_to_lower(access_code) == stringr::str_to_lower(entered_access_code))
       load_access_code <- FALSE
-      if (nrow(team) == 0) {
+      if (nrow(active) == 0) {
         showModal(modalDialog(h2(paste0("Unknown access code: ", pure_access_code)), easyClose = TRUE, fade = FALSE))
       } else if (is.null(values$access_code) || stringr::str_to_lower(values$access_code) != stringr::str_to_lower(entered_access_code)) {
         
-        # team info
-        team <- as.list(team[1,])
+        # active roster entry info
+        active <- as.list(active[1,])
         
         # retrieve data from google spreadsheet
-        message("Info: Retrieving previous answers for team '", team$team, "'")
-        answers <- get_answers(team$access_code)
+        message("Info: Retrieving previous answers for '", active$name, "'")
+        answers <- get_answers(active$access_code)
         if (!is.null(answers)) load_access_code <- TRUE
       }
       
@@ -105,8 +105,8 @@ immediate_feedback_test_server <- function(teams, questions, data_gs_title, gs_k
       if (load_access_code) {
         message("Info: loading GUI for access code: ", pure_access_code)
         
-        values$team <- team
-        values$access_code <- team$access_code
+        values$active <- active
+        values$access_code <- active$access_code
         values$answers <- answers
         
         hide("loading-panel", anim = TRUE, animType = "fade")   
@@ -142,13 +142,13 @@ immediate_feedback_test_server <- function(teams, questions, data_gs_title, gs_k
     
     # load main UI ====
     observeEvent(values$gui_ready, {
-      req(values$team)
+      req(values$active)
       req(values$access_code)
-      message("Info: showing GUI for team '", values$team$team, "'")
+      message("Info: showing GUI for '", values$active$name, "'")
       if (values$auto_login == FALSE) {
         showModal(modalDialog(
-          h2(str_c("Welcome ", values$team$team)),
-          h4("Please decide as a team which answers are correct and make your choices by clicking on the right option for each question."),
+          h2(str_c("Welcome ", values$active$name)),
+          h4("Please decide which answers are correct and make your choices by clicking on the right option for each question."),
           footer = modalButton("Ok"),
           easyClose = TRUE, fade = FALSE
         ))
@@ -231,8 +231,8 @@ immediate_feedback_test_server <- function(teams, questions, data_gs_title, gs_k
     # log out ==== FIXME: do we even need this? probably not
     
     logout_user <- function() {
-      message("Info: logging out ", values$team$team)
-      value$team <- NULL
+      message("Info: logging out ", values$active$name)
+      value$active <- NULL
       values$access_code <- NULL
       values$state <- NULL
       updateTextInput(session, "access_code", value = "")

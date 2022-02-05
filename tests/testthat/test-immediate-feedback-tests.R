@@ -5,13 +5,13 @@ context("immediate feedback test")
 test_that("test that immediate feedback test functions throw the proper errors", {
 
   # student roster
-  expect_error(check_roster(42), "must be a data frame")
-  roster <- tibble(team = "team", access_code = "42")
-  expect_error(check_roster(roster %>% select(-team)), "missing column.*team")
-  expect_error(check_roster(roster %>% select(-access_code)), "missing column.*access_code")
-  expect_true(is.data.frame(check_roster(roster)))
+  expect_error(check_immediate_feedback_test_roster(42), "must be a data frame")
+  roster <- tibble(name = "team", access_code = "42")
+  expect_error(check_immediate_feedback_test_roster(roster %>% select(-name)), "missing column")
+  expect_error(check_immediate_feedback_test_roster(roster %>% select(-access_code)), "missing column.*access_code")
+  expect_true(is.data.frame(check_immediate_feedback_test_roster(roster)))
   roster <- bind_rows(roster, roster)
-  expect_error(check_roster(roster), "not unique access code")
+  expect_error(check_immediate_feedback_test_roster(roster), "not unique access code")
     
   # read data
   expect_error(read_immediate_feedback_test("DNE"), "neither a google spreadsheet nor a valid path")
@@ -43,7 +43,7 @@ test_that("test that immediate feedback test functions throw the proper errors",
   expect_true(file.exists(file.path(tmp2, "gs_key_file.json")))
   
   # app start
-  expect_error(tbl_run_immediate_feedback_test(roster = 5), "roster.*required")
+  expect_error(tbl_run_immediate_feedback_test(roster = 5), "data frame required")
   expect_error(tbl_run_immediate_feedback_test(roster = tibble(), questions = 5), "questions.*required")
   expect_error(tbl_run_immediate_feedback_test(roster = tibble(), questions = tibble()), "no key file")
 
