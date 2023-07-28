@@ -12,3 +12,4 @@ immediate_feedback_test_ui(app_title)
 \description{
 Generates the user interface part of the immediate feedback test app.
 }
+\keyword{internal}

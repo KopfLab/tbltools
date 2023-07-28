@@ -12,3 +12,4 @@ peer_evaluation_ui(app_title)
 \description{
 Generates the user interface part of the peer evaluation app.
 }
+\keyword{internal}

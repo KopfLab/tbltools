@@ -77,4 +77,17 @@ reference:
   - tbl_example_roster
   - tbl_example_peer_evaluation
   - tbl_example_empty_peer_evaluation
+- title: Immediate Feedback Test Setup
+  desc: >
+    Functions to easily generate, test and deploy a shiny application for online team-based immediate feedback tests.
+  contents:
+  - tbl_setup_immediate_feedback_test
+  - tbl_duplicate_immediate_feedback_test
+  - tbl_test_immediate_feedback_test
+  - tbl_deploy_immediate_feedback_test
+  - tbl_run_immediate_feedback_test
+  - tbl_generate_immediate_feedback_test
+  - tbl_fetch_immediate_feedback_test_data
+  - tbl_read_immediate_feedback_test_data
+  - tbl_summarize_immediate_feedback_test_data
 

@@ -3,6 +3,7 @@
 #' Generates the user interface part of the immediate feedback test app.
 #' 
 #' @param app_title the title of the app, e.g. "Class name - tRAT #1"
+#' @keywords internal
 immediate_feedback_test_ui <- function(app_title) {
   
   # set spinner color

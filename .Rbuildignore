@@ -16,3 +16,4 @@ demo_RAT
 \.httr-oauth
 \.yml$
 ^CONDUCT\.md$
+^\.github$
