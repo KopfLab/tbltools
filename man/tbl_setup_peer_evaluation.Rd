@@ -24,6 +24,8 @@ tbl_setup_peer_evaluation(
 
 \item{gs_key_file}{path to your .json access key file for peer evaluation google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. Make sure to share the google spreadshhet for this peer evaluation with the \code{client_email} listed in the key file.}
 
+\item{gs_token}{deprecated in favor of using a gs_key_file}
+
 \item{overwrite}{whether to overwrite the app in the target directory if it already exists}
 
 \item{check_gs_access}{whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE}, this function will NOT validate the \code{gs_key_file} and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the key file grants access to.}

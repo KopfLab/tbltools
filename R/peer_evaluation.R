@@ -14,7 +14,7 @@
 #' @param gs_key_file path to your .json access key file for peer evaluation google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. Make sure to share the google spreadshhet for this peer evaluation with the \code{client_email} listed in the key file.
 #' @param overwrite whether to overwrite the app in the target directory if it already exists
 #' @param check_gs_access whether to confirm google spreadsheet access (using the \code{\link{tbl_check_gs_access}} function). Note that if this is set to \code{FALSE}, this function will NOT validate the \code{gs_key_file} and NOT check that the provided \code{data_gs_title} is a valid spreadsheet the key file grants access to.
-#' @inheritParams tbl_run_peer_evaluation
+#' @param gs_token deprecated in favor of using a gs_key_file
 #' @return returns the \code{folder} invisibly for ease of use in pipelines
 #' @family peer evaluation functions
 #' @export
@@ -373,7 +373,7 @@ tbl_deploy_peer_evaluation <- function(folder = "peer_evaluation", appName = gue
 #' Example files
 #' @rdname tbl_example
 #' @export
-#' @details \code{tbl_example_peer_evaluation} returns the google spreadsheet key (\link{gs_key}) for an example peer evaluation dataset.
+#' @details \code{tbl_example_peer_evaluation} returns the google spreadsheet key for an example peer evaluation dataset.
 tbl_example_peer_evaluation <- function() {
   try_to_fetch_google_spreadsheet(gs_id = "1u9p0erH13N-KFGsAEEY5Eo2cyXJhR62SA485GaRP3O8")
 }
@@ -398,6 +398,7 @@ tbl_example_roster <- function() {
 #' @inheritParams tbl_setup_peer_evaluation
 #' @inheritParams tbl_run_peer_evaluation
 #' @param data_gs_id optional alternative to the \code{data_gs_title}, a google spread sheet ID text or object (see \link[googlesheets4]{sheets_id}). If provided, it takes precedence over the \code{data_gs_title} parameter as the google spreadsheet doesn't need to be searched by name anymore (i.e. can be loaded faster).
+#' @param data_gs_key this parameter is no longer used (replaced by data_gs_id)
 #' @param folder folder where the peer evaluation app is located (relative to the location of the RMarkdown file if used in the latter context)
 #' @param download_to location where the whole peer evaluation data sheet will be downloaded to for more efficient read access
 #' @export

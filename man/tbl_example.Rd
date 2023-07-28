@@ -16,7 +16,7 @@ tbl_example_roster()
 Example files
 }
 \details{
-\code{tbl_example_peer_evaluation} returns the google spreadsheet key (\link{gs_key}) for an example peer evaluation dataset.
+\code{tbl_example_peer_evaluation} returns the google spreadsheet key for an example peer evaluation dataset.
 
 \code{tbl_example_empty_peer_evaluation} returns the google spreadsheet key (\link{gs_key}) for an example empty/newly set-up peer evaluation.
 
