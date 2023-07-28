@@ -34,7 +34,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 
 3. When you are finished (or the time is up), return the test.
 
-## Instructions for the team readiness assessment test (tRAT)
+## Instructions for the immediate feedback test (tRAT)
 
 1. When the time is up, have one member of your team turn in the envelopes to the instructor and collect the IF-AT sheet for your team.
 
