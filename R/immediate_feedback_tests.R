@@ -684,7 +684,7 @@ tbl_summarize_immediate_feedback_test_data <- function(data, guess_points = c(1,
 #'
 #' This function generates visual immediate feedback tests based on the data retrieved by \link{tbl_fetch_immediate_feedback_test_data} (the same function is used internally by the immediate feedback test apps).
 #'
-#' @param data the immediate feedback test data frame retrieved by \link{tbl_fetch_immediate_feedback_test_data}
+#' @param immediate_feedback_test_data the immediate feedback test data frame retrieved by \link{tbl_fetch_immediate_feedback_test_data}
 #' @param correct the color for correct answers (green by default)
 #' @param incorrect the color for incorrect answers (red by default)
 #' @param unknown the color for yet unknown answers (gray by default)

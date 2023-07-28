@@ -23,6 +23,8 @@ Imports:
     readr,
     readxl,
     openxlsx,
+    gargle,
+    jsonlite,
     googledrive,
     googlesheets4,
     lifecycle,

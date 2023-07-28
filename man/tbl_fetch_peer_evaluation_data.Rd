@@ -21,6 +21,8 @@ tbl_fetch_peer_evaluation_data(
 
 \item{data_gs_id}{optional alternative to the \code{data_gs_title}, a google spread sheet ID text or object (see \link[googlesheets4]{sheets_id}). If provided, it takes precedence over the \code{data_gs_title} parameter as the google spreadsheet doesn't need to be searched by name anymore (i.e. can be loaded faster).}
 
+\item{data_gs_key}{this parameter is no longer used (replaced by data_gs_id)}
+
 \item{roster}{data frame with the student roster}
 
 \item{gs_key_file}{path to your .json access key file for peer evaluation google spreadsheets. See the \href{https://tbltools.kopflab.org/articles/peer_evaluations.html}{peer evaluations vignette} for details. This key file is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. Make sure to share the google spreadshhet for this peer evaluation with the \code{client_email} listed in the key file.}

@@ -14,6 +14,8 @@ tbl_generate_immediate_feedback_test(
 )
 }
 \arguments{
+\item{immediate_feedback_test_data}{the immediate feedback test data frame retrieved by \link{tbl_fetch_immediate_feedback_test_data}}
+
 \item{correct}{the color for correct answers (green by default)}
 
 \item{incorrect}{the color for incorrect answers (red by default)}
@@ -23,8 +25,6 @@ tbl_generate_immediate_feedback_test(
 \item{width}{the relative width of the option boxes (from 0 to 1)}
 
 \item{height}{the relative height of the optin boxes (from 0 to 1)}
-
-\item{data}{the immediate feedback test data frame retrieved by \link{tbl_fetch_immediate_feedback_test_data}}
 }
 \description{
 This function generates visual immediate feedback tests based on the data retrieved by \link{tbl_fetch_immediate_feedback_test_data} (the same function is used internally by the immediate feedback test apps).
