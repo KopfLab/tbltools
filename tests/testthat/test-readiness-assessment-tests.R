@@ -130,9 +130,7 @@ test_that("test that RAT generation works properly", {
   expect_warning(tbl_arrange_RAT_questions(rat, by = "fixed", fixed_number_column = "number", group_by_column = "group"), "no effect")
   
   # semi - random numbers
-  if (as.numeric(version$major) >= 3 && as.numeric(version$minor) >= 6) {
-    suppressWarnings(RNGkind(sample.kind = "Rounding")) # to account for random number generation changes in R version >=3.6.0
-  }
+  suppressWarnings(RNGkind(sample.kind = "Rounding"))
   expect_arrangement(rat2, c(2, 3, 1), c(2, 3, 1), by = "semi-random", fixed_number_column = "number", random_seed = 42)
   expect_arrangement(rat2, c(1, 3, 2), c(1, 3, 2), by = "semi-random", fixed_number_column = "number", random_seed = 42, group_by_column = "group")
   expect_arrangement(rat2, c(5, 3, 4), c(5, 3, 4), by = "semi-random", fixed_number_column = "number", random_seed = 42, tRAT_n_start = 3)

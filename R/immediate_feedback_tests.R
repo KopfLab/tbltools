@@ -416,11 +416,11 @@ prepare_immediate_feedback_test_questions <- function(questions) {
 
   # format questions
   questions_all <- questions %>%
-    select(.data$question:.data$correct) %>%
+    select("question":"correct") %>%
     # preserve order
     mutate(question = forcats::as_factor(.data$question)) %>%
     tidyr::pivot_longer(
-      cols = -c(.data$question, .data$correct),
+      cols = -c("question", "correct"),
       values_to = "option",
       values_drop_na = TRUE
     ) %>%
@@ -437,11 +437,11 @@ prepare_immediate_feedback_test_questions <- function(questions) {
     ) %>%
     ungroup() %>%
     # cleanup
-    select(-name)
+    select(-"name")
 
   # make sure correct answer is included
   correct_check <- questions_all %>%
-    group_by(question_id) %>%
+    group_by(.data$question_id) %>%
     summarize(has_correct = any(.data$correct), .groups = "drop")
 
   if (!all(correct_check$has_correct)) {
@@ -642,15 +642,15 @@ tbl_read_immediate_feedback_test_data <- function(
   # fetch data
   answers <- roster %>%
     mutate(answers = purrr::map(.data$access_code, ~read_immediate_feedback_test(download_file, .x))) %>%
-    select(.data$name, .data$answers) %>%
-    unnest(.data$answers)
+    select("name", "answers") %>%
+    unnest("answers")
 
   # combine
   questions %>%
     prepare_immediate_feedback_test_questions() %>%
     tidyr::crossing(name = roster$name) %>%
     combine_immediate_feedback_test_questions_and_answers(answers) %>%
-    arrange(name, question, option_idx) %>%
+    arrange(.data$name, .data$question, .data$option_idx) %>%
     return()
 }
 

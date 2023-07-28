@@ -20,31 +20,27 @@ test_that("test that peer evaluation functions throw the proper errors", {
   
   # app setup
   tmp <- file.path(tempdir(), "pe1")
+  unlink(tmp, recursive = TRUE)
   expect_error(tbl_setup_peer_evaluation(folder = tmp, template_roster_file = "DNE", check_gs_access = FALSE), "roster file.*does not exist")
   expect_error(tbl_setup_peer_evaluation(folder = tmp, gs_key_file = system.file("extdata", "broken_json_file.json", package="tbltools")), "not valid JSON")
   expect_error(tbl_setup_peer_evaluation(folder = tmp, gs_key_file = system.file("extdata", "broken_key_file.json", package="tbltools")), "authentication failed")
-  expect_error(tbl_setup_peer_evaluation(folder = tmp, gs_key_file = system.file("extdata", "gs_key_file_example.json", package="tbltools")), "authentication failed")
-  expect_message(tbl_setup_peer_evaluation(folder = tmp, check_gs_access = FALSE), "complete")
+  expect_message(tbl_setup_peer_evaluation(folder = tmp, gs_key_file = system.file("extdata", "gs_key_file_example.json", package="tbltools"), data_gs_title = "Peer Evaluations Example", overwrite = TRUE), "complete")
   expect_message(tbl_setup_peer_evaluation(folder = tmp, check_gs_access = FALSE), "app already exists.*to overwrite")
   expect_message(tbl_setup_peer_evaluation(folder = tmp, overwrite = TRUE, check_gs_access = FALSE), "will be overwritten")
   expect_message(tbl_setup_peer_evaluation(folder = tmp, overwrite = TRUE, check_gs_access = FALSE), "complete")
-  expect_false(file.exists(file.path(tmp, "gs_key_file.json")))
+  expect_true(file.exists(file.path(tmp, "gs_key_file.json")))
   expect_true(file.exists(file.path(tmp, "roster.xlsx")))
   
   # duplicate app
   tmp2 <- file.path(tempdir(), "pe2")
-  expect_error(tbl_duplicate_peer_evaluation(tmp, tmp2, overwrite = TRUE), "key file does not exist")
-  expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2), "app already exists.*to overwrite")
-  expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2, overwrite = TRUE, check_gs_access = FALSE), "will be overwritten")
-  expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2, overwrite = TRUE, check_gs_access = FALSE, data_gs_title = "NEW"), "changing spreadsheet title")
+  unlink(tmp2, recursive = TRUE)
   expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2, overwrite = TRUE, check_gs_access = FALSE), "fully duplicated")
-  file.copy(system.file("extdata", "gs_key_file_example.json", package="tbltools"), file.path(tmp2, "gs_key_file.json"))
-  expect_true(file.exists(file.path(tmp2, "gs_key_file.json")))
+  expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2), "app already exists.*to overwrite")
+  expect_message(tbl_duplicate_peer_evaluation(tmp, tmp2, overwrite = TRUE, check_gs_access = FALSE, data_gs_title = "NEW"), "changing spreadsheet title")
     
   # check access
-  expect_error(tbl_check_gs_access(folder = tmp), "key file does not exist")
-  expect_error(tbl_check_gs_access(gs_key_file = system.file("extdata", "gs_key_file_example.json", package="tbltools")), "authentication failed")
-  expect_error(tbl_check_gs_access(folder = tmp2), "authentication failed")
+  expect_error(tbl_check_gs_access(folder = tmp), "don't have access")
+  expect_error(tbl_check_gs_access(folder = tmp2), "don't have access")
   
   # app start
   expect_error(tbl_run_peer_evaluation(roster = 5), "roster.*required")
@@ -53,8 +49,7 @@ test_that("test that peer evaluation functions throw the proper errors", {
   # app testing
   expect_error(tbl_test_peer_evaluation(folder = "DNE"), "does not exist")
   expect_error(tbl_test_peer_evaluation(folder = "."), "not.*contain a peer evaluation app")
-  expect_error(tbl_test_peer_evaluation(tmp), "no key file")
-  expect_error(tbl_test_peer_evaluation(tmp2), "authentication failed")
+  expect_error(tbl_test_peer_evaluation(tmp), "don't have access")
   
   # app deployment
   expect_error(tbl_deploy_peer_evaluation(folder = "DNE"), "does not exist")
@@ -83,7 +78,7 @@ test_that("test that peer evaluation functions throw the proper errors", {
   expect_error(tbl_export_peer_evaluation_data(5), "no data frame supplied")
   
   # example data
-  expect_error(try_to_fetch_google_spreadsheet("DNE"), "could not retrieve")
+  expect_error(try_to_fetch_google_spreadsheet("DNE"), "don't have access")
   
   # cleanup
   unlink(tmp, recursive = TRUE)

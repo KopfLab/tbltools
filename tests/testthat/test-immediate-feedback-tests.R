@@ -22,7 +22,7 @@ test_that("test that immediate feedback test functions throw the proper errors",
   expect_error(tbl_setup_immediate_feedback_test(folder = tmp, template_questions_file = "DNE", check_gs_access = FALSE), "questions file.*does not exist")
   expect_error(tbl_setup_immediate_feedback_test(folder = tmp, gs_key_file = system.file("extdata", "broken_json_file.json", package="tbltools")), "not valid JSON")
   expect_error(tbl_setup_immediate_feedback_test(folder = tmp, gs_key_file = system.file("extdata", "broken_key_file.json", package="tbltools")), "authentication failed")
-  expect_error(tbl_setup_immediate_feedback_test(folder = tmp, gs_key_file = system.file("extdata", "gs_key_file_example.json", package="tbltools")), "authentication failed")
+  expect_error(tbl_setup_immediate_feedback_test(folder = tmp, gs_key_file = system.file("extdata", "gs_key_file_example.json", package="tbltools")), "don't have access")
   expect_message(tbl_setup_immediate_feedback_test(folder = tmp, check_gs_access = FALSE), "complete")
   expect_message(tbl_setup_immediate_feedback_test(folder = tmp, check_gs_access = FALSE), "app already exists.*to overwrite")
   expect_message(tbl_setup_immediate_feedback_test(folder = tmp, overwrite = TRUE, check_gs_access = FALSE), "will be overwritten")
@@ -51,7 +51,7 @@ test_that("test that immediate feedback test functions throw the proper errors",
   expect_error(tbl_test_immediate_feedback_test(folder = "DNE"), "does not exist")
   expect_error(tbl_test_immediate_feedback_test(folder = "."), "not.*contain.* app")
   expect_error(tbl_test_immediate_feedback_test(tmp), "no key file")
-  expect_error(tbl_test_immediate_feedback_test(tmp2), "authentication failed")
+  expect_error(tbl_test_immediate_feedback_test(tmp2), "don't have access")
   
   # app deployment
   expect_error(tbl_deploy_immediate_feedback_test(folder = "DNE"), "does not exist")
