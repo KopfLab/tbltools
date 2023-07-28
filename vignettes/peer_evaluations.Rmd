@@ -32,23 +32,7 @@ Peer evaluations conveniently store the student responses in a google spreadshee
 
 ## Google credentials (setup once)
 
-It is important to secure access to the peer evaluation spreadsheet(s) so only you and the peer evaluation app have access. As of the google API version 4 this is best accomplished by creating a dedicated google project from your google account as outlined below. This creates a so-called **service account** with a unique client email address that you can share your peer evaluation spreadsheets with (just like sharing it with any other email address) as well as an access key file that your peer evaluation app can use for secure access. You can use this service account for all your peer evaluations and thus only need to set it up once (it does not expire). Note that previously peer evaluations worked by accessing your entire google drive account which is no longer the recommended (or supported) approach for security reasons. For additional information on service account authentication, see the \href{https://gargle.r-lib.org/articles/get-api-credentials.html#service-account-token}{gargle documentation}.
-
- 1. go to [console.cloud.google.com/projectcreate](https://console.cloud.google.com/projectcreate) to start creating a new project and make sure to switch to the correct google account in the upper right corner (if you have multiple)
- 1. give the project an informative **Project name**, e.g. `peer evaluations`
- 1. go to the API libraries at [console.cloud.google.com/apis/library](https://console.cloud.google.com/apis/library) (again, switch to the right google account if you have multiple)
- 1. select the newly created project from the dropdown at the top if it is not already selected
- 1. search for **google sheets api** and click `ENABLE` 
- 1. go back to the [API libraries](https://console.cloud.google.com/apis/library), select right google account and project, search for **google drive api**, click `ENABLE` as well
- 1. go to the API service account credentials at [console.cloud.google.com/iam-admin/serviceaccounts](https://console.cloud.google.com/iam-admin/serviceaccounts) (again, switch to the right google account if you have multiple) and select the correct project
- 1. click on `CREATE SERVICE ACCOUNT`
- 1. provide a descriptive **Service account name**, e.g. `google sheets editor` (this will lead to a service account ID along the lines of `google-sheets-editor@peer-evaluations-xxxx.iam...`) and **Service account description**, e.g. `Editing google sheets for peer evaluations`, then click `CREATE AND CONTINUE`
- 1. select the **Role** `Basic` --> `Editor` and click `CONTINUE`
- 1. don't grant any specific users access, click `DONE` instead
- 1. in the table you will see the new service account listed. Under **Actions** in the table, click on the vertical dots and choose **Manage keys**
- 1. select **ADD KEY** --> **Create new key**, make sure `JSON` is selected, then click **CREATE**
- 1. this will automatically download an access token in JSON format, save the file with an informative name, e.g. as `peer_evaluations_access_key.json` and keep it in a safe location on your hard drive. Yyou can reuse this key file for all peer evaluations, and it is safe to use on a secure shiny app server but be careful to never post this file anywhere publicly as it could be used to gain access to your peer evaluation spreadsheets. You will have to provide the path to this key file when setting up the peer evaluation folder below.
- 1. open the `peer_evaluations_access_key.json` file in a text editor and share the peer evaluation spreadsheet(s) you want to access through the `tbltools` package with the `client_email` address listed there (something along the lines of `google-sheets-editor@peer-evaluations-xxxx.iam.gserviceaccount.com`)
+See the [credentials vignette](credentials.html) for details on how to set up google credentials for your spreadsheet.
 
 ## Create Peer Evaluation App
 
