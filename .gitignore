@@ -43,3 +43,7 @@ Gemfile.lock
 .httr-oauth
 # key files
 *.json
+# documentation
+inst/doc
+doc
+docs
