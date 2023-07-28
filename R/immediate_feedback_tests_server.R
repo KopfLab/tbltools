@@ -5,6 +5,7 @@
 #' @param roster data frame with the roster and access codes
 #' @param questions data frame with the questions
 #' @param auto_login_access_code set an automatic login access code for testing and debugging purposes
+#' @keywords internal
 immediate_feedback_test_server <- function(roster, questions, data_gs_title, gs_key_file, auto_login_access_code = NULL) {
   
   # plotting constants (could become parameters if that would be useful)

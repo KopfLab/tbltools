@@ -3,6 +3,7 @@
 #' Generates the user interface part of the peer evaluation app.
 #' 
 #' @param app_title the title of the Peer Evaluation App, e.g. "Class name - Peer Evaluation #1"
+#' @keywords internal
 peer_evaluation_ui <- function(app_title) {
 
   # Define UI ----

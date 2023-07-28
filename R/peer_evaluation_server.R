@@ -17,6 +17,7 @@
 #' @param require_self_eval whether the qualitative self evaluation is required
 #' @param require_peer_evals whether the qualitative self evaluation is required
 #' @param auto_login_access_code set an automatic login access code for testing and debugging purposes
+#' @keywords internal
 peer_evaluation_server <- function(roster, data_gs_title, gs_key_file, 
                                    welcome_md_file, self_eval_plus_md_file, self_eval_minus_md_file, 
                                    teammate_eval_plus_md_file, teammate_eval_minus_md_file, quant_scores_md_file,
