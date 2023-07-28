@@ -380,7 +380,7 @@ tbl_example_peer_evaluation <- function() {
 
 #' @rdname tbl_example
 #' @export
-#' @details \code{tbl_example_empty_peer_evaluation} returns the google spreadsheet key (\link{gs_key}) for an example empty/newly set-up peer evaluation.
+#' @details \code{tbl_example_empty_peer_evaluation} returns the google spreadsheet key for an example empty/newly set-up peer evaluation.
 tbl_example_empty_peer_evaluation <- function() {
   try_to_fetch_google_spreadsheet(gs_id = "1WcxbU3NOIrOzhf-PAyNGlgpxiEPLMFthe-3lldoCc2M")
 }
