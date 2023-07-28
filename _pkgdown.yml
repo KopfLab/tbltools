@@ -3,7 +3,10 @@ url: http://tbltools.kopflab.org
 template:
   params:
     bootswatch: simplex
-    
+  
+development:
+  mode: devel
+  
 home:
   strip_header: true    
 

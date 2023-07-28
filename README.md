@@ -3,8 +3,11 @@
 
 # tbltools
 
+<!-- badges: start -->
+
 [![R-CMD-check](https://github.com/KopfLab/tbltools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/KopfLab/tbltools/actions/workflows/R-CMD-check.yaml)
 [![Documentation](https://img.shields.io/badge/docs-online-green.svg)](https://kopflab.github.io/tbltools/reference/)
+<!-- badges: end -->
 
 ## About
 
