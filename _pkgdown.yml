@@ -5,7 +5,7 @@ template:
     bootswatch: simplex
   
 development:
-  mode: devel
+  mode: auto
   
 home:
   strip_header: true    
